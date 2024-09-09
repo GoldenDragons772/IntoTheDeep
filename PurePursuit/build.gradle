@@ -1,0 +1,24 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'org.ftc772'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'org.jetbrains.kotlinx:kandy-lets-plot:0.6.0'
+    testImplementation 'org.jcodec:jcodec:0.2.3'
+    testImplementation 'org.jcodec:jcodec-javase:0.2.3'
+}
+
+test {
+    useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(18)
+}
