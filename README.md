@@ -1,5 +1,4 @@
-# ParallelPlate
-Boilerplate for FTC Robots
+# IntoTheDeep
 Code can be found in Team772/src/main/java/org/firstinspires/ftc/team772
 
 Important Links
