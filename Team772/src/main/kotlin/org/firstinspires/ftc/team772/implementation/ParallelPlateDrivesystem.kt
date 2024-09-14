@@ -8,18 +8,21 @@ import com.arcrobotics.ftclib.kinematics.HolonomicOdometry
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
-import org.firstinspires.ftc.team772.abstractions.ExampleExtension
+import org.firstinspires.ftc.team772.abstractions.ClimbExtension
 import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
     val FLMotor: MotorEx = MotorEx(hw, "Motor1"),
-    val FRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    val BLMotor: MotorEx = MotorEx(hw, "Motor2"),
-    val BRMotor: MotorEx = MotorEx(hw, "Motor3"),
+    val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
+    val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
+    val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
+    val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
+    val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
-) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
+    override var climbState: Boolean = false,
+) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem, ClimbExtension {
     // TODO: Implement things from control theory: Motion Profiling, PID.
 
     companion object {
@@ -59,7 +62,6 @@ class ParallelPlateDrivesystem(
          * Returns the position of the robot.
          */
         get() = this.odometry.pose
-    override val extension1: ExampleExtension = ThingDoer(hw)
 
     init {
         encoderLeft.setDistancePerPulse(1 / TICKS_PER_INCHES)
@@ -113,6 +115,16 @@ class ParallelPlateDrivesystem(
         BRMotor.set(0.25)
         FLMotor.set(0.5)
         BLMotor.set(1.0)
+    }
+
+    override fun climb() {
+        TODO("Not yet implemented")
+        // TODO: Make the motors climb or whatever the
+    }
+
+    override fun unclimb() {
+        TODO("Not yet implemented")
+        // TODO: Make the motors unclimb or whatever the
     }
 
 }

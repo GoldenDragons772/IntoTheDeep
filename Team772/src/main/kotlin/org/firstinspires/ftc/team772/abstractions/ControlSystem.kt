@@ -17,7 +17,6 @@ interface ControlSystem {
      * The position of the robot.
      */
     val position: Pose2d
-    val extension1: ExampleExtension
     val pathFollowerPID: PIDController
 
     /**
