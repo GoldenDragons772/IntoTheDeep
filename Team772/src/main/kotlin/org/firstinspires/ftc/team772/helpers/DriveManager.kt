@@ -36,7 +36,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     fun update() {
 //        TODO("Add drive logic, run command scheduler")
-        robot!!.drive(gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
+        robot!!.drive(-gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
     }
 
     /**

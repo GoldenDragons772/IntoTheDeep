@@ -18,8 +18,8 @@ class ParallelPlateDrivesystem(
     val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
-    val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
+    // val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
+    // val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem, ClimbExtension {
