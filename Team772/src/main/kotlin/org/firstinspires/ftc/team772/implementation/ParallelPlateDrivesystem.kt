@@ -68,6 +68,8 @@ class ParallelPlateDrivesystem(
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
+
+        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
     }
 
     override fun update() {
@@ -85,7 +87,8 @@ class ParallelPlateDrivesystem(
         BRMotor.setRunMode(Motor.RunMode.RawPower)
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
-        climbMotorRight.setRunMode(Motor.RunMode.RawPower)
+        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
+        climbMotor.setRunMode(Motor.RunMode.PositionControl)
 
         FLMotor.set((-y - x - theta) / denominator)
         BLMotor.set((-y + x - theta) / denominator)
@@ -118,20 +121,18 @@ class ParallelPlateDrivesystem(
         BLMotor.set(1.0)
     }
 
-    override fun climb(lb: Double, rb: Int) {
-        TODO("Not yet implemented")
-
-        var lbIsPressed = lb < 0.1
-        var rbIsPressed = rb < 0.1
-
-        if (lbIsPressed) {
-            climbMotorRight.set(100)
-        }
+    override fun climb() {
+        climbMotorRight.setTargetPosition(1000)
+        climbMotorRight.set(1.0)
+        climbState = true
     }
 
-    override fun unclimb(lb: Double, rb: Double) {
-        TODO("Not yet implemented")
+    override fun unclimb() {
+        // TODO("Not yet implemented")
         // TODO: Make the motors unclimb or whatever the
+        climbMotorRight.setTargetPosition(0)
+        climbMotorRight.set(1.0)
+        climbState = false
     }
 
 }
