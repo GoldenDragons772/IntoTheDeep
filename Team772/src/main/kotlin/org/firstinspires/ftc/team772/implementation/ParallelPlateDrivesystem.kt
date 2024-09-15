@@ -19,7 +19,7 @@ class ParallelPlateDrivesystem(
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
     // val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
-    // val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
+    val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem, ClimbExtension {
@@ -85,6 +85,7 @@ class ParallelPlateDrivesystem(
         BRMotor.setRunMode(Motor.RunMode.RawPower)
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
+        climbMotorRight.setRunMode(Motor.RunMode.RawPower)
 
         FLMotor.set((-y - x - theta) / denominator)
         BLMotor.set((-y + x - theta) / denominator)
@@ -117,12 +118,18 @@ class ParallelPlateDrivesystem(
         BLMotor.set(1.0)
     }
 
-    override fun climb() {
+    override fun climb(lb: Double, rb: Int) {
         TODO("Not yet implemented")
-        // TODO: Make the motors climb or whatever the
+
+        var lbIsPressed = lb < 0.1
+        var rbIsPressed = rb < 0.1
+
+        if (lbIsPressed) {
+            climbMotorRight.set(100)
+        }
     }
 
-    override fun unclimb() {
+    override fun unclimb(lb: Double, rb: Double) {
         TODO("Not yet implemented")
         // TODO: Make the motors unclimb or whatever the
     }

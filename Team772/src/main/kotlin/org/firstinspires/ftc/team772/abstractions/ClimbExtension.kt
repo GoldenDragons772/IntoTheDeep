@@ -15,5 +15,5 @@ interface ClimbExtension {
     /**
      * Makes the robot climb down.
      */
-    fun unclimb()
+    fun unclimb(lt: Double, rt: Double)
 }
