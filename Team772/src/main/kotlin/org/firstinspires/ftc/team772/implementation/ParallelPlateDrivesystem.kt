@@ -18,7 +18,7 @@ class ParallelPlateDrivesystem(
     val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    // val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
+    val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
     val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     override var climbState: Boolean = false,
@@ -88,7 +88,7 @@ class ParallelPlateDrivesystem(
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
         climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
-        climbMotor.setRunMode(Motor.RunMode.PositionControl)
+        //climbMotorLeft.setRunMode(Motor.RunMode.PositionControl)
 
         FLMotor.set((-y - x - theta) / denominator)
         BLMotor.set((-y + x - theta) / denominator)
