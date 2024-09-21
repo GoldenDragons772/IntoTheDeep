@@ -9,7 +9,7 @@ import org.firstinspires.ftc.team772.helpers.PIDController
  * Main drive system: OpModes (or helpers) should use this in order to move the robot.
  * This is basically an abstraction over the robot: If the autos or teleop need to do something, it should go through here.
  */
-interface ControlSystem {
+interface ControlSystem : ClimbExtension {
     val hw: HardwareMap
     var hubs: MutableList<LynxModule>
 

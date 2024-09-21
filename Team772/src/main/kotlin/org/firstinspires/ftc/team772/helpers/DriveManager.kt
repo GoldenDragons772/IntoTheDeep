@@ -10,7 +10,7 @@ import org.firstinspires.ftc.team772.implementation.Constants
 /**
  * Manages driving and button mappings for TeleOps.
  */
-class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad) {
+class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
     /**
      * Subsystems
      */
@@ -28,7 +28,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         gamepad2 = GamepadEx(gp2)
         // THIS IS FOR BLAH BLAH BLAH BLHA BLAH
         robot = Constants.CURRENT_IMPLEMENTATION(hardwareMap)
-//        this.initializeBindings()
+        initializeBindings(mapping)
     }
 
     /**
@@ -40,16 +40,37 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     }
 
     /**
+     * Gets a gamepad from its int id.
+     */
+    private fun getGamepad(x: Int): GamepadEx? = if (x == 1) gamepad1 else gamepad2
+
+    /**
+     * Binds a function to a button on the controller.
+     */
+    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(function)
+
+    private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(function)
+
+    /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
-    private fun initializeBindings() {
-        TODO("Add logic here")
+    private fun initializeBindings(mapping: Mapping) {
+
+        setPressedBinding(mapping.climbMapping, robot!!::climb)
+        setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
+
     }
 
     /**
      * Definition of possible mappings. Using this instead of a dictionary/hashmap allows for code completion.
      */
     class Mapping(
-        val dummyMapping: Pair<GamepadKeys.Button, Int> // TODO: Add mappings
+        /**
+         * Added mapping for climbing
+         */
+        val climbMapping: Pair<GamepadKeys.Button, Int>,
+        val unClimbMapping: Pair<GamepadKeys.Button, Int>
     )
 }

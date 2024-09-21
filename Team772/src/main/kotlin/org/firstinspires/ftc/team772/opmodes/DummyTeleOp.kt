@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team772.opmodes
 
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -19,9 +20,14 @@ class DummyTeleOp : CommandOpMode() {
      * Runs when init button is pressed on the drive hub. Initializes button mappings and the drive manager.
      */
     override fun initialize() {
-        driveManager = DriveManager(hardwareMap, gamepad1, gamepad2)
 
-//        TODO("Create mappings and initialize drive manager")
+        val mapping = DriveManager.Mapping(
+            climbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
+            unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1)
+        )
+
+        driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
+
     }
 
     /**
@@ -32,19 +38,6 @@ class DummyTeleOp : CommandOpMode() {
 //        TODO("Add logic: run drive manager")
         while (!isStopRequested){
             driveManager.update()
-            override val hw: HardwareMap
-            val robot: ControlSystem = Constants.CURRENT_IMPLEMENTATION(hw)
-
-            if (gamepad1.dpad_up){
-
-                robot.climb()
-
-            }
-            if (gamepad1.dpad_down){
-
-                robot.unClimb()
-
-            }
         }
     }
 }

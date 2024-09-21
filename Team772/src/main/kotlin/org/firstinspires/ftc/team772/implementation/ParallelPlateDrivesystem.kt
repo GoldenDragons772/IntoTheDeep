@@ -22,7 +22,7 @@ class ParallelPlateDrivesystem(
     val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     override var climbState: Boolean = false,
-) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem, ClimbExtension {
+) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
 
     companion object {
