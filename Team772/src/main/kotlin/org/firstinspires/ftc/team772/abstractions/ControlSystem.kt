@@ -20,12 +20,6 @@ interface ControlSystem : ClimbExtension {
     val pathFollowerPID: PIDController
 
     /**
-     * Does a thing
-     */
-    fun doThing()
-
-
-    /**
      * Stop the robot, including cancelling all paths.
      */
     fun stop()
@@ -39,11 +33,6 @@ interface ControlSystem : ClimbExtension {
      * Main drive function: takes x, y, θ and moves the robot accordingly.
      */
     fun drive(x: Double, y: Double, theta: Double)
-
-    /**
-     * Rotate the robot by theta radians.
-     */
-    fun rotate(theta: Double)
 
     /**
      * Updates the robot's sensors and updates things that need updating.

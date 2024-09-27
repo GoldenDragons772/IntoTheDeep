@@ -3,16 +3,10 @@ package org.firstinspires.ftc.team772.opmodes
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.team772.abstractions.ClimbExtension
-import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.DriveManager
-import org.firstinspires.ftc.team772.implementation.Constants
-import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 
-@TeleOp(name = "DummyTeleOp")
-class DummyTeleOp : CommandOpMode() {
+@TeleOp(name = "Solo TeleOp")
+class SoloTeleOp : CommandOpMode() {
     private lateinit var driveManager: DriveManager
 
 

@@ -5,10 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.autos.AutoPath
 import org.firstinspires.ftc.team772.helpers.PathFollower
-import org.firstinspires.ftc.team772.implementation.Constants
 
-@Autonomous(name = "DummyAuto")
-class DummyAuto : CommandOpMode() {
+@Autonomous(name = "Autonomous")
+class AutonomousOpMode : CommandOpMode() {
 
     private lateinit var robot: ControlSystem;
     private var selectedAuto = AutoPath.XYZDUMMYAUTO;
