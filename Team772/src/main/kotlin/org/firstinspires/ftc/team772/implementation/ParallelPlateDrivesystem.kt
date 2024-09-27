@@ -8,7 +8,6 @@ import com.arcrobotics.ftclib.kinematics.HolonomicOdometry
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
-import org.firstinspires.ftc.team772.abstractions.ClimbExtension
 import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
 
@@ -18,11 +17,10 @@ class ParallelPlateDrivesystem(
     val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    // val climbMotorLeft: MotorEx =  MotorEx(hw, "LeftClimb"),
-    // val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
-    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
-    override var climbState: Boolean = false,
-) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem, ClimbExtension {
+    val climbMotorLeft: MotorEx = MotorEx(hw, "LeftClimb"),
+    val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
+    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java), override var climbState: Boolean,
+) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
 
     companion object {
@@ -64,10 +62,13 @@ class ParallelPlateDrivesystem(
         get() = this.odometry.pose
 
     init {
+        super.initBulkReads()
         encoderLeft.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
+
+        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
     }
 
     override fun update() {
@@ -85,6 +86,8 @@ class ParallelPlateDrivesystem(
         BRMotor.setRunMode(Motor.RunMode.RawPower)
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
+        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
+        //climbMotorLeft.setRunMode(Motor.RunMode.PositionControl)
 
         FLMotor.set((-y - x - theta) / denominator)
         BLMotor.set((-y + x - theta) / denominator)
@@ -98,33 +101,25 @@ class ParallelPlateDrivesystem(
     }
 
     override fun stop() {
+        super.stop()
         halt()
-        // TODO: Make this like stop more or something.
     }
 
-    override fun rotate(theta: Double) {
-        TODO("Not yet implemented")
-    }
-
-    override fun doThing() {
-        TODO("Not yet implemented")
-    }
-
-    private fun debugFindWheels() {
-        FRMotor.set(0.0)
-        BRMotor.set(0.25)
-        FLMotor.set(0.5)
-        BLMotor.set(1.0)
-    }
 
     override fun climb() {
-        TODO("Not yet implemented")
-        // TODO: Make the motors climb or whatever the
+        climbMotorLeft.setTargetPosition(1000)
+        climbMotorRight.setTargetPosition(1000)
+        climbMotorRight.set(1.0)
+        climbMotorLeft.set(1.0)
+        climbState = true
     }
 
     override fun unclimb() {
-        TODO("Not yet implemented")
-        // TODO: Make the motors unclimb or whatever the
+        climbMotorRight.setTargetPosition(0)
+        climbMotorLeft.setTargetPosition(0)
+        climbMotorRight.set(-1.0)
+        climbMotorLeft.set(-1.0)
+        climbState = false
     }
 
 }

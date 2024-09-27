@@ -9,7 +9,7 @@ import org.firstinspires.ftc.team772.helpers.PIDController
  * Main drive system: OpModes (or helpers) should use this in order to move the robot.
  * This is basically an abstraction over the robot: If the autos or teleop need to do something, it should go through here.
  */
-interface ControlSystem {
+interface ControlSystem : ClimbExtension {
     val hw: HardwareMap
     var hubs: MutableList<LynxModule>
 
@@ -18,12 +18,6 @@ interface ControlSystem {
      */
     val position: Pose2d
     val pathFollowerPID: PIDController
-
-    /**
-     * Does a thing
-     */
-    fun doThing()
-
 
     /**
      * Stop the robot, including cancelling all paths.
@@ -39,11 +33,6 @@ interface ControlSystem {
      * Main drive function: takes x, y, θ and moves the robot accordingly.
      */
     fun drive(x: Double, y: Double, theta: Double)
-
-    /**
-     * Rotate the robot by theta radians.
-     */
-    fun rotate(theta: Double)
 
     /**
      * Updates the robot's sensors and updates things that need updating.
