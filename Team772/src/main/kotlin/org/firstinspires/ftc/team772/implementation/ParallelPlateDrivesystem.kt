@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.team772.implementation
 
+import ClimbSystem
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -17,11 +20,10 @@ class ParallelPlateDrivesystem(
     val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    val climbMotorLeft: MotorEx = MotorEx(hw, "LeftClimb"),
-    val climbMotorRight: MotorEx = MotorEx(hw, "RightClimb"),
-    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java), override var climbState: Boolean,
+    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java), override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
+    var climbSystem: ClimbSystem? = null
 
     companion object {
         // Constants. Change these to tune, et cetera.
@@ -67,8 +69,10 @@ class ParallelPlateDrivesystem(
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
+        climbSystem = ClimbSystem(hw)
 
-        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
+        BRMotor.inverted = true;
+
     }
 
     override fun update() {
@@ -86,11 +90,10 @@ class ParallelPlateDrivesystem(
         BRMotor.setRunMode(Motor.RunMode.RawPower)
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
-        climbMotorRight.setRunMode(Motor.RunMode.PositionControl)
-        //climbMotorLeft.setRunMode(Motor.RunMode.PositionControl)
 
-        FLMotor.set((-y - x - theta) / denominator)
-        BLMotor.set((-y + x - theta) / denominator)
+
+        FLMotor.set((y + x + theta) / denominator)
+        BLMotor.set((y - x + theta) / denominator)
 
         FRMotor.set((y - x - theta) / denominator)
         BRMotor.set((y + x - theta) / denominator)
@@ -105,21 +108,12 @@ class ParallelPlateDrivesystem(
         halt()
     }
 
-
     override fun climb() {
-        climbMotorLeft.setTargetPosition(1000)
-        climbMotorRight.setTargetPosition(1000)
-        climbMotorRight.set(1.0)
-        climbMotorLeft.set(1.0)
-        climbState = true
+        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.CLIMB)
     }
 
     override fun unclimb() {
-        climbMotorRight.setTargetPosition(0)
-        climbMotorLeft.setTargetPosition(0)
-        climbMotorRight.set(-1.0)
-        climbMotorLeft.set(-1.0)
-        climbState = false
+        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
     }
 
 }

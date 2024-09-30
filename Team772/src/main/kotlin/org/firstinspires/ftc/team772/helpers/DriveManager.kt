@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.team772.helpers
 
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.implementation.Constants
+import java.time.Instant
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -25,8 +27,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     init {
 //        TODO("Add stuff here: reset command scheduler, initialize bindings")
         gamepad1 = GamepadEx(gp1)
-        gamepad2 = GamepadEx(gp2)
-        // THIS IS FOR BLAH BLAH BLAH BLHA BLAH
+        gamepad2 = GamepadEx(gp2) // THIS IS FOR BLAH BLAH BLAH BLHA BLAH
         robot = Constants.CURRENT_IMPLEMENTATION(hardwareMap)
         initializeBindings(mapping)
     }
@@ -48,16 +49,15 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Binds a function to a button on the controller.
      */
     private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(function)
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({function()}))
 
     private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(function)
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()}))
 
     /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-
         setPressedBinding(mapping.climbMapping, robot!!::climb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
 
