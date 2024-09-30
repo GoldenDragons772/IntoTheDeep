@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team772.opmodes
 
+import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.team772.helpers.DriveManager
@@ -14,7 +16,7 @@ class SoloTeleOp : CommandOpMode() {
      * Runs when init button is pressed on the drive hub. Initializes button mappings and the drive manager.
      */
     override fun initialize() {
-
+        CommandScheduler.getInstance().reset()
         val mapping = DriveManager.Mapping(
             climbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1)
@@ -30,8 +32,6 @@ class SoloTeleOp : CommandOpMode() {
     override fun run() {
         super.run()
 //        TODO("Add logic: run drive manager")
-        while (!isStopRequested){
-            driveManager.update()
-        }
+        driveManager.update()
     }
 }
