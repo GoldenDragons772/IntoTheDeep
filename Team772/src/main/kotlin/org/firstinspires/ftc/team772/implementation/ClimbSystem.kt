@@ -17,17 +17,8 @@ class ClimbSystem(hw: HardwareMap) {
 
     enum class ArmPos(val position: Int) {
         HOME(0),
-        HANG(100),
-        SET1(550),
-        LOW(700),
-        MIDDLE(1000),
-        HIGH(1300),
-        HIGHER(1600),
-        TALLER(1900),
-        SET2(2100),
-        CLIMB(2700),
-        SET2HIGHER(2700),
-        SET2TALLER(3000);
+        HIGHCLIMB(2700),
+        LOWCLIMB(1350)
 
     }
 
@@ -65,6 +56,9 @@ class ClimbSystem(hw: HardwareMap) {
 
         leftArmMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
         rightArmMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        leftArmMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        rightArmMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         leftArmMotor.power = 1.0
         rightArmMotor.power = 1.0

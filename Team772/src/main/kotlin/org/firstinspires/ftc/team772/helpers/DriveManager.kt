@@ -58,7 +58,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(mapping.climbMapping, robot!!::climb)
+        setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
+        setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
 
     }
@@ -70,7 +71,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         /**
          * Added mapping for climbing
          */
-        val climbMapping: Pair<GamepadKeys.Button, Int>,
+        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>
     )
 }

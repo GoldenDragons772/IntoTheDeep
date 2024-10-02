@@ -8,9 +8,14 @@ interface ClimbExtension {
     var climbState: Boolean
 
     /**
-     * Makes the robot climb up.
+     * Makes the robot climb up to the upper bar.
      */
-    fun climb()
+    fun lowclimb()
+
+    /**
+     * Makes the robot climb up to the upper bar.
+     */
+    fun highclimb()
 
     /**
      * Makes the robot climb down.

@@ -18,7 +18,7 @@
         <LynxModule name="Expansion Hub" port="2">
 <!--            <goBILDA5202SeriesMotor name="LeftArmMotor" port="0" />-->
 <!--            <goBILDA5202SeriesMotor name="IntakeMotor" port="1" />-->
-                <goBILDA5202SeriesMotor name="RightArmMotor" port="2" />
+<!--            <goBILDA5202SeriesMotor name="RightArmMotor" port="2" />-->
 <!--            <Servo name="RDipper" port="0" />-->
 <!--            <Servo name="RBPivot" port="2" />-->
 <!--            <Servo name="Plane" port="4" />-->

@@ -18,7 +18,8 @@ class SoloTeleOp : CommandOpMode() {
     override fun initialize() {
         CommandScheduler.getInstance().reset()
         val mapping = DriveManager.Mapping(
-            climbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
+            lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
+            highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1)
         )
 

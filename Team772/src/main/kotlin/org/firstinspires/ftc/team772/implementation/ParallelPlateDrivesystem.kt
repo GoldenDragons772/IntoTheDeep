@@ -108,8 +108,12 @@ class ParallelPlateDrivesystem(
         halt()
     }
 
-    override fun climb() {
-        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.CLIMB)
+    override fun highclimb() {
+        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+    }
+
+    override fun lowclimb() {
+        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
     }
 
     override fun unclimb() {
