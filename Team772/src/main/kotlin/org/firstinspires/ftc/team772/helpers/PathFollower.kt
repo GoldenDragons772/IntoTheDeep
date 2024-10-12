@@ -7,12 +7,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.autos.AutoPath
 import org.firstinspires.ftc.team772.implementation.Constants
+import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.ftc772.purepursuit.Point
 import org.ftc772.purepursuit.PurePursuit
 import kotlin.math.*
 
 class PathFollower(private val hw: HardwareMap) {
-    private val robot: ControlSystem = Constants.CURRENT_IMPLEMENTATION(hw)
+    private val robot: ParallelPlateDrivesystem = ParallelPlateDrivesystem(hw)
     private var pathToFollow: List<Point>? = null
     val isFollowingPath: Boolean
         get() = pathToFollow != null

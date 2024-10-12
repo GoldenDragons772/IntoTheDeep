@@ -20,7 +20,11 @@ class SoloTeleOp : CommandOpMode() {
         val mapping = DriveManager.Mapping(
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
-            unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1)
+            unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
+            grabMapping = Pair(GamepadKeys.Button.A, 1),
+            extendMapping = Pair(GamepadKeys.Button.A, 1),
+            pivotMapping = Pair(GamepadKeys.Button.A, 1)
+
         )
 
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)

@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.team772.implementation
-
 import ClimbSystem
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -12,7 +9,9 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.max
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
@@ -20,10 +19,12 @@ class ParallelPlateDrivesystem(
     val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
     val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
     val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
-    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java), override var climbState: Boolean = false,
+    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
+    override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
-    var climbSystem: ClimbSystem? = null
+    val climbSystem: ClimbSystem = ClimbSystem(hw)
+    val intakeSystem: IntakeSystem = IntakeSystem(hw)
 
     companion object {
         // Constants. Change these to tune, et cetera.
@@ -69,7 +70,6 @@ class ParallelPlateDrivesystem(
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
-        climbSystem = ClimbSystem(hw)
 
         BRMotor.inverted = true;
 

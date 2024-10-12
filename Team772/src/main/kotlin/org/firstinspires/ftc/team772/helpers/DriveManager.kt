@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.implementation.Constants
+import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import java.time.Instant
 
 /**
@@ -16,7 +17,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Subsystems
      */
-    var robot: ControlSystem? = null
+    var robot: ParallelPlateDrivesystem? = null
 
     /**
      * Controllers
@@ -48,11 +49,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Binds a function to a button on the controller.
      */
-    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({function()}))
+    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
 
-    private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()}))
+    private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
 
     /**
      * Take the bindings created in an OpMode and bind them to functions.
@@ -61,6 +62,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
+        setPressedBinding(mapping.extendMapping, robot!!.intakeSystem::extend, robot!!.intakeSystem::retract)
+        setPressedBinding(mapping.grabMapping, robot!!.intakeSystem::grab, robot!!.intakeSystem::ungrab)
+        setPressedBinding(mapping.pivotMapping, robot!!.intakeSystem::pivot, robot!!.intakeSystem::unpivot)
 
     }
 
@@ -73,6 +77,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
          */
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
-        val unClimbMapping: Pair<GamepadKeys.Button, Int>
+        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
+        val extendMapping: Pair<GamepadKeys.Button, Int>,
+        val grabMapping: Pair<GamepadKeys.Button, Int>,
+        val pivotMapping: Pair<GamepadKeys.Button, Int>
     )
 }

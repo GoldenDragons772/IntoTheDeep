@@ -12,6 +12,4 @@ interface IntakeExtension {
      */
     var clawState: Boolean
 
-
-
 }
