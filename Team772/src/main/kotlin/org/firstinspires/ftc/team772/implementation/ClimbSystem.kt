@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import java.util.*
 
+//PID???
+
 class ClimbSystem(hw: HardwareMap) {
 
     companion object {
