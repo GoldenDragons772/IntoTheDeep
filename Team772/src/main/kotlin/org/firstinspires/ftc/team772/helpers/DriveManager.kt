@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.helpers
 
+import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
@@ -39,6 +40,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     fun update() {
 //        TODO("Add drive logic, run command scheduler")
         robot!!.drive(-gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
+
     }
 
     /**
@@ -62,9 +64,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setPressedBinding(mapping.extendMapping, robot!!.intakeSystem::extend, robot!!.intakeSystem::retract)
-        setPressedBinding(mapping.grabMapping, robot!!.intakeSystem::grab, robot!!.intakeSystem::ungrab)
-        setPressedBinding(mapping.pivotMapping, robot!!.intakeSystem::pivot, robot!!.intakeSystem::unpivot)
+        //setPressedBinding(mapping.extendMapping, robot!!.intakeSystem::extend, robot!!.intakeSystem::retract)
+        //setPressedBinding(mapping.grabMapping, robot!!.intakeSystem::grab, robot!!.intakeSystem::ungrab)
+        //setPressedBinding(mapping.pivotMapping, robot!!.intakeSystem::pivot, robot!!.intakeSystem::unpivot)
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aim, robot!!.intakeSystem::goHome)
 
     }
 
@@ -78,8 +81,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-        val extendMapping: Pair<GamepadKeys.Button, Int>,
-        val grabMapping: Pair<GamepadKeys.Button, Int>,
-        val pivotMapping: Pair<GamepadKeys.Button, Int>
+        //val extendMapping: Pair<GamepadKeys.Button, Int>,
+        //val grabMapping: Pair<GamepadKeys.Button, Int>,
+        //val pivotMapping: Pair<GamepadKeys.Button, Int>,
+        val aimMapping: Pair<GamepadKeys.Button, Int>
     )
 }

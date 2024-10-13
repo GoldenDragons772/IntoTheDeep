@@ -30,15 +30,15 @@ class Constants {
         const val MIN_GOAL_DISTANCE = 1
 
         /**
-         * Values for the intake. Change these for tuning.
-         */
+         * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
+         * */
         const val SLIDE_SERVO_HOME = 0.0
-        const val PIVOT_SERVO_HOME = 0.0
+        const val PIVOT_SERVO_HOME = 0.1
         const val CLAW_SERVO_HOME = 0.0
 
-        const val SLIDE_SERVO_TARGET = 5.0
-        const val PIVOT_SERVO_TARGET = 5.0
-        const val CLAW_SERVO_TARGET = 5.0
+        const val SLIDE_SERVO_TARGET = 1.0
+        const val PIVOT_SERVO_TARGET = 1.0
+        const val CLAW_SERVO_TARGET = 0.5
 
     }
 }

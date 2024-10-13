@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.team772.helpers.DriveManager
 
@@ -21,14 +22,12 @@ class SoloTeleOp : CommandOpMode() {
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
-            grabMapping = Pair(GamepadKeys.Button.A, 1),
-            extendMapping = Pair(GamepadKeys.Button.A, 1),
-            pivotMapping = Pair(GamepadKeys.Button.A, 1)
-
+            //grabMapping = Pair(GamepadKeys.Button.A, 1),
+            //extendMapping = Pair(GamepadKeys.Button.B, 1),
+            //pivotMapping = Pair(GamepadKeys.Button.X, 1),
+            aimMapping = Pair(GamepadKeys.Button.Y, 1)
         )
-
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
-
     }
 
     /**
@@ -38,5 +37,6 @@ class SoloTeleOp : CommandOpMode() {
         super.run()
 //        TODO("Add logic: run drive manager")
         driveManager.update()
+
     }
 }
