@@ -71,7 +71,10 @@ class ParallelPlateDrivesystem(
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
 
+        FRMotor.inverted = true;
+        BLMotor.inverted = true;
         BRMotor.inverted = true;
+
 
     }
 
