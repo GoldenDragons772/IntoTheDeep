@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.team772.implementation
 
+import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.hardware.HardwareMap
 
+@Config
 class Constants {
     companion object {
         // Example values

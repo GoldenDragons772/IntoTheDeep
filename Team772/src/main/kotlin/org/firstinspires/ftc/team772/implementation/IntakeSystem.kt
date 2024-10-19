@@ -5,18 +5,21 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.arcrobotics.ftclib.util.Timing
 
 class IntakeSystem(hw: HardwareMap) {
-    private val slideServo: Servo = hw.get(Servo::class.java, "SlideServo") // Port 0
+    private val slideServoLeft: Servo = hw.get(Servo::class.java, "SlideServo") // Port 0
+    private val slideServoRight: Servo = hw.get(Servo::class.java, "InsertNameHere") // Not on the robot yet
     private val clawServo: Servo = hw.get(Servo::class.java, "ClawServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
 
     private var clawTimer = Timing.Timer(1) // Create a timer to track the claw closing.
 
     fun extend() {
-        slideServo.position = Constants.SLIDE_SERVO_TARGET
+        slideServoLeft.position = Constants.SLIDE_SERVO_TARGET
+        slideServoRight.position = Constants.SLIDE_SERVO_TARGET
     }
 
     fun retract() {
-        slideServo.position = Constants.SLIDE_SERVO_HOME
+        slideServoLeft.position = Constants.SLIDE_SERVO_HOME
+        slideServoRight.position = Constants.SLIDE_SERVO_HOME
     }
 
     fun ungrab() {
