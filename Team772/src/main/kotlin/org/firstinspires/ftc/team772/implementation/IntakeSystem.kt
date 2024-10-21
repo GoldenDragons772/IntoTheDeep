@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.arcrobotics.ftclib.util.Timing
 
 class IntakeSystem(hw: HardwareMap) {
-    private val slideServoLeft: Servo = hw.get(Servo::class.java, "SlideServo") // Port 0
-    private val slideServoRight: Servo = hw.get(Servo::class.java, "InsertNameHere") // Not on the robot yet
+    private val slideServoRight: Servo = hw.get(Servo::class.java, "SlideServoRight") // Port 0
+    private val slideServoLeft: Servo = hw.get(Servo::class.java, "SlideServoLeft") // Port 3
     private val clawServo: Servo = hw.get(Servo::class.java, "ClawServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
 
