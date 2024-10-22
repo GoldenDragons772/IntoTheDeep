@@ -38,7 +38,7 @@ class Constants {
         const val PIVOT_SERVO_HOME = 0.1
         const val CLAW_SERVO_HOME = 0.0
 
-        const val SLIDE_SERVO_TARGET = 1.0
+        const val SLIDE_SERVO_TARGET = 0.4
         const val PIVOT_SERVO_TARGET = 1.0
         const val CLAW_SERVO_TARGET = 0.5
 

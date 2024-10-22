@@ -12,7 +12,13 @@ class IntakeSystem(hw: HardwareMap) {
 
     private var clawTimer = Timing.Timer(1) // Create a timer to track the claw closing.
 
+
+    init {
+        slideServoLeft.direction = Servo.Direction.REVERSE
+    }
+
     fun extend() {
+
         slideServoLeft.position = Constants.SLIDE_SERVO_TARGET
         slideServoRight.position = Constants.SLIDE_SERVO_TARGET
     }
