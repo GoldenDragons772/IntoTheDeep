@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team772.helpers
 
+import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
+import com.arcrobotics.ftclib.command.RepeatCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -54,6 +56,18 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
         getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
 
+    /**
+     * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
+     * Note that this is more akin to setHeldBinding than the other setPressedBinding
+     */
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Trigger, Int>,
+        function: () -> Unit
+    ) {
+        val isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ if (isDown) function() })))
+    }
+    
     /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
