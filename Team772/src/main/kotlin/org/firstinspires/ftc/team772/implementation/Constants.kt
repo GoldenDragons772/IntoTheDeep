@@ -35,12 +35,12 @@ class Constants {
          * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
          * */
         const val SLIDE_SERVO_HOME = 0.0
-        const val PIVOT_SERVO_HOME = 0.1
+        const val PIVOT_SERVO_HOME = 0.0
         const val CLAW_SERVO_HOME = 0.0
 
         const val SLIDE_SERVO_TARGET = 0.4
         const val PIVOT_SERVO_TARGET = 1.0
-        const val CLAW_SERVO_TARGET = 0.5
+        const val CLAW_SERVO_TARGET = 0.0
 
     }
 }

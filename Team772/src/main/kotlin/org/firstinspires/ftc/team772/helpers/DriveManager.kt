@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.team772.helpers
 
-import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.implementation.Constants
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
-import java.time.Instant
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -64,10 +61,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        //setPressedBinding(mapping.extendMapping, robot!!.intakeSystem::extend, robot!!.intakeSystem::retract)
-        //setPressedBinding(mapping.grabMapping, robot!!.intakeSystem::grab, robot!!.intakeSystem::ungrab)
-        //setPressedBinding(mapping.pivotMapping, robot!!.intakeSystem::pivot, robot!!.intakeSystem::unpivot)
-        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aim, robot!!.intakeSystem::goHome)
+        setPressedBinding(mapping.suckMapping, robot!!.intakeSystem::suck, robot!!.intakeSystem::stopSuck)
+        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::unSuck, robot!!.intakeSystem::stopSuck)
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
 
     }
 
@@ -81,9 +77,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-        //val extendMapping: Pair<GamepadKeys.Button, Int>,
-        //val grabMapping: Pair<GamepadKeys.Button, Int>,
-        //val pivotMapping: Pair<GamepadKeys.Button, Int>,
+        val suckMapping: Pair<GamepadKeys.Button, Int>,
+        val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>
     )
 }

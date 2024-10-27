@@ -1,65 +1,83 @@
 package org.firstinspires.ftc.team772.implementation
 
+import com.arcrobotics.ftclib.hardware.motors.Motor
+import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import com.arcrobotics.ftclib.util.Timing
+import com.qualcomm.robotcore.hardware.CRServo
 
 class IntakeSystem(hw: HardwareMap) {
-    private val slideServoRight: Servo = hw.get(Servo::class.java, "SlideServoRight") // Port 0
-    private val slideServoLeft: Servo = hw.get(Servo::class.java, "SlideServoLeft") // Port 3
-    private val clawServo: Servo = hw.get(Servo::class.java, "ClawServo") // Port 1
+    //private val slideMotor: MotorEx = hw.get(MotorEx::class.java, "slideMotor") // Port 0
+    private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
 
-    private var clawTimer = Timing.Timer(1) // Create a timer to track the claw closing.
-
+    private var suckTimer = Timing.Timer(1) // Create a timer to track the claw closing.
+    private var pivotState = false
 
     init {
-        slideServoLeft.direction = Servo.Direction.REVERSE
+        //slideMotor.setRunMode(Motor.RunMode.PositionControl)
+        //slideMotor.setTargetPosition(1350)
     }
 
-    fun extend() {
+    //gabe should add arm functions here cuz Im dum
 
-        slideServoLeft.position = Constants.SLIDE_SERVO_TARGET
-        slideServoRight.position = Constants.SLIDE_SERVO_TARGET
+    fun extend(){
+
     }
 
-    fun retract() {
-        slideServoLeft.position = Constants.SLIDE_SERVO_HOME
-        slideServoRight.position = Constants.SLIDE_SERVO_HOME
+    fun retract(){
+
     }
 
-    fun ungrab() {
-        clawServo.position = Constants.CLAW_SERVO_HOME
+    fun unpivot(){
+        pivotServo.position = Constants.PIVOT_SERVO_TARGET
     }
 
-    fun grab() {
-        clawServo.position = Constants.CLAW_SERVO_TARGET
-    }
-
-    fun pivot() {
+    fun pivot(){
         pivotServo.position = Constants.PIVOT_SERVO_HOME
     }
 
-    fun unpivot() {
-        pivotServo.position = Constants.PIVOT_SERVO_TARGET
+    //Ayo
+    fun suck(){
+        intakeServo.power = -1.0;
     }
+
+    fun unSuck(){
+        intakeServo.power = 1.0;
+    }
+
+    fun stopSuck(){
+        intakeServo.power = 0.0;
+    }
+
+    //As driver request: Aim and goHome set as toggle.
+    //Sucking should be binded to a separate button.
 
     fun aim() {
         // Set the robot up to pick up a sample.
         extend()
         pivot()
-        ungrab()
     }
 
     fun goHome() {
         // Grab the sample and bring it into the robot.
-        grab()
-        clawTimer.start()
-        while (!clawTimer.done()){
-          //Do Nothing if the claw is not closed (Robot can still move)
-        }
         unpivot()
         retract()
+
+    }
+
+    fun aimToggle() {
+
+        if (!pivotState) {
+            extend()
+            pivot()
+        }
+        else {
+            unpivot()
+            retract()
+        }
+        pivotState = !pivotState
 
     }
 

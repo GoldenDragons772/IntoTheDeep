@@ -22,9 +22,8 @@ class SoloTeleOp : CommandOpMode() {
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
-            //grabMapping = Pair(GamepadKeys.Button.A, 1),
-            //extendMapping = Pair(GamepadKeys.Button.B, 1),
-            //pivotMapping = Pair(GamepadKeys.Button.X, 1),
+            suckMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 1),
+            unSuckMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             aimMapping = Pair(GamepadKeys.Button.Y, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)

@@ -95,11 +95,11 @@ class ParallelPlateDrivesystem(
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
 
-        FLMotor.set((y + x + theta) / denominator)
-        BLMotor.set((y - x + theta) / denominator)
+        FLMotor.set((y + x - theta) / denominator)
+        BLMotor.set((y - x - theta) / denominator)
 
-        FRMotor.set((y - x - theta) / denominator)
-        BRMotor.set((y + x - theta) / denominator)
+        FRMotor.set((y - x + theta) / denominator)
+        BRMotor.set((y + x + theta) / denominator)
     }
 
     override fun halt() {
