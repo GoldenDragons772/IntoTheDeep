@@ -11,6 +11,8 @@ class IntakeSystem(hw: HardwareMap) {
     //private val slideMotor: MotorEx = hw.get(MotorEx::class.java, "slideMotor") // Port 0
     private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
+    private val slideServoLeft: Servo = hw.get(Servo::class.java, "slideServoLeft") // Port 0 Expansion
+    private val slideServoRight: Servo = hw.get(Servo::class.java, "slideServoRight") // Port 0
 
     private var suckTimer = Timing.Timer(1) // Create a timer to track the claw closing.
     private var pivotState = false
@@ -18,16 +20,19 @@ class IntakeSystem(hw: HardwareMap) {
     init {
         //slideMotor.setRunMode(Motor.RunMode.PositionControl)
         //slideMotor.setTargetPosition(1350)
+        slideServoLeft.direction = Servo.Direction.REVERSE
     }
 
     //gabe should add arm functions here cuz Im dum
 
     fun extend(){
-
+        slideServoRight.position = Constants.SLIDE_SERVO_TARGET
+        slideServoLeft.position = Constants.SLIDE_SERVO_TARGET
     }
 
     fun retract(){
-
+        slideServoRight.position = Constants.SLIDE_SERVO_HOME
+        slideServoLeft.position = Constants.SLIDE_SERVO_HOME
     }
 
     fun unpivot(){
@@ -40,15 +45,15 @@ class IntakeSystem(hw: HardwareMap) {
 
     //Ayo
     fun suck(){
-        intakeServo.power = -1.0;
+        intakeServo.power = -1.0
     }
 
     fun unSuck(){
-        intakeServo.power = 1.0;
+        intakeServo.power = 1.0
     }
 
     fun stopSuck(){
-        intakeServo.power = 0.0;
+        intakeServo.power = 0.0
     }
 
     //As driver request: Aim and goHome set as toggle.
@@ -70,12 +75,10 @@ class IntakeSystem(hw: HardwareMap) {
     fun aimToggle() {
 
         if (!pivotState) {
-            extend()
-            pivot()
+            aim()
         }
         else {
-            unpivot()
-            retract()
+            goHome()
         }
         pivotState = !pivotState
 
