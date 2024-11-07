@@ -1,27 +1,21 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Robot type="FirstInspires-FTC">
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="RightClimb" port="0" />
+            <goBILDA5202SeriesMotor name="Motor1" port="2" />
+            <goBILDA5202SeriesMotor name="PIDmotor" port="3" />
+            <Servo name="slideServoLeft" port="0" />
+            <ContinuousRotationServo name="IntakeServo" port="1" />
+            <Servo name="PivotServo" port="2" />
+        </LynxModule>
         <LynxModule name="Control Hub" port="173">
-            <goBILDA5202SeriesMotor name="Motor1" port="0" />
+            <goBILDA5202SeriesMotor name="LeftClimb" port="0" />
             <goBILDA5202SeriesMotor name="Motor2" port="1" />
             <goBILDA5202SeriesMotor name="Motor3" port="2" />
             <goBILDA5202SeriesMotor name="Motor4" port="3" />
-<!--            <Servo name="LDipper" port="3" />-->
-<!--            <Servo name="LBPivot" port="0" />-->
-<!--            <Servo name="LinkTake" port="4" />-->
-<!--            <ContinuousRotationServo name="Bucket" port="5" />-->
+            <Servo name="slideServoRight" port="0" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
-        </LynxModule>
-    </LynxUsbDevice>
-    <Webcam name="webcam" serialNumber="0B0B2370" />
-    <LynxUsbDevice name="GDExpansion" serialNumber="DQ80WSFK" parentModuleAddress="2">
-        <LynxModule name="Expansion Hub" port="2">
-<!--            <goBILDA5202SeriesMotor name="LeftArmMotor" port="0" />-->
-<!--            <goBILDA5202SeriesMotor name="IntakeMotor" port="1" />-->
-<!--            <goBILDA5202SeriesMotor name="RightArmMotor" port="2" />-->
-<!--            <Servo name="RDipper" port="0" />-->
-<!--            <Servo name="RBPivot" port="2" />-->
-<!--            <Servo name="Plane" port="4" />-->
         </LynxModule>
     </LynxUsbDevice>
 </Robot>
