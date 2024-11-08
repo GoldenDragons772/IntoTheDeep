@@ -1,7 +1,10 @@
+import com.arcrobotics.ftclib.controller.PIDFController
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import org.firstinspires.ftc.team772.opmodes.PIDtester
+import org.firstinspires.ftc.team772.opmodes.PIDtester.Companion
 import java.util.*
 
 //PID???

@@ -11,11 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @TeleOp(name = "PIDtester")
 class PIDtester : LinearOpMode() {
     companion object {
-        @JvmField var kp = 1.0
+        @JvmField var kp = 28.0
         @JvmField var ki = 0.0
-        @JvmField var kd = 0.0
+        @JvmField var kd = 2.0
         @JvmField var kf = 0.0
-        @JvmField var point = 1200.0
+        @JvmField var point = -1000.0
     }
 
     override fun runOpMode() {
