@@ -38,7 +38,7 @@ class IntakeSystem(hw: HardwareMap) {
 
     enum class ExtendPos(val position: Int) {
         HOME(0),
-        TARGET(1000)
+        TARGET(1150)
 
     }
 
@@ -63,7 +63,7 @@ class IntakeSystem(hw: HardwareMap) {
      * Stops and resets the slide motor power
      */
     fun stopResetSlide() {
-        slideMotor.power = 1.0
+        slideMotor.power = Constants.SLIDE_MOTOR_SPEED
     }
 
     /**
@@ -83,7 +83,7 @@ class IntakeSystem(hw: HardwareMap) {
         //Set the stop behavior for the motor
         slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        slideMotor.power = 1.0
+        slideMotor.power = Constants.SLIDE_MOTOR_SPEED
 
 //        pidf.atSetPoint()
 //

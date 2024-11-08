@@ -42,5 +42,7 @@ class Constants {
         const val PIVOT_SERVO_TARGET = 1.0
         const val CLAW_SERVO_TARGET = 0.0
 
+        const val SLIDE_MOTOR_SPEED = 1.0
+
     }
 }
