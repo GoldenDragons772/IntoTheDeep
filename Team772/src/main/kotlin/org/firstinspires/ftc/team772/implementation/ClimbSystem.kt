@@ -28,7 +28,7 @@ class ClimbSystem(hw: HardwareMap) {
     }
 
     init {
-        // Break the Motors
+        // Brake the Motors
         leftArmMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         rightArmMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
