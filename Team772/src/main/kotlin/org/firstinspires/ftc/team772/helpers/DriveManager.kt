@@ -26,10 +26,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     private var gamepad2: GamepadEx? = null
 
     init {
-//        TODO("Add stuff here: reset command scheduler, initialize bindings")
         gamepad1 = GamepadEx(gp1)
-        gamepad2 = GamepadEx(gp2) // THIS IS FOR BLAH BLAH BLAH BLHA BLAH
-        robot = Constants.CURRENT_IMPLEMENTATION(hardwareMap)
+        gamepad2 = GamepadEx(gp2)
+        robot = ParallelPlateDrivesystem(hardwareMap)
         initializeBindings(mapping)
     }
 
@@ -37,7 +36,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Start driving and processing input: Main drive loop.
      */
     fun update() {
-//        TODO("Add drive logic, run command scheduler")
         robot!!.drive(-gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
 
     }

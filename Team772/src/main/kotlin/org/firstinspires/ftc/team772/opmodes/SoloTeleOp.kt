@@ -34,8 +34,6 @@ class SoloTeleOp : CommandOpMode() {
      */
     override fun run() {
         super.run()
-//        TODO("Add logic: run drive manager")
         driveManager.update()
-
     }
 }
