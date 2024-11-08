@@ -63,7 +63,7 @@ class IntakeSystem(hw: HardwareMap) {
      * Stops and resets the slide motor power
      */
     fun stopResetSlide() {
-        slideMotor.power = 0.3
+        slideMotor.power = 1.0
     }
 
     /**
@@ -83,7 +83,7 @@ class IntakeSystem(hw: HardwareMap) {
         //Set the stop behavior for the motor
         slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        slideMotor.power = 0.3
+        slideMotor.power = 1.0
 
 //        pidf.atSetPoint()
 //
