@@ -50,19 +50,30 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Binds a function to a button on the controller.
      */
-    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
+    private fun setPressedBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: () -> Unit,
+        whenReleased: () -> Unit = {}
+    ) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({ function() }))
+            .whenReleased(InstantCommand(whenReleased))
 
 
     private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: Command) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(SequentialCommandGroup(
-            function
-        ))
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(
+            SequentialCommandGroup(
+                function
+            )
+        )
 
 
-    private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
-
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: () -> Unit,
+        whenReleased: () -> Unit = {}
+    ) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({ function() }))
+            .whenReleased(InstantCommand(whenReleased))
 
 
     /**
@@ -71,12 +82,22 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     private fun setHeldBinding(
         map: Pair<GamepadKeys.Trigger, Int>,
-        function: () -> Unit
+        function: () -> Unit, onRelease: () -> Unit
     ) {
-        val isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
-        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ if (isDown) function() })))
+        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        val geepad = getGamepad(map.second)!!
+        var lastIsDown = isDown
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
+            isDown = geepad.getTrigger(map.first) > 0.5
+            if (isDown) {
+                function()
+            } else if (lastIsDown) {
+                onRelease()
+            }
+            lastIsDown = isDown
+        })))
     }
-    
+
     /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
@@ -84,8 +105,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setPressedBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
-        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::stopSpit, robot!!.intakeSystem::stopSpit)
+        setHeldBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
+//        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::stopSpit, robot!!.intakeSystem::stopSpit)
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
     }
 
@@ -99,8 +120,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-        val suckMapping: Pair<GamepadKeys.Button, Int>,
-        val unSuckMapping: Pair<GamepadKeys.Button, Int>,
+        val suckMapping: Pair<GamepadKeys.Trigger, Int>,
+//        val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>
     )
 }
