@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.team772.implementation
 
-import com.arcrobotics.ftclib.hardware.motors.Motor
-import com.arcrobotics.ftclib.hardware.motors.MotorEx
+import com.arcrobotics.ftclib.command.SubsystemBase
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
-import com.arcrobotics.ftclib.util.Timing
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -13,12 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import java.util.Timer
 import java.util.TimerTask
 
-/**
- * Subsystem responsible for taking in pixels.
- */
-class IntakeSystem(hw: HardwareMap) {
-
-    private val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
+    val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
     private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
 
@@ -31,23 +25,14 @@ class IntakeSystem(hw: HardwareMap) {
 
     companion object {
         var extendPos: ExtendPos = ExtendPos.HOME
-
         //@JvmField is a static keyword because kotlin can't comprehend it.
-        @JvmField
-        var kp = 28.0
-
-        @JvmField
-        var ki = 0.0
-
-        @JvmField
-        var kd = 2.0
-
-        @JvmField
-        var kf = 0.0
-
-        @JvmField
-        var point = 0.0
+        @JvmField var kp = 28.0
+        @JvmField var ki = 0.0
+        @JvmField var kd = 2.0
+        @JvmField var kf = 0.0
+        @JvmField var point = 0.0
     }
+
 
     enum class ExtendPos(val position: Int) {
         HOME(0),
@@ -61,7 +46,7 @@ class IntakeSystem(hw: HardwareMap) {
         slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         slideMotor.direction = DcMotorSimple.Direction.REVERSE
-        //We might have to reverse motors
+    //We might have to reverse motors
     }
 
     /**
@@ -160,69 +145,64 @@ class IntakeSystem(hw: HardwareMap) {
      * Sets the slide power
      * @param power The power being supplied to the robo
      */
-    fun setSlidePower(power: Double) {
+    fun setSlidePower(power: Double){
         slideMotor.power = power
     }
 
-    fun extend() {
+    fun extend(){
         setSlideToPos(enumValues<ExtendPos>()[1])
     }
 
-    fun retract() {
+    fun retract(){
         setSlideToPos(enumValues<ExtendPos>()[0])
     }
 
-    fun unpivot() {
+    fun unpivot(){
         pivotServo.position = Constants.PIVOT_SERVO_TARGET
     }
 
-    fun pivot() {
+    fun pivot(){
         pivotServo.position = Constants.PIVOT_SERVO_HOME
     }
 
     //Ayo
-    fun suck() {
+    fun swallow(){
         intakeServo.power = -1.0
     }
 
-    fun unSuck() {
+    fun spit(){
         intakeServo.power = 1.0
     }
 
-    fun stopSuck() {
+    fun stopSpit() {
         intakeServo.power = 0.0
     }
 
     //As driver request: Aim and goHome set as toggle.
     //Sucking should be binded to a separate button.
 
-    /**
-     * Extend the arm and pivot in preparation to pick up a sample.
-     */
     fun aim() {
+        // Set the robot up to pick up a sample.
         extend()
         pivot()
     }
 
-    /**
-     * Grab the sample and bring it into the robot.
-     */
     fun goHome() {
+        // Grab the sample and bring it into the robot.
         unpivot()
         retract()
+
     }
 
-    /**
-     * Transition between pivoted/extended ("aimed") and unpivoted/retracted ("home") states.
-     */
     fun aimToggle() {
+
         if (!pivotState) {
             aim()
-        } else {
+        }
+        else {
             goHome()
         }
         pivotState = !pivotState
 
     }
-
 }

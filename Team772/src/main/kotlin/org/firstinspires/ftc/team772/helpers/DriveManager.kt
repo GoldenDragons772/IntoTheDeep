@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team772.helpers
 
+import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RepeatCommand
+import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -51,8 +53,17 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
         getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
 
+
+    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: Command) =
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(SequentialCommandGroup(
+            function
+        ))
+
+
     private fun setHeldBinding(map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}) =
         getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({function()})).whenReleased(InstantCommand(whenReleased))
+
+
 
     /**
      * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
@@ -73,10 +84,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setPressedBinding(mapping.suckMapping, robot!!.intakeSystem::suck, robot!!.intakeSystem::stopSuck)
-        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::unSuck, robot!!.intakeSystem::stopSuck)
+        setPressedBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
+        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::stopSpit, robot!!.intakeSystem::stopSpit)
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
-
     }
 
     /**

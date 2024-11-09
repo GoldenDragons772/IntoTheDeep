@@ -6,6 +6,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 @Config
 class Constants {
     companion object {
+        // Example values
+         @JvmField val FUN_NUMBER = 1
+
+        // value that points to currently used implementation's constructor function.
+
+        /*
+            ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+            CHANGE THIS FOR OTHER DRIVETRAIN
+            ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+         */
+        val CURRENT_IMPLEMENTATION = fun(hw: HardwareMap): ParallelPlateDrivesystem {return ParallelPlateDrivesystem(hw) }
 
         //// Pure Pursuit config values
         // The initial value to use as the lookahead.
