@@ -44,5 +44,16 @@ class Constants {
 
         const val SLIDE_MOTOR_SPEED = 1.0
 
+        /**
+         * Values for the outtake. Change for tuning.
+         * */
+        const val SWING_SERVO_HOME = 0.0
+        const val WRIST_SERVO_HOME = 0.0
+        const val UNGRIPPY = 0.6
+
+        const val SWING_SERVO_TARGET = 1.0
+        const val WRIST_SERVO_TARGET = 0.25
+        const val GRIPPY = 0.0
+
     }
 }

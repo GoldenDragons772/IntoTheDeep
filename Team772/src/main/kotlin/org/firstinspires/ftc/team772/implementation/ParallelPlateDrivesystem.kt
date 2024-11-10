@@ -25,6 +25,7 @@ class ParallelPlateDrivesystem(
     // TODO: Implement things from control theory: Motion Profiling, PID.
     val climbSystem: ClimbSystem = ClimbSystem(hw)
     val intakeSystem: IntakeSystem = IntakeSystem(hw)
+    val outtakeSystem: OuttakeSystem = OuttakeSystem(hw)
 
     companion object {
         // Constants. Change these to tune, et cetera.

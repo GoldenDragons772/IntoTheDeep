@@ -106,8 +106,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
         setHeldBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
-//        setPressedBinding(mapping.unSuckMapping, robot!!.intakeSystem::stopSpit, robot!!.intakeSystem::stopSpit)
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
+        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem::toggleSwing)
+        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem::toggleGripper)
     }
 
     /**
@@ -121,7 +122,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
         val suckMapping: Pair<GamepadKeys.Trigger, Int>,
-//        val unSuckMapping: Pair<GamepadKeys.Button, Int>,
-        val aimMapping: Pair<GamepadKeys.Button, Int>
+        val aimMapping: Pair<GamepadKeys.Button, Int>,
+        val swingMapping: Pair<GamepadKeys.Button, Int>,
+        val gripMapping: Pair<GamepadKeys.Button, Int>
     )
 }
