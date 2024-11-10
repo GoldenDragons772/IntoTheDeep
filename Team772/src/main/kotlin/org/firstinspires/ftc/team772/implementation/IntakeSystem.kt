@@ -167,11 +167,11 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     //Ayo
     fun swallow(){
-        intakeServo.power = -1.0
+        intakeServo.power = 1.0
     }
 
     fun spit(){
-        intakeServo.power = 1.0
+        intakeServo.power = -1.0
     }
 
     fun stopSpit() {
@@ -184,6 +184,9 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun aim() {
         // Set the robot up to pick up a sample.
         extend()
+        while(slideMotor.currentPosition > 800.0) {
+            // DO NOTHING
+        }
         pivot()
     }
 
@@ -191,7 +194,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         // Grab the sample and bring it into the robot.
         unpivot()
         retract()
-
     }
 
     fun aimToggle() {
@@ -203,6 +205,5 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             goHome()
         }
         pivotState = !pivotState
-
     }
 }
