@@ -4,12 +4,10 @@ import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RepeatCommand
-import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.team772.implementation.Constants
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 
 /**
@@ -51,29 +49,30 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Binds a function to a button on the controller.
      */
     private fun setPressedBinding(
-        map: Pair<GamepadKeys.Button, Int>,
-        function: () -> Unit,
-        whenReleased: () -> Unit = {}
-    ) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(InstantCommand({ function() }))
-            .whenReleased(InstantCommand(whenReleased))
+        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
+    ) {
+        setPressedBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
+    }
 
-
-    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: Command) =
+    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command) {
         getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(
-            SequentialCommandGroup(
-                function
-            )
-        )
+            function
+        ).whenReleased(whenReleased)
+    }
 
 
     private fun setHeldBinding(
-        map: Pair<GamepadKeys.Button, Int>,
-        function: () -> Unit,
-        whenReleased: () -> Unit = {}
-    ) =
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(InstantCommand({ function() }))
-            .whenReleased(InstantCommand(whenReleased))
+        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
+    ) {
+        setHeldBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
+    }
+
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command
+    ) {
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(function)
+            .whenReleased(whenReleased)
+    }
 
 
     /**
@@ -81,8 +80,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Note that this is more akin to setHeldBinding than the other setPressedBinding
      */
     private fun setHeldBinding(
-        map: Pair<GamepadKeys.Trigger, Int>,
-        function: () -> Unit, onRelease: () -> Unit
+        map: Pair<GamepadKeys.Trigger, Int>, function: () -> Unit, onRelease: () -> Unit
     ) {
         var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
         val geepad = getGamepad(map.second)!!
