@@ -79,7 +79,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
      * Note that this is more akin to setHeldBinding than the other setPressedBinding
      */
-    private fun setHeldBinding(
+    private fun setHeldTriggerBinding(
         map: Pair<GamepadKeys.Trigger, Int>, function: () -> Unit, onRelease: () -> Unit
     ) {
         var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
@@ -103,7 +103,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setHeldBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
+        setHeldTriggerBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
+        // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem::toggleSwing)
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem::toggleGripper)

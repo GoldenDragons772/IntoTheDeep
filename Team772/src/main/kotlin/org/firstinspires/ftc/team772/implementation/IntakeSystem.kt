@@ -25,18 +25,31 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     companion object {
         var extendPos: ExtendPos = ExtendPos.HOME
+
         //@JvmField is a static keyword because kotlin can't comprehend it.
-        @JvmField var kp = 28.0
-        @JvmField var ki = 0.0
-        @JvmField var kd = 2.0
-        @JvmField var kf = 0.0
-        @JvmField var point = 0.0
+        @JvmField
+        var kp = 28.0
+
+        @JvmField
+        var ki = 0.0
+
+        @JvmField
+        var kd = 2.0
+
+        @JvmField
+        var kf = 0.0
+
+        @JvmField
+        var point = 0.0
+
+        @JvmField
+        var extendPoint = 1100
     }
 
 
     enum class ExtendPos(val position: Int) {
-        HOME(0),
-        TARGET(1150)
+        HOME(50), // Changed to 50 because that's the maximum acceptable minimum value.
+        TARGET(1100) // Original Value: 1150
 
     }
 
@@ -46,7 +59,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         slideMotor.direction = DcMotorSimple.Direction.REVERSE
-    //We might have to reverse motors
+        //We might have to reverse motors
     }
 
     /**
@@ -96,42 +109,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 //            slideMotor.velocity = output
 //        }
 
-        //Continue if the position being moved to is the HOME (0)
-        if (pos == 0) {
-            //Continue if the current position of the slides greater than 50 (?)
-            if (getSlidePosition() > 50) {
-                try {
-                    //Cancel any previous timers
-                    tt?.cancel()
-                } catch (e: Exception) {
-                    // Do Nothing
-                    // If the code breaks, just keep swimming
-                } finally {
-                    //Initialize the timer
-                    t = Timer()
-                    //Create timer two
-                    tt = object : TimerTask() {
-                        //What is this
-                        override fun run() {
-                            stopResetSlide()
-                        }
-                    }
-                    // Set the timer to 3 seconds and wait
-                    t?.schedule(tt, 3000)
-                }
-            } else {
-                // Stop the Motor Since We are already at Home
-                slideMotor.power = 0.0
-            }
-        } else {
-            //Since we are not going home, make sure any running timers are cancelled since we won't need them
-            try {
-                tt?.cancel()
-            } catch (e: Exception) {
-                // Do Nothing
-                // If the code breaks, just keep swimming
-            }
-        }
     }
 
     /**
@@ -145,32 +122,42 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Sets the slide power
      * @param power The power being supplied to the robo
      */
-    fun setSlidePower(power: Double){
+    fun setSlidePower(power: Double) {
         slideMotor.power = power
     }
 
-    fun extend(){
-        setSlideToPos(enumValues<ExtendPos>()[1])
+    fun extend() {
+        setSlideToPos(ExtendPos.TARGET.position)
     }
 
-    fun retract(){
-        setSlideToPos(enumValues<ExtendPos>()[0])
+    fun retract() {
+        setSlideToPos(ExtendPos.HOME.position)
     }
 
-    fun unpivot(){
+    /**
+     * Unpivot the head.
+     */
+    fun unpivot() {
+        // Weird kotlin field thing -- Although it seems like it would only set a field, I assume it's actually running a setter that does stuff.
         pivotServo.position = Constants.PIVOT_SERVO_TARGET
     }
 
-    fun pivot(){
+    fun pivot() {
         pivotServo.position = Constants.PIVOT_SERVO_HOME
     }
 
     //Ayo
-    fun swallow(){
+    /**
+     * Make the head begin to swallow elements.
+     */
+    fun swallow() {
         intakeServo.power = 1.0
     }
 
-    fun spit(){
+    /**
+     * Make the head spit the elements back out.
+     */
+    fun spit() {
         intakeServo.power = -1.0
     }
 
@@ -179,13 +166,15 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     }
 
     //As driver request: Aim and goHome set as toggle.
-    //Sucking should be binded to a separate button.
+    //Sucking should be bound to a separate button.
 
     fun aim() {
         // Set the robot up to pick up a sample.
         extend()
-        while(slideMotor.currentPosition > 800.0) {
+        // Wait until slide is extended enough
+        while (slideMotor.currentPosition > 800.0) {
             // DO NOTHING
+            //TODO: find some other method of executing this besides busywaiting
         }
         pivot()
     }
@@ -193,15 +182,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun goHome() {
         // Grab the sample and bring it into the robot.
         unpivot()
+        // TODO: In order to properly match this we would need to wait like in aim()
         retract()
     }
 
-    fun aimToggle() {
-
-        if (!pivotState) {
+    fun aimToggle() { // BUG: When the button is pressed it aims but does not retract.
+        if (!pivotState) { // Check if pivotState is actually changed. Maybe the busywaiting in aim() has an effect on it somehow??
             aim()
-        }
-        else {
+        } else {
             goHome()
         }
         pivotState = !pivotState

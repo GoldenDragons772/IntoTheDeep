@@ -39,6 +39,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         gripper.position = Constants.GRIPPY
     }
 
+    /**
+     * Open and close the claw.
+     */
     fun toggleGripper(){
 
         if(!gripState){
@@ -51,6 +54,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
 
     }
 
+    /**
+     * Pivot the servo that pivots the outtake.
+     */
     fun toggleSwing(){
 
         if(!swingState){
