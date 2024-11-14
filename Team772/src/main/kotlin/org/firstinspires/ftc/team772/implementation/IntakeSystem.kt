@@ -48,9 +48,9 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
 
     enum class ExtendPos(val position: Int) {
-        HOME(0), // Changed to 50 because that's the maximum acceptable minimum value.
-        TARGET(1150) // Original Value: 1150
-
+        HOME(Constants.SLIDE_HOME), // Changed to 50 because that's the maximum acceptable minimum value.
+        TARGET(Constants.SLIDE_TARGET) // Original Value: 1150
+        // TODO: Consider removing this and replacing it with constants
     }
 
     init {

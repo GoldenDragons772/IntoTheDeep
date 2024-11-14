@@ -3,6 +3,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import org.firstinspires.ftc.team772.implementation.Constants
 import org.firstinspires.ftc.team772.opmodes.PIDtester
 import org.firstinspires.ftc.team772.opmodes.PIDtester.Companion
 import java.util.*
@@ -21,9 +22,9 @@ class ClimbSystem(hw: HardwareMap) {
     private var tt: TimerTask? = null
 
     enum class ArmPos(val position: Int) {
-        HOME(0),
-        HIGHCLIMB(2700),
-        LOWCLIMB(1350)
+        HOME(Constants.ARM_HOME),
+        LOWCLIMB(Constants.ARM_LOW_CLIMB),
+        HIGHCLIMB(Constants.ARM_HIGH_CLIMB),
 
     }
 

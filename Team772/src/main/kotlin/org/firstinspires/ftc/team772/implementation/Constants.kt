@@ -6,18 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 @Config
 class Constants {
     companion object {
-        // Example values
-         @JvmField val FUN_NUMBER = 1
-
-        // value that points to currently used implementation's constructor function.
-
-        /*
-            ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-            CHANGE THIS FOR OTHER DRIVETRAIN
-            ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-         */
-        val CURRENT_IMPLEMENTATION = fun(hw: HardwareMap): ParallelPlateDrivesystem {return ParallelPlateDrivesystem(hw) }
-
         //// Pure Pursuit config values
         // The initial value to use as the lookahead.
         const val LOOKAHEAD = 0.5
@@ -32,12 +20,21 @@ class Constants {
         const val MIN_GOAL_DISTANCE = 1
 
         /**
+         * Values for arm.
+         */
+        const val ARM_HOME = 0
+        const val ARM_HIGH_CLIMB = 2700
+        const val ARM_LOW_CLIMB = 1350
+
+        /**
          * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
          * */
+        const val SLIDE_HOME = 0
         const val SLIDE_SERVO_HOME = 0.1
         const val PIVOT_SERVO_HOME = 0.47//TODO: Swap variable names
         const val CLAW_SERVO_HOME = 0.0
 
+        const val SLIDE_TARGET = 1150
         const val SLIDE_SERVO_TARGET = 0.3
         const val PIVOT_SERVO_TARGET = 1.0
         const val CLAW_SERVO_TARGET = 0.0
@@ -49,10 +46,18 @@ class Constants {
          * */
         const val SWING_SERVO_HOME = 0.0
         const val WRIST_SERVO_HOME = 0.0
+
+        /**
+         * Claw home position.
+         */
         const val UNGRIPPY = 0.6
 
         const val SWING_SERVO_TARGET = 1.0
         const val WRIST_SERVO_TARGET = 0.25
+
+        /**
+         * Claw target position.
+         */
         const val GRIPPY = 0.0
 
     }
