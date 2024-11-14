@@ -18,13 +18,18 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     private var t: Timer? = null
     private var tt: TimerTask? = null
-    private var pivotState = false
 
+    // States
+    // Right now these are all binary, but in the future some of these might need to be in an enum.
+    var aimState = false
+        private set
+    var pivotState = false
+        private set
     //Create PIDF Controller
     val pidf = PIDFController(kp, ki, kd, kf)
+    var extendPos: ExtendPos = ExtendPos.HOME
 
     companion object {
-        var extendPos: ExtendPos = ExtendPos.HOME
 
         //@JvmField is a static keyword because kotlin can't comprehend it.
         @JvmField
@@ -138,12 +143,13 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Unpivot the head.
      */
     fun unpivot() {
-        // Weird kotlin field thing -- Although it seems like it would only set a field, I assume it's actually running a setter that does stuff.
-        pivotServo.position = Constants.PIVOT_SERVO_TARGET
+        pivotServo.position = Constants.PIVOT_SERVO_TARGET // BUG: Maybe seems backwards?
+        pivotState = false
     }
 
     fun pivot() {
         pivotServo.position = Constants.PIVOT_SERVO_HOME
+        pivotState = true
     }
 
     //Ayo
@@ -170,28 +176,24 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     fun aim() {
         // Set the robot up to pick up a sample.
-        extend()
+        if (extendPos != ExtendPos.TARGET) extend() // Enforce our desired state.
         // Wait until slide is extended enough
         while (slideMotor.currentPosition > 800.0) {
             // DO NOTHING
             //TODO: find some other method of executing this besides busywaiting
         }
-        pivot()
+        if (!pivotState) pivot() // Couldn't physically be pivoted and unextended.
+        aimState = true
     }
 
+    /**
+     * Grab the sample and bring it into the robot.
+     */
     fun goHome() {
-        // Grab the sample and bring it into the robot.
-        unpivot()
-        // TODO: In order to properly match this we would need to wait like in aim()
-        retract()
+        if (pivotState) unpivot()
+        if (extendPos != ExtendPos.HOME) retract()
+        aimState = false
     }
 
-    fun aimToggle() { // BUG: When the button is pressed it aims but does not retract.
-        if (!pivotState) { // Check if pivotState is actually changed. Maybe the busywaiting in aim() has an effect on it somehow??
-            aim()
-        } else {
-            goHome()
-        }
-        pivotState = !pivotState
-    }
+    fun aimToggle() = if (!aimState) aim() else goHome()
 }
