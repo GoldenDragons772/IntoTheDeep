@@ -22,7 +22,8 @@ class SoloTeleOp : CommandOpMode() {
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
-            suckMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1),
+            suckMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
+            unSuckMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             aimMapping = Pair(GamepadKeys.Button.Y, 1),
             gripMapping = Pair(GamepadKeys.Button.A, 1),
             swingMapping = Pair(GamepadKeys.Button.B, 1)
