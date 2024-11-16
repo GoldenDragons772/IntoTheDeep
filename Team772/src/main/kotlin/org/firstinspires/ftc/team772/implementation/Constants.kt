@@ -8,57 +8,79 @@ class Constants {
     companion object {
         //// Pure Pursuit config values
         // The initial value to use as the lookahead.
-        const val LOOKAHEAD = 0.5
+        @JvmField
+        val LOOKAHEAD = 0.5
 
         // The maximum value to use as a lookahead.
-        const val MAX_LOOKAHEAD = 1
+        @JvmField
+        val MAX_LOOKAHEAD = 1
 
         // The search step to increase the lookahead by if no intersection is found.
-        const val LOOKAHEAD_STEP = 0.1
+        @JvmField
+        val LOOKAHEAD_STEP = 0.1
 
         // The distance to the end of the path that the robot needs to be in order to consider itself finished.
-        const val MIN_GOAL_DISTANCE = 1
+        @JvmField
+        val MIN_GOAL_DISTANCE = 1
 
         /**
          * Values for arm.
          */
-        const val ARM_HOME = 0
-        const val ARM_HIGH_CLIMB = 2700
-        const val ARM_LOW_CLIMB = 1350
+        @JvmField
+        val ARM_HOME = 0
+        @JvmField
+        val ARM_HIGH_CLIMB = 2700
+        @JvmField
+        val ARM_LOW_CLIMB = 1350
 
         /**
          * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
          * */
-        const val SLIDE_HOME = 0
-        const val SLIDE_SERVO_HOME = 0.1
-        const val PIVOT_SERVO_HOME = 0.47//TODO: Swap variable names
-        const val CLAW_SERVO_HOME = 0.0
+        @JvmField
+        val SLIDE_HOME = 0
+        @JvmField
+        val SLIDE_SERVO_HOME = 0.1
+        @JvmField
+        val PIVOT_SERVO_HOME = 0.47//TODO: Swap variable names
+        @JvmField
+        val CLAW_SERVO_HOME = 0.0
 
-        const val SLIDE_TARGET = 1150
-        const val SLIDE_SERVO_TARGET = 0.3
-        const val PIVOT_SERVO_TARGET = 1.0
-        const val CLAW_SERVO_TARGET = 0.0
+        @JvmField
+        val SLIDE_TARGET = 1150
+        @JvmField
+        val SLIDE_SERVO_TARGET = 0.3
+        @JvmField
+        val PIVOT_SERVO_TARGET = 1.0
+        @JvmField
+        val CLAW_SERVO_TARGET = 0.0
 
-        const val SLIDE_MOTOR_SPEED = 1.0
+        @JvmField
+        val SLIDE_MOTOR_SPEED = 1.0
 
         /**
          * Values for the outtake. Change for tuning.
          * */
-        const val SWING_SERVO_HOME = 1.0
-        const val WRIST_SERVO_HOME = 0.0
+        @JvmField
+        val SWING_SERVO_HOME = 0.0
+        @JvmField
+        val WRIST_SERVO_HOME = 0.0
 
         /**
          * Claw home position.
          */
-        const val UNGRIPPY = 0.6
+        @JvmField
+        val UNGRIPPY = 0.6
 
-        const val SWING_SERVO_TARGET = 0.0
-        const val WRIST_SERVO_TARGET = 0.25
+        @JvmField
+        val SWING_SERVO_TARGET = 1.0
+        @JvmField
+        val WRIST_SERVO_TARGET = 0.25
 
         /**
          * Claw target position.
          */
-        const val GRIPPY = 0.0
+        @JvmField
+        val GRIPPY = 0.0
 
     }
 }
