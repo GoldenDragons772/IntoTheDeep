@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
+import org.firstinspires.ftc.team772.implementation.TransferPixelCommand
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -113,7 +114,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
-        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
+        setPressedBinding(mapping.gripMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.implementation
 
+import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
@@ -12,16 +13,17 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     private val gripper: Servo = hw.get(Servo::class.java, "clawServo")
 
     //Other Utilites
-    var gripState = false
+    var gripState = true
         private set // Prevents setting outside of this class.
     var swingState = false
         private set
-    var wristState = false
+    var wristState = true
         private set
 
     fun swingToHome(): Command {
         return InstantCommand({
-            if (!swingState) return@InstantCommand;
+            Log.i("Big MEN", "${swingServo.position}")
+//            if (swingState) return@InstantCommand;
             swingServo.position = Constants.SWING_SERVO_HOME;
             swingState = false
         })

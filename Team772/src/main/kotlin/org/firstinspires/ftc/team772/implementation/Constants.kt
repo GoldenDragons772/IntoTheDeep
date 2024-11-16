@@ -44,7 +44,7 @@ class Constants {
         /**
          * Values for the outtake. Change for tuning.
          * */
-        const val SWING_SERVO_HOME = 0.0
+        const val SWING_SERVO_HOME = 1.0
         const val WRIST_SERVO_HOME = 0.0
 
         /**
@@ -52,7 +52,7 @@ class Constants {
          */
         const val UNGRIPPY = 0.6
 
-        const val SWING_SERVO_TARGET = 1.0
+        const val SWING_SERVO_TARGET = 0.0
         const val WRIST_SERVO_TARGET = 0.25
 
         /**
