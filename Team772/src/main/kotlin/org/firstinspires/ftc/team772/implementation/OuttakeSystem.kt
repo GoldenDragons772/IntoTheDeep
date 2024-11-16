@@ -41,7 +41,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     fun unGrip() {
         gripper.position = Constants.UNGRIPPY;
-        gripState = true
+        gripState = false
     }
 
     //GYAAAAAAAAAAAAAT

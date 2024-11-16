@@ -7,7 +7,7 @@ import com.arcrobotics.ftclib.command.CommandBase
  */
 class TransferPixelCommand(private val intake: IntakeSystem, private val outtake: OuttakeSystem) : CommandBase() {
     // I
-    val targetPos = IntakeSystem.ExtendPos.HOME;
+    val targetPos = IntakeSystem.ExtendPos.HOME
 
     init {
         addRequirements(intake)
