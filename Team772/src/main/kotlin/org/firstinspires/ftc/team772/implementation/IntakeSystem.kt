@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.team772.implementation
 
-import com.arcrobotics.ftclib.command.SubsystemBase
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.hardware.CRServo
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
+import android.util.Log
+import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.controller.PIDFController
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import java.util.Timer
-import java.util.TimerTask
+import com.qualcomm.robotcore.hardware.*
+import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
+import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
+import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
+import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
+import java.util.logging.Logger
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
     private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
-
-    private var t: Timer? = null
-    private var tt: TimerTask? = null
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
@@ -25,6 +21,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         private set
     var pivotState = false
         private set
+
     //Create PIDF Controller
     val pidf = PIDFController(kp, ki, kd, kf)
     var extendPos: ExtendPos = ExtendPos.HOME
@@ -89,31 +86,9 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * or overheating the motor.
      * @param pos The desired position
      */
-    private fun setSlideToPos(pos: Int) {
-        //Set the Target Position
-        slideMotor.targetPosition = pos
-
-        //Set the motor mode
-        slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        //Set the stop behavior for the motor
-        slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-
-        slideMotor.power = Constants.SLIDE_MOTOR_SPEED
-
-//        pidf.atSetPoint()
-//
-//        //Sets the pid input to the target position
-//        pidf.setPoint = pos.toDouble()
-
-        //
-//        while(!pidf.atSetPoint()) {
-//            //Get the position of the motor and input it into the pid equation
-//            val output = pidf.calculate(slideMotor.currentPosition.toDouble())
-//            //set the slideMotor power
-//            slideMotor.velocity = output
-//        }
-
+    private fun setSlideToPos(pos: Int): SlideCommand {
+        val command = SlideCommand(this, pos)
+        return command
     }
 
     /**
@@ -131,69 +106,116 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         slideMotor.power = power
     }
 
-    fun extend() {
-        setSlideToPos(ExtendPos.TARGET.position)
+    fun extendCommand(): SlideCommand {
+        return setSlideToPos(ExtendPos.TARGET.position)
     }
 
-    fun retract() {
-        setSlideToPos(ExtendPos.HOME.position)
+    fun retractCommand(): SlideCommand {
+        // TODO: Return if it's already there.
+        return setSlideToPos(ExtendPos.HOME.position)
     }
 
     /**
      * Unpivot the head.
      */
-    fun unpivot() {
-        pivotServo.position = Constants.PIVOT_SERVO_TARGET // BUG: Maybe seems backwards?
-        pivotState = false
+    fun unpivot(): Command {
+        return InstantCommand({
+            if (!pivotState) return@InstantCommand
+            pivotServo.position = Constants.PIVOT_SERVO_TARGET // BUG: Maybe seems backwards?
+            pivotState = false
+        })
     }
 
-    fun pivot() {
-        pivotServo.position = Constants.PIVOT_SERVO_HOME
-        pivotState = true
+    fun pivot(): InstantCommand {
+        return InstantCommand({
+            if (pivotState) return@InstantCommand // Return if we're already in the desired state.
+            pivotServo.position = Constants.PIVOT_SERVO_HOME
+            pivotState = true
+        })
     }
 
     //Ayo
     /**
      * Make the head begin to swallow elements.
      */
-    fun swallow() {
-        intakeServo.power = 1.0
+    fun swallow(): InstantCommand {
+        return InstantCommand({ intakeServo.power = 1.0 })
     }
 
     /**
      * Make the head spit the elements back out.
      */
-    fun spit() {
-        intakeServo.power = -1.0
+    fun spit(): InstantCommand {
+        return InstantCommand({ intakeServo.power = -1.0 })
     }
 
-    fun stopSpit() {
-        intakeServo.power = 0.0
+    fun stopSpit(): InstantCommand {
+        return InstantCommand({ intakeServo.power = 0.0 })
     }
 
     //As driver request: Aim and goHome set as toggle.
     //Sucking should be bound to a separate button.
 
-    fun aim() {
-        // Set the robot up to pick up a sample.
-        if (extendPos != ExtendPos.TARGET) extend() // Enforce our desired state.
-        // Wait until slide is extended enough
-        while (slideMotor.currentPosition > 800.0) {
-            // DO NOTHING
-            //TODO: find some other method of executing this besides busywaiting
-        }
-        if (!pivotState) pivot() // Couldn't physically be pivoted and unextended.
-        aimState = true
-    }
+    fun aim(): Command =
+        extendCommand().andThen(InstantCommand({ pivot() })).andThen(InstantCommand({ aimState = true }))
 
     /**
      * Grab the sample and bring it into the robot.
      */
-    fun goHome() {
-        if (pivotState) unpivot()
-        if (extendPos != ExtendPos.HOME) retract()
-        aimState = false
+    fun goHome(): Command = unpivot().andThen(retractCommand()).andThen(InstantCommand({ aimState = false }))
+
+    //    fun aimToggle() = if (!aimState) aim() else goHome()
+    fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
+}
+
+class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {
+    private val pidf = PIDFController(kp, ki, kd, kf)
+    private var isEnded = false;
+
+    init {
+        addRequirements(intake)
     }
 
-    fun aimToggle() = if (!aimState) aim() else goHome()
+    override fun initialize() {
+        //Set the Target Position
+        intake.slideMotor.targetPosition = position
+
+        //Set the motor mode
+        intake.slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        //Set the stop behavior for the motor
+        intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
+        intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
+        pidf.setTolerance(25.0)
+//        pidf.atSetPoint()
+//
+//        //Sets the pid input to the target position
+        pidf.setPoint = position.toDouble()
+//        while(!pidf.atSetPoint()) {
+//            //Get the position of the motor and input it into the pid equation
+//        }
+    }
+
+    override fun execute() {
+        if (this.isEnded) return
+        val output = pidf.calculate(intake.slideMotor.currentPosition.toDouble())
+        //set the slideMotor power
+        intake.slideMotor.velocity = output
+        Log.i("ROBO", "looping")
+    }
+
+    override fun end(interrupted: Boolean) {
+        super.end(interrupted)
+        Log.i("ROBO", "ended")
+        this.isEnded = true
+    }
+
+    override fun isFinished(): Boolean {
+        // TODO: don't stop when extended
+        Log.i("ROBO", "finished looping")
+        this.isEnded = true
+        return pidf.atSetPoint()
+    }
 }
+
