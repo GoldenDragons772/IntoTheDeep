@@ -23,7 +23,8 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun swingToHome(): Command {
         return InstantCommand({
             Log.i("Big MEN", "${swingServo.position}")
-//            if (swingState) return@InstantCommand;
+            if (!swingState) return@InstantCommand;
+
             swingServo.position = Constants.SWING_SERVO_HOME;
             swingState = false
         })
@@ -64,7 +65,8 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     //GYAAAAAAAAAAAAAT
     fun gripIt(): Command {
         return InstantCommand({
-            if (gripState) return@InstantCommand
+            //if (gripState) return@InstantCommand  //We need to bypass this since the claw needs to contiuously grip onto the sample as it doesn't know when to and when not to.
+
             gripper.position = Constants.GRIPPY
             gripState = true
         })

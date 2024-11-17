@@ -114,7 +114,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
-        setPressedBinding(mapping.gripMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
+        setPressedBinding(mapping.transferMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
+        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
     }
 
     /**
@@ -131,6 +132,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
-        val gripMapping: Pair<GamepadKeys.Button, Int>
+        val gripMapping: Pair<GamepadKeys.Button, Int>,
+        val transferMapping: Pair<GamepadKeys.Button, Int>
     )
 }

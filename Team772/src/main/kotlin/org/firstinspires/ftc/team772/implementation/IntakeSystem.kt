@@ -51,7 +51,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     enum class ExtendPos(val position: Int) {
         HOME(Constants.SLIDE_HOME), // Changed to 50 because that's the maximum acceptable minimum value.
-        TARGET(Constants.SLIDE_TARGET) // Original Value: 1150
+        TARGET(Constants.SLIDE_TARGET), // Original Value: 1150
+        EDGE(Constants.SLIDE_EDGE)
         // TODO: Consider removing this and replacing it with constants
     }
 
@@ -110,6 +111,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         return setSlideToPos(ExtendPos.TARGET.position)
     }
 
+    fun edgeCommand(): SlideCommand{
+        return setSlideToPos(ExtendPos.EDGE.position)
+    }
+
     fun retractCommand(): SlideCommand {
         // TODO: Return if it's already there.
         return setSlideToPos(ExtendPos.HOME.position)
@@ -131,6 +136,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             if (pivotState) return@InstantCommand // Return if we're already in the desired state.
             pivotServo.position = Constants.PIVOT_SERVO_HOME
             pivotState = true
+            Log.i("ROBO", "true")
         })
     }
 
@@ -157,7 +163,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //Sucking should be bound to a separate button.
 
     fun aim(): Command =
-        extendCommand().andThen(InstantCommand({ pivot() })).andThen(InstantCommand({ aimState = true }))
+        extendCommand().andThen(pivot()).andThen(InstantCommand({ aimState = true }))
 
     /**
      * Grab the sample and bring it into the robot.
@@ -186,7 +192,8 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         //Set the stop behavior for the motor
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
+        if(position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.3
+        else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
         pidf.setTolerance(25.0)
 //        pidf.atSetPoint()
 //
@@ -215,7 +222,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         // TODO: don't stop when extended
         Log.i("ROBO", "finished looping")
         this.isEnded = true
-        return pidf.atSetPoint()
+        return true //THIS NEEDS TO RETURN TRUE!!! IF THE CODE TRIES TO RETURN ANYTHING ELSE, IT WILL LOOP OVER ITSELF UNTILL FOREVER!
     }
 }
 
