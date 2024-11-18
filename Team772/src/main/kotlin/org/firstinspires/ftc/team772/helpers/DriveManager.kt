@@ -37,9 +37,13 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Start driving and processing input: Main drive loop.
      */
+    // TODO: Fix the arguments.
     fun update() {
-        robot!!.drive(-gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
-
+        robot!!.drive(
+            -gamepad1!!.leftX,
+            gamepad1!!.rightY,
+            gamepad1!!.rightX
+        );
     }
 
     /**
