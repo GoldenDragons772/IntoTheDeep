@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.command.WaitCommand
  */
 class TransferPixelCommand(private val intake: IntakeSystem, private val outtake: OuttakeSystem) : SequentialCommandGroup() {
     // I
-    val targetPos = IntakeSystem.ExtendPos.HOME;
+    val targetPos = IntakeSystem.ExtendPos.HOME
 
 
     init {

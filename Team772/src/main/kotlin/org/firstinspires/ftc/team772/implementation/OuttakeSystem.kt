@@ -60,6 +60,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
             gripper.position = Constants.UNGRIPPY;
             gripState = false
         })
+
     }
 
     //GYAAAAAAAAAAAAAT
