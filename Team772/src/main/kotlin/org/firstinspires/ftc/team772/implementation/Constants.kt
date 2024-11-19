@@ -29,7 +29,7 @@ class Constants {
         @JvmField
         val ARM_HOME = 0
         @JvmField
-        val ARM_HIGH_CLIMB = 2700
+        val ARM_HIGH_CLIMB = 2850 // Moved up by 150
         @JvmField
         val ARM_LOW_CLIMB = 1350
 

@@ -16,9 +16,9 @@ class TransferPixelCommand(private val intake: IntakeSystem, private val outtake
         super.addCommands(
             outtake.unGrip(),
             WaitCommand(500),
-            outtake.swingToHome(),
-            WaitCommand(500),
             intake.goHome(),
+            WaitCommand(500),
+            outtake.swingToHome(),
             WaitCommand(500),
             outtake.gripIt(),
             WaitCommand(500),

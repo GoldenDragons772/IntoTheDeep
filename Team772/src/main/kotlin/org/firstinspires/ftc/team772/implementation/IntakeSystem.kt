@@ -179,10 +179,12 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     private var isEnded = false;
 
     init {
+        isEnded = false// Try to reset isEnded every time
         addRequirements(intake)
     }
 
     override fun initialize() {
+        isEnded = false
         //Set the Target Position
         intake.slideMotor.targetPosition = position
 
