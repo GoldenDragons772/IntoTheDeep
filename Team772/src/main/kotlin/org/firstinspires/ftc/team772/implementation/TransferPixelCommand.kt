@@ -1,37 +1,43 @@
 package org.firstinspires.ftc.team772.implementation
 
 import com.arcrobotics.ftclib.command.CommandBase
+import com.arcrobotics.ftclib.command.SequentialCommandGroup
+import com.arcrobotics.ftclib.command.WaitCommand
 
 /**
  * Transfers a pixel from the intake to the outtake.
  */
-class TransferPixelCommand(private val intake: IntakeSystem, private val outtake: OuttakeSystem) : CommandBase() {
+class TransferPixelCommand(private val intake: IntakeSystem, private val outtake: OuttakeSystem) : SequentialCommandGroup() {
     // I
     val targetPos = IntakeSystem.ExtendPos.HOME
 
+
     init {
-        addRequirements(intake)
-        addRequirements(outtake)
+        super.addCommands(
+            outtake.unGrip(),
+            WaitCommand(500),
+            outtake.swingToHome(),
+            WaitCommand(500),
+            intake.goHome(),
+            WaitCommand(500),
+            outtake.gripIt(),
+            WaitCommand(500),
+            intake.spit(),
+            outtake.gripIt(),
+            intake.edgeCommand(),
+            WaitCommand(500),
+            outtake.gripIt(),
+            outtake.swingToTarget(),
+            WaitCommand(500),
+            outtake.gripIt(),
+            intake.retractCommand(),
+            intake.stopSpit()
+        )
+        addRequirements(intake, outtake)
     }
 
-    override fun initialize() {
-        // Enforce required states
-        // TODO: Make these all run smoothly instead of all at once.
-        if (!outtake.swingState) outtake.swingToHome()
-        if (outtake.gripState) outtake.unGrip()
-        if (intake.aimState) intake.goHome()
-        intake.spit()
-        outtake.gripIt()
-        intake.aim()
-        outtake.swingToTarget()
-    }
-
-    fun setPosition(pos: IntakeSystem.ExtendPos) {
-        intake.setSlideToPos(pos)
-    }
-
-    override fun isFinished(): Boolean {
-        return intake.slideMotor.currentPosition == targetPos.position;
-    }
+//    override fun isFinished(): Boolean {
+//        return intake.slideMotor.currentPosition == targetPos.position;
+//    }
 
 }

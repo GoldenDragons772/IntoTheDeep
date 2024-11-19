@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team772.helpers
 
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
+import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RepeatCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
@@ -9,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
+import org.firstinspires.ftc.team772.implementation.TransferPixelCommand
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -35,9 +37,13 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Start driving and processing input: Main drive loop.
      */
+    // TODO: Fix the arguments.
     fun update() {
-        robot!!.drive(-gamepad1!!.rightX, gamepad1!!.rightY, gamepad1!!.leftX)
-
+        robot!!.drive(
+            -gamepad1!!.leftX,
+            gamepad1!!.rightY,
+            gamepad1!!.rightX
+        );
     }
 
     /**
@@ -54,7 +60,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
     }
 
-    private fun setPressedBinding(map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command) {
+    private fun setPressedBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: Command,
+        whenReleased: Command = InstantCommand()
+    ) {
         getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(
             function
         ).whenReleased(whenReleased)
@@ -80,7 +90,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Note that this is more akin to setHeldBinding than the other setPressedBinding
      */
     private fun setHeldTriggerBinding(
-        map: Pair<GamepadKeys.Trigger, Int>, function: () -> Unit, onRelease: () -> Unit
+        map: Pair<GamepadKeys.Trigger, Int>, function: InstantCommand, onRelease: InstantCommand
     ) {
         var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
         val geepad = getGamepad(map.second)!!
@@ -88,9 +98,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
             isDown = geepad.getTrigger(map.first) > 0.5
             if (isDown) {
-                function()
+                function.schedule()
             } else if (lastIsDown) {
-                onRelease()
+                onRelease.schedule()
             }
             lastIsDown = isDown
         })))
@@ -100,15 +110,16 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)
+        setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setHeldTriggerBinding(mapping.suckMapping, robot!!.intakeSystem::swallow, robot!!.intakeSystem::stopSpit)
-        setHeldBinding(mapping.unSuckMapping, robot!!.intakeSystem::spit, robot!!.intakeSystem::stopSpit)
+        setHeldTriggerBinding(mapping.suckMapping, robot!!.intakeSystem.swallow(), robot!!.intakeSystem.stopSpit())
+        setHeldBinding(mapping.unSuckMapping, robot!!.intakeSystem.spit(), robot!!.intakeSystem.stopSpit())
         // Toggle extending the arm out and prime for picking up pixels.
-        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem::aimToggle)
-        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem::toggleSwing)
-        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem::toggleGripper)
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
+        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
+        setPressedBinding(mapping.transferMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
+        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
     }
 
     /**
@@ -125,6 +136,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
-        val gripMapping: Pair<GamepadKeys.Button, Int>
+        val gripMapping: Pair<GamepadKeys.Button, Int>,
+        val transferMapping: Pair<GamepadKeys.Button, Int>
     )
 }

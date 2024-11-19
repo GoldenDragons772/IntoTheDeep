@@ -25,8 +25,9 @@ class SoloTeleOp : CommandOpMode() {
             suckMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
             unSuckMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             aimMapping = Pair(GamepadKeys.Button.Y, 1),
-            gripMapping = Pair(GamepadKeys.Button.A, 1),
-            swingMapping = Pair(GamepadKeys.Button.B, 1)
+            transferMapping = Pair(GamepadKeys.Button.A, 1),
+            swingMapping = Pair(GamepadKeys.Button.B, 1),
+            gripMapping = Pair(GamepadKeys.Button.X, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
     }
