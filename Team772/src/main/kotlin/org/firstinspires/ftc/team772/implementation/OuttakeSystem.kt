@@ -20,6 +20,10 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     var wristState = true
         private set
 
+    init {
+        wristServo.position = Constants.WRIST_SERVO_HOME //Lock Wrist Servo
+    }
+
     fun swingToHome(): Command {
         return InstantCommand({
             Log.i("Big MEN", "${swingServo.position}")
@@ -67,7 +71,6 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun gripIt(): Command {
         return InstantCommand({
             //if (gripState) return@InstantCommand  //We need to bypass this since the claw needs to contiuously grip onto the sample as it doesn't know when to and when not to.
-
             gripper.position = Constants.GRIPPY
             gripState = true
         })
