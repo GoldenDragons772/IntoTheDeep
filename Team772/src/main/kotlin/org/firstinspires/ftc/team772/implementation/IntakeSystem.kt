@@ -21,6 +21,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         private set
     var pivotState = false
         private set
+    var swallowState = false
+        private set
+    var spitState = false
+        private set
 
     //Create PIDF Controller
     val pidf = PIDFController(kp, ki, kd, kf)
@@ -145,6 +149,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Make the head begin to swallow elements.
      */
     fun swallow(): InstantCommand {
+        swallowState = true
         return InstantCommand({ intakeServo.power = 1.0 })
     }
 
@@ -152,10 +157,13 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Make the head spit the elements back out.
      */
     fun spit(): InstantCommand {
+        spitState = true
         return InstantCommand({ intakeServo.power = -1.0 })
     }
 
     fun stopSpit(): InstantCommand {
+        swallowState = false
+        spitState = false
         return InstantCommand({ intakeServo.power = 0.0 })
     }
 
@@ -172,6 +180,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
+
+    fun suckToggle() = ConditionalCommand(swallow(), stopSpit()) { swallowState }
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {

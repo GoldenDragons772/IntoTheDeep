@@ -107,13 +107,30 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     }
 
     /**
+     * Honestly I'm not really sure what I did but it should do an action when the function is pressed.
+     * @param map This is the controller binding you want to pass in.
+     * @param function This is what will happen when the trigger is pressed.
+     */
+    private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command){
+        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        val geepad = getGamepad(map.second)!!
+        var lastIsDown = isDown
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
+            isDown = geepad.getTrigger(map.first) > 0.5
+            if(isDown){
+                function.schedule()
+            }
+        })))
+    }
+
+    /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setHeldTriggerBinding(mapping.suckMapping, robot!!.intakeSystem.swallow(), robot!!.intakeSystem.stopSpit())
+        setPressedTriggerBinding(mapping.suckMapping, robot!!.intakeSystem.suckToggle())
         setHeldBinding(mapping.unSuckMapping, robot!!.intakeSystem.spit(), robot!!.intakeSystem.stopSpit())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
