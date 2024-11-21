@@ -28,7 +28,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     companion object {
 
-        //@JvmField is a static keyword because kotlin can't comprehend it.
+        //@JvmField is a static keyword because java can't comprehend it.
         @JvmField
         var kp = 28.0
 
