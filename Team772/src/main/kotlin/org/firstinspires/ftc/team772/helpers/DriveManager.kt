@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.helpers
 
+import android.util.Log
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.ConditionalCommand
@@ -117,9 +118,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         var lastIsDown = isDown
         CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
             isDown = geepad.getTrigger(map.first) > 0.5
-            if(isDown){
+            if (!lastIsDown && isDown) {
                 function.schedule()
             }
+            lastIsDown = isDown
         })))
     }
 
