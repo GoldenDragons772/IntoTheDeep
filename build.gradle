@@ -20,6 +20,7 @@ buildscript {
 
 plugins {
     id 'org.jetbrains.kotlin.android' version "$kotlin_version" apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.8.20' apply false
 }
 // This is now required because aapt2 has to be downloaded from the
 // google() repository beginning with version 3.2 of the Android Gradle Plugin

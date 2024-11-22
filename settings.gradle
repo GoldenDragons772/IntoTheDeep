@@ -4,3 +4,5 @@ plugins {
 include ':PurePursuit'
 include ':FtcRobotController'
 include ':Team772'
+include ':moopmoop'
+include ':moopmoop'

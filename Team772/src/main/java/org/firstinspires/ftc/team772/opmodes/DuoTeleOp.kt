@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.team772.helpers.DriveManager
 
 @TeleOp(name = "DuoTeleOp")
-class DuoTeleOp: CommandOpMode() {
+class clsDuoTeleOp: CommandOpMode() {
     private lateinit var driveManager: DriveManager
 
     override fun initialize() {
