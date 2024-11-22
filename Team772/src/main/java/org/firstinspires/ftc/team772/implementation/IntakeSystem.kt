@@ -17,10 +17,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
-    var aimState = false
-        private set
     var pivotState = false
-        private set
+    var aimState = false
+    enum class LipState{
+        SPITTING,
+        SWALLOWING,
+        STOPPED
+    }
+    var lipState = LipState.STOPPED
 
     //Create PIDF Controller
     val pidf = PIDFController(kp, ki, kd, kf)
@@ -145,6 +149,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Make the head begin to swallow elements.
      */
     fun swallow(): InstantCommand {
+        lipState = LipState.SWALLOWING
+        Log.i("ROBO", "Swallowing")
         return InstantCommand({ intakeServo.power = 1.0 })
     }
 
@@ -152,10 +158,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Make the head spit the elements back out.
      */
     fun spit(): InstantCommand {
+        lipState = LipState.SPITTING
         return InstantCommand({ intakeServo.power = -1.0 })
     }
 
     fun stopSpit(): InstantCommand {
+        lipState = LipState.STOPPED
         return InstantCommand({ intakeServo.power = 0.0 })
     }
 
@@ -172,6 +180,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
+
+    fun suckToggle() = ConditionalCommand(stopSpit(), swallow()) { lipState == LipState.SWALLOWING }
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {

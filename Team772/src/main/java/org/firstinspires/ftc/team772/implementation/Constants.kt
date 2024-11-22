@@ -48,7 +48,7 @@ class Constants {
         val CLAW_SERVO_HOME = 0.0
 
         @JvmField
-        val SLIDE_TARGET = 1150
+        val SLIDE_TARGET = 1050
         @JvmField
         val SLIDE_SERVO_TARGET = 0.3
         @JvmField
@@ -57,7 +57,7 @@ class Constants {
         val CLAW_SERVO_TARGET = 0.0
 
         @JvmField
-        val SLIDE_MOTOR_SPEED = 1.0
+        val SLIDE_MOTOR_SPEED = 0.7
 
         /**
          * Values for the outtake. Change for tuning.
