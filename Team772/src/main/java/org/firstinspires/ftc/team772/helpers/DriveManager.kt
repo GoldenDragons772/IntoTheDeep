@@ -114,25 +114,22 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command){
         var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
-        val geepad = getGamepad(map.second)!!
         var lastIsDown = isDown
-        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
-            isDown = geepad.getTrigger(map.first) > 0.5
-            if (!lastIsDown && isDown) {
-                function.schedule()
-            }
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ // Repeatedly run an instant command
+            isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5 // Every loop, update isDown
+            if (!lastIsDown && isDown) function.schedule()// If was just down and is now up, schedule function.
             lastIsDown = isDown
         })))
     }
 
-    /**
+    /*Weather*
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
         setPressedBinding(mapping.lowclimbMapping, robot!!::lowclimb)// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!::highclimb)
         setPressedBinding(mapping.unClimbMapping, robot!!::unclimb)
-        setPressedTriggerBinding(mapping.suckMapping, robot!!.intakeSystem.suckToggle())
+        setPressedBinding(mapping.suckMapping, robot!!.intakeSystem.suckToggle()) // right bumper intake (toggle)  left bumper outtake (not toggle)
         setHeldBinding(mapping.unSuckMapping, robot!!.intakeSystem.spit(), robot!!.intakeSystem.stopSpit())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
@@ -151,7 +148,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-        val suckMapping: Pair<GamepadKeys.Trigger, Int>,
+        val suckMapping: Pair<GamepadKeys.Button, Int>,
         val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
