@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team772.abstractions
 
+import com.arcrobotics.ftclib.command.InstantCommand
+
 interface ClimbExtension {
 
     /**
@@ -10,15 +12,15 @@ interface ClimbExtension {
     /**
      * Makes the robot climb up to the upper bar.
      */
-    fun lowclimb()
+    fun lowclimb(): InstantCommand
 
     /**
      * Makes the robot climb up to the upper bar.
      */
-    fun highclimb()
+    fun highclimb(): InstantCommand
 
     /**
      * Makes the robot climb down.
      */
-    fun unclimb()
+    fun unclimb(): InstantCommand
 }

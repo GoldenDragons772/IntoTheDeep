@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.implementation
 import ClimbSystem
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -113,16 +114,16 @@ class ParallelPlateDrivesystem(
     }
 
     // TODO: Modify the climb subsystem so that everything is a command.
-    override fun highclimb() {
-        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+    override fun highclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
     }
 
-    override fun lowclimb() {
-        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
+    override fun lowclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
     }
 
-    override fun unclimb() {
-        climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
+    override fun unclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
     }
 
 }
