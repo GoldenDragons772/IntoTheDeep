@@ -19,7 +19,7 @@ class clsDuoTeleOp: CommandOpMode() {
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 2),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 2),
             suckMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
-            unSuckMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 2),
+            unSuckMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2),
             aimMapping = Pair(GamepadKeys.Button.Y, 2),
             transferMapping = Pair(GamepadKeys.Button.A, 2),
             swingMapping = Pair(GamepadKeys.Button.B, 2),

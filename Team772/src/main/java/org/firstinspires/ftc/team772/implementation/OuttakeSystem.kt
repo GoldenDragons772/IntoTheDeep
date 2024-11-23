@@ -22,7 +22,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     init {
         wristServo.position = Constants.WRIST_SERVO_HOME //Lock Wrist Servo
-        swingServo.position = Constants.SWING_SERVO_HOME
+        swingServo.position = Constants.SWING_SERVO_INIT
     }
 
     fun swingToHome(): Command {
@@ -40,6 +40,11 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
             if (swingState) return@InstantCommand
             swingServo.position = Constants.SWING_SERVO_TARGET
             swingState = true
+        })
+    }
+    fun initializeSwing(): Command {
+        return InstantCommand({
+            swingServo.position  = Constants.SWING_SERVO_INIT
         })
     }
 
@@ -65,7 +70,6 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
             gripper.position = Constants.UNGRIPPY;
             gripState = false
         })
-
     }
 
     //GYAAAAAAAAAAAAAT
