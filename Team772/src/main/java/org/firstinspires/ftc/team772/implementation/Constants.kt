@@ -37,7 +37,7 @@ class Constants {
          * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
          * */
         @JvmField
-        val SLIDE_HOME = 75 //70 works well
+        val SLIDE_HOME = 60 //70 works well
         @JvmField
         val SLIDE_EDGE = 400
         @JvmField
@@ -74,7 +74,7 @@ class Constants {
         val UNGRIPPY = 0.6
 
         @JvmField
-        val SWING_SERVO_HOME = 1.0
+        val SWING_SERVO_HOME = 0.95
         @JvmField
         val WRIST_SERVO_TARGET = 0.25
 

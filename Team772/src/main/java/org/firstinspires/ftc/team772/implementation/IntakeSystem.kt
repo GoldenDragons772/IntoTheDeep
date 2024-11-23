@@ -19,11 +19,13 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     // Right now these are all binary, but in the future some of these might need to be in an enum.
     var pivotState = false
     var aimState = false
-    enum class LipState{
+
+    enum class LipState {
         SPITTING,
         SWALLOWING,
         STOPPED
     }
+
     var lipState = LipState.STOPPED
 
     //Create PIDF Controller
@@ -115,7 +117,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         return setSlideToPos(ExtendPos.TARGET.position)
     }
 
-    fun edgeCommand(): SlideCommand{
+    fun edgeCommand(): SlideCommand {
         return setSlideToPos(ExtendPos.EDGE.position)
     }
 
@@ -149,22 +151,29 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Make the head begin to swallow elements.
      */
     fun swallow(): InstantCommand {
-        lipState = LipState.SWALLOWING
-        Log.i("ROBO", "Swallowing")
-        return InstantCommand({ intakeServo.power = 1.0 })
+        return InstantCommand({
+            lipState = LipState.SWALLOWING
+            Log.i("ROBO", "Swallowing")
+            intakeServo.power = 1.0
+        })
     }
 
     /**
      * Make the head spit the elements back out.
      */
     fun spit(): InstantCommand {
-        lipState = LipState.SPITTING
-        return InstantCommand({ intakeServo.power = -1.0 })
+        return InstantCommand({
+            lipState = LipState.SPITTING
+            intakeServo.power = -1.0
+        })
     }
 
     fun stopSpit(): InstantCommand {
-        lipState = LipState.STOPPED
-        return InstantCommand({ intakeServo.power = 0.0 })
+        return InstantCommand({
+            lipState = LipState.STOPPED
+            Log.i("ROBO", "Stopped Swallowing/spitting")
+            intakeServo.power = 0.0
+        })
     }
 
     //As driver request: Aim and goHome set as toggle.
@@ -181,7 +190,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
 
-    fun suckToggle() = ConditionalCommand(stopSpit(), swallow()) { lipState == LipState.SWALLOWING }
+    fun suckToggle() = ConditionalCommand(stopSpit(), swallow()) { this.lipState == LipState.SWALLOWING }
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {
@@ -204,7 +213,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         //Set the stop behavior for the motor
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        if(position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.3
+        if (position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.3
         else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
         pidf.setTolerance(25.0)
 //        pidf.atSetPoint()
