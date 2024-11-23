@@ -229,7 +229,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         if (this.isEnded) return
         val output = pidf.calculate(intake.slideMotor.currentPosition.toDouble())
         //set the slideMotor power
-        intake.slideMotor.velocity = output
+        intake.slideMotor.power = output
         Log.i("ROBO", "looping")
     }
 
