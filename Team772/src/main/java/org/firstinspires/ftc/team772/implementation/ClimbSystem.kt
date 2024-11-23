@@ -2,6 +2,9 @@ import ClimbSystem.Companion.kf
 import ClimbSystem.Companion.kp
 import ClimbSystem.Companion.ki
 import ClimbSystem.Companion.kd
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandBase
 import com.arcrobotics.ftclib.command.CommandScheduler
@@ -22,15 +25,16 @@ import java.time.Instant
 import java.util.*
 
 //PID???
-
+@Config
 class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
 
     companion object {
         var armPos: ArmPos = ArmPos.HOME
-        val kp = 0.5
-        val kd = 0.5
-        val ki = 0.5
-        val kf = 0.5
+
+        @JvmField var kp = 0.5
+        @JvmField var kd = 0.5
+        @JvmField var ki = 0.5
+        @JvmField var kf = 0.5
     }
 
     /*private*/ val leftArmMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "LeftClimb")
@@ -77,47 +81,47 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         return SetArmPosCommand(pos, this)
     }
 
-/*
-    fun setArmPower(power: Double) {
-        leftArmMotor.power = power
-        rightArmMotor.power = power
-    }
-
-    fun setArmMode(mode: DcMotor.RunMode) {
-        if (mode != leftArmMotor.mode || mode != rightArmMotor.mode) {
-            leftArmMotor.mode = mode
-            rightArmMotor.mode = mode
-        }
-    }
-*/
-
-/*
-    fun incrementArmPos() {
-        val nextPos = armPos.ordinal + 1
-        if (nextPos < ArmPos.values().size) {
-            armPos = ArmPos.values()[nextPos]
-            setArmToPos(armPos)
+    /*
+        fun setArmPower(power: Double) {
+            leftArmMotor.power = power
+            rightArmMotor.power = power
         }
 
-        if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
-            leftArmMotor.power = 1.0
-            rightArmMotor.power = 1.0
+        fun setArmMode(mode: DcMotor.RunMode) {
+            if (mode != leftArmMotor.mode || mode != rightArmMotor.mode) {
+                leftArmMotor.mode = mode
+                rightArmMotor.mode = mode
+            }
         }
-    }
-*/
+    */
 
-/*    fun decrementArmPos() {
-        val nextPos = armPos.ordinal - 1
-        if (nextPos >= 0) {
-            armPos = ArmPos.values()[nextPos]
-            setArmToPos(armPos)
-        }
+    /*
+        fun incrementArmPos() {
+            val nextPos = armPos.ordinal + 1
+            if (nextPos < ArmPos.values().size) {
+                armPos = ArmPos.values()[nextPos]
+                setArmToPos(armPos)
+            }
 
-        if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
-            leftArmMotor.power = 1.0
-            rightArmMotor.power = 1.0
+            if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
+                leftArmMotor.power = 1.0
+                rightArmMotor.power = 1.0
+            }
         }
-    }*/
+    */
+
+    /*    fun decrementArmPos() {
+            val nextPos = armPos.ordinal - 1
+            if (nextPos >= 0) {
+                armPos = ArmPos.values()[nextPos]
+                setArmToPos(armPos)
+            }
+
+            if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
+                leftArmMotor.power = 1.0
+                rightArmMotor.power = 1.0
+            }
+        }*/
 
     fun getAvgArmPosition(): Int {
         return (leftArmMotor.currentPosition + rightArmMotor.currentPosition) / 2
@@ -137,6 +141,11 @@ class SetArmPosCommand(
 
     init {
         addRequirements(climbSystem)
+    }
+
+
+    override fun initialize() {
+        super.initialize()
         climbSystem.leftArmMotor.targetPosition = destination
         climbSystem.rightArmMotor.targetPosition = destination
 
@@ -148,36 +157,39 @@ class SetArmPosCommand(
 
         climbSystem.leftArmMotor.power = 1.0
         climbSystem.rightArmMotor.power = 1.0
-    }
-
-
-    override fun initialize() {
-        super.initialize()
-        val pos = climbSystem.getAvgArmPosition()
         pidf.setPoint = destination.toDouble()
         pidf.setTolerance(25.0)
-        if (destination == 0) {
-            if (pos > 50) {
-                CommandScheduler.getInstance().schedule(SequentialCommandGroup(WaitCommand(3000), InstantCommand({
-                    climbSystem.stopResetArm()
-                })))
-            } else {
-                // Stop the Motor Since We are already at Home
-                climbSystem.stopResetArm()
-            }
-        }
+//        if (destination == 0) {
+//            if (pos > 50) {
+//                CommandScheduler.getInstance().schedule(SequentialCommandGroup(WaitCommand(3000), InstantCommand({
+//                    climbSystem.stopResetArm()
+//                })))
+//            } else {
+//                // Stop the Motor Since We are already at Home
+//                climbSystem.stopResetArm()
+//            }
+//        }
     }
 
     override fun execute() {
         super.execute()
-        val output = pidf.calculate(climbSystem.getAvgArmPosition().toDouble())
-        climbSystem.leftArmMotor.velocity = output
-        climbSystem.rightArmMotor.velocity = output
+        val packet = TelemetryPacket()
+        val current_position = climbSystem.getAvgArmPosition().toDouble()
+        val output = pidf.calculate(current_position)
+        packet.addLine("arm position: ${current_position}")
+        packet.addLine("pidf out: $output")
+        packet.addLine("destination: $destination")
+        packet.addLine("armPos ${climbSystem.getArmPos()}")
+        FtcDashboard.getInstance().sendTelemetryPacket(packet)
+
+//        climbSystem.leftArmMotor.velocity = output
+//        climbSystem.rightArmMotor.velocity = output
     }
 
 
     override fun isFinished(): Boolean {
         val pos = climbSystem.getAvgArmPosition()
         return pos in (destination - epsilon)..(destination + epsilon)
+//        return true
     }
 }
