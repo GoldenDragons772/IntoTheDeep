@@ -20,12 +20,10 @@ public class moopmoop {
                 .build();
 
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 63, Math.toRadians(90)))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 63, Math.toRadians(180)))
                         // Drive to Center
-                        .splineToConstantHeading(new Vector2d(0, 32), Math.toRadians(90))
-                        .waitSeconds(2)
-                        .splineToLinearHeading(new Pose2d(-35, 38, Math.toRadians(90)), Math.toRadians(270))
-                        .splineToLinearHeading(new Pose2d(-25, 0, Math.toRadians(0)), Math.toRadians(0))
+                        //.splineToConstantHeading(new Vector2d(0, 32), Math.toRadians(90))\
+                        .strafeTo(new Vector2d(-58, 63))
                         .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
