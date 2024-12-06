@@ -23,7 +23,9 @@ public class moopmoop {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 63, Math.toRadians(180)))
                         // Drive to Center
                         //.splineToConstantHeading(new Vector2d(0, 32), Math.toRadians(90))\
-                        .strafeTo(new Vector2d(-58, 63))
+                        .strafeTo(new Vector2d(55, 63))
+                        .waitSeconds(1)
+                        .strafeTo(new Vector2d(-55, 63))
                         .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)

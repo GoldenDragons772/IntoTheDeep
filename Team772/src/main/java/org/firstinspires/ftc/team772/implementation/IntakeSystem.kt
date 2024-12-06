@@ -67,7 +67,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
-        slideMotor.direction = DcMotorSimple.Direction.REVERSE
+        //slideMotor.direction = DcMotorSimple.Direction.REVERSE
         //We might have to reverse motors
     }
 
@@ -180,7 +180,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //Sucking should be bound to a separate button.
 
     fun aim(): Command =
-        extendCommand().andThen(pivot()).andThen(InstantCommand({ aimState = true }))
+        extendCommand().andThen(WaitCommand(500)).andThen(pivot()).andThen(InstantCommand({ aimState = true }))
 
     /**
      * Grab the sample and bring it into the robot.
@@ -213,7 +213,8 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         //Set the stop behavior for the motor
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        if (position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.3
+        if (position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.4
+        else if(position == Constants.SLIDE_TARGET) intake.slideMotor.power = 0.5
         else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
         pidf.setTolerance(25.0)
 //        pidf.atSetPoint()
@@ -228,8 +229,6 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     override fun execute() {
         if (this.isEnded) return
         val output = pidf.calculate(intake.slideMotor.currentPosition.toDouble())
-        //set the slideMotor power
-        intake.slideMotor.power = output
         Log.i("ROBO", "looping")
     }
 
