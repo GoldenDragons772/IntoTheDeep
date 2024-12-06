@@ -1,7 +1,9 @@
-import ClimbSystem.Companion.kf
-import ClimbSystem.Companion.kp
-import ClimbSystem.Companion.ki
-import ClimbSystem.Companion.kd
+package org.firstinspires.ftc.team772.implementation
+
+import org.firstinspires.ftc.team772.implementation.ClimbSystem.Companion.kd
+import org.firstinspires.ftc.team772.implementation.ClimbSystem.Companion.kf
+import org.firstinspires.ftc.team772.implementation.ClimbSystem.Companion.ki
+import org.firstinspires.ftc.team772.implementation.ClimbSystem.Companion.kp
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
