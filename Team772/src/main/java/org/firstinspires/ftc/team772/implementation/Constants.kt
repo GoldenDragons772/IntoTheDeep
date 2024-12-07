@@ -23,17 +23,17 @@ object Constants {
      * Values for arm.
      */
     @JvmField var ARM_HOME = 0
-    @JvmField var ARM_HIGH_CLIMB = 2850 // Moved up by 150
+    @JvmField var ARM_HIGH_CLIMB = 2950 // Moved up by 150
     @JvmField var ARM_LOW_CLIMB = 1350
 
     /**
      * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
      * */
-    @JvmField var SLIDE_HOME = 80 //70 works well
+    @JvmField var SLIDE_HOME = 75 //70 works well
     @JvmField var SLIDE_EDGE = 400
     @JvmField var SLIDE_RECALIBRATE = -100
     @JvmField var SLIDE_SERVO_HOME = 0.1
-    @JvmField var PIVOT_SERVO_HOME = 0.44//TODO: Swap variable names -- Home is on the ground?
+    @JvmField var PIVOT_SERVO_HOME = 0.43//TODO: Swap variable names -- Home is on the ground?
     @JvmField var CLAW_SERVO_HOME = 0.0
     @JvmField var SLIDE_TARGET = 1050
     @JvmField var SLIDE_SERVO_TARGET = 0.3
@@ -58,5 +58,5 @@ object Constants {
     /**
      * Claw target position.
      */
-    @JvmField var GRIPPY = 0.1
+    @JvmField var GRIPPY = 0.0
 }

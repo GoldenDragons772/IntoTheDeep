@@ -23,6 +23,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     var pivotState = false
     var aimState = false
 
+    //Stores the states of the intake into an Enum object.
     enum class LipState {
         SPITTING,
         SWALLOWING,
@@ -57,13 +58,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         var extendPoint = 1100
     }
 
-
+    //Sets the positions of the arm to a enum.
     enum class ExtendPos(val position: Int) {
-        HOME(Constants.SLIDE_HOME), // Changed to 50 because that's the maximum acceptable minimum value.
-        TARGET(Constants.SLIDE_TARGET), // Original Value: 1150
+        HOME(Constants.SLIDE_HOME),
+        TARGET(Constants.SLIDE_TARGET),
         EDGE(Constants.SLIDE_EDGE),
         RECALIBRATE(Constants.SLIDE_RECALIBRATE)
-        // TODO: Consider removing this and replacing it with constants
     }
 
     init {
@@ -117,19 +117,31 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         slideMotor.power = power
     }
 
+    /**
+     * Sets the intake to the [extendPos]
+     */
     fun extendCommand(): SlideCommand {
         return setSlideToPos(ExtendPos.TARGET.position)
     }
 
+    /**
+     * Sets the intake to the edge position
+     */
     fun edgeCommand(): SlideCommand {
         return setSlideToPos(ExtendPos.EDGE.position)
     }
 
+    /**
+     * Sets the intake to the home position.
+     */
     fun retractCommand(): SlideCommand {
         // TODO: Return if it's already there.
         return setSlideToPos(ExtendPos.HOME.position)
     }
 
+    /**
+     * Sets the intake to the recalibration position (It hits the button)
+     */
     fun recalCommand(): SlideCommand {
         return setSlideToPos(ExtendPos.RECALIBRATE.position)
     }
@@ -145,6 +157,9 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
+    /**
+     * Pivot the active intake downwards for intake.
+     */
     fun pivot(): InstantCommand {
         return InstantCommand({
             if (pivotState) return@InstantCommand // Return if we're already in the desired state.
