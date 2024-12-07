@@ -136,6 +136,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
         setPressedBinding(mapping.transferMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
+        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
     }
 
     /**
@@ -153,6 +154,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
-        val transferMapping: Pair<GamepadKeys.Button, Int>
+        val transferMapping: Pair<GamepadKeys.Button, Int>,
+        val calibrateMapping: Pair<GamepadKeys.Button, Int>
     )
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.implementation
 
+import android.transition.Slide
 import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.controller.PIDFController
@@ -12,8 +13,10 @@ import java.util.logging.Logger
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+    val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
     private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
     private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
+
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
@@ -58,7 +61,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     enum class ExtendPos(val position: Int) {
         HOME(Constants.SLIDE_HOME), // Changed to 50 because that's the maximum acceptable minimum value.
         TARGET(Constants.SLIDE_TARGET), // Original Value: 1150
-        EDGE(Constants.SLIDE_EDGE)
+        EDGE(Constants.SLIDE_EDGE),
+        RECALIBRATE(Constants.SLIDE_RECALIBRATE)
         // TODO: Consider removing this and replacing it with constants
     }
 
@@ -124,6 +128,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun retractCommand(): SlideCommand {
         // TODO: Return if it's already there.
         return setSlideToPos(ExtendPos.HOME.position)
+    }
+
+    fun recalCommand(): SlideCommand {
+        return setSlideToPos(ExtendPos.RECALIBRATE.position)
     }
 
     /**
@@ -217,7 +225,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         else if(position == Constants.SLIDE_TARGET) intake.slideMotor.power = 0.5
         else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
         pidf.setTolerance(25.0)
-//        pidf.atSetPoint()
+//      pidf.atSetPoint()
 //
 //        //Sets the pid input to the target position
         pidf.setPoint = position.toDouble()
@@ -229,6 +237,10 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     override fun execute() {
         if (this.isEnded) return
         val output = pidf.calculate(intake.slideMotor.currentPosition.toDouble())
+        if (intake.stopSwitch.isPressed){
+            intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            intake.slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        }
         Log.i("ROBO", "looping")
     }
 
