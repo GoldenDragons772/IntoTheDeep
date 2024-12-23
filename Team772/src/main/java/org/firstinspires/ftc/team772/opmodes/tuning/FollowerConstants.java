@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team772.pedroPathing.tuning;
+package org.firstinspires.ftc.team772.opmodes.tuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;

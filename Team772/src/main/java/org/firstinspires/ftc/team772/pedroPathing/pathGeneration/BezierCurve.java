@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.team772.pedroPathing.pathGeneration;
 
 
-import org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants;
+import org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants;
 
 import java.util.ArrayList;
 

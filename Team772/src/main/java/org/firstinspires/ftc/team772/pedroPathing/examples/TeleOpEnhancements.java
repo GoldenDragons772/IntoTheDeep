@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.team772.pedroPathing.examples;
 
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftFrontMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftRearMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightFrontMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightRearMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftFrontMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftRearMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightFrontMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightRearMotorName;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

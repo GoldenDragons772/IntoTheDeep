@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.team772.pedroPathing.localization.tuning;
 
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftFrontMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftRearMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightFrontMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightRearMotorName;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftFrontMotorDirection;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.leftRearMotorDirection;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightFrontMotorDirection;
-import static org.firstinspires.ftc.team772.pedroPathing.tuning.FollowerConstants.rightRearMotorDirection;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftFrontMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftRearMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightFrontMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightRearMotorName;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftFrontMotorDirection;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.leftRearMotorDirection;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightFrontMotorDirection;
+import static org.firstinspires.ftc.team772.opmodes.tuning.FollowerConstants.rightRearMotorDirection;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
