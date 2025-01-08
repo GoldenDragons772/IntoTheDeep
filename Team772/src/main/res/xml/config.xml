@@ -4,19 +4,22 @@
         <LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="RightClimb" port="0" />
             <goBILDA5202SeriesMotor name="Motor1" port="2" />
-            <goBILDA5202SeriesMotor name="PIDmotor" port="3" />
+            <goBILDA5202SeriesMotor name="slideMotor" port="3" />
             <Servo name="slideServoLeft" port="0" />
-            <ContinuousRotationServo name="IntakeServo" port="1" />
-            <Servo name="PivotServo" port="2" />
+            <Servo name="clawServo" port="1" />
+            <Servo name="clawPivotServo" port="2" />
+            <Servo name="swivelServo" port="3" />
+            <Servo name="intakePivot" port="4" />
+            <RevTouchSensor name="hardStop" port="0" />
         </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="LeftClimb" port="0" />
             <goBILDA5202SeriesMotor name="Motor2" port="1" />
             <goBILDA5202SeriesMotor name="Motor3" port="2" />
             <goBILDA5202SeriesMotor name="Motor4" port="3" />
-            <Servo name="clawServo" port="0" />
             <Servo name="swingServo" port="1" />
             <Servo name="wristServo" port="2" />
+            <Servo name="outtakeClaw" port="0" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

@@ -129,14 +129,16 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!.lowclimb())// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!.highclimb())
         setPressedBinding(mapping.unClimbMapping, robot!!.unclimb())
-        setPressedTriggerBinding(mapping.suckMapping, robot!!.intakeSystem.suckToggle()) // right bumper intake (toggle)  left bumper outtake (not toggle)
-        setHeldBinding(mapping.unSuckMapping, robot!!.intakeSystem.spit(), robot!!.intakeSystem.stopSpit())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
         setPressedBinding(mapping.transferMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
         setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
+
+        // Claw Commands
+        setPressedBinding(mapping.pickMapping, robot!!.intakeSystem.toggleIntakePivot())
+        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
     }
 
     /**
@@ -149,12 +151,12 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-        val suckMapping: Pair<GamepadKeys.Trigger, Int>,
-        val unSuckMapping: Pair<GamepadKeys.Button, Int>,
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
         val transferMapping: Pair<GamepadKeys.Button, Int>,
-        val calibrateMapping: Pair<GamepadKeys.Button, Int>
+        val calibrateMapping: Pair<GamepadKeys.Button, Int>,
+        val pickMapping: Pair<GamepadKeys.Button, Int>,
+        val clawMapping: Pair<GamepadKeys.Trigger, Int>
     )
 }

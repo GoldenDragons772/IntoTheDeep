@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team772.implementation
 
-import android.transition.Slide
 import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.controller.PIDFController
@@ -9,19 +8,21 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
-import java.util.logging.Logger
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
     val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
-    private val intakeServo: CRServo = hw.get(CRServo::class.java, "IntakeServo") // Port 1
-    private val pivotServo: Servo = hw.get(Servo::class.java, "PivotServo") // Port 2
 
+    private val clawServo: Servo = hw.get(Servo::class.java, "clawServo") // Port 1
+    private val clawPivotServo: Servo = hw.get(Servo::class.java, "clawPivotServo")
+    private val swivelServo: Servo = hw.get(Servo::class.java, "swivelServo")
+    private val intakePivot: Servo = hw.get(Servo::class.java, "intakePivot")
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
     var pivotState = false
     var aimState = false
+    var clawState = false
 
     //Stores the states of the intake into an Enum object.
     enum class LipState {
@@ -71,7 +72,17 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
-        //slideMotor.direction = DcMotorSimple.Direction.REVERSE
+        // Set Home Positions for Servo
+        clawPivotServo.direction = Servo.Direction.REVERSE
+        clawPivotServo.position = Constants.PIVOT_SERVO_HOME
+
+        // Claw Defaults
+        clawServo.position = Constants.CLAW_SERVO_HOME
+
+        // Strike positions Defaults
+        intakePivot.position = Constants.STRIKE_SERVO_HOME
+
+//        slideMotor.direction = DcMotorSimple.Direction.REVERSE
         //We might have to reverse motors
     }
 
@@ -149,23 +160,24 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     /**
      * Unpivot the head.
      */
-    fun unpivot(): Command {
+    fun joint2UnPivot(): Command {
         return InstantCommand({
-            if (!pivotState) return@InstantCommand
-            pivotServo.position = Constants.PIVOT_SERVO_TARGET // BUG: Maybe seems backwards?
-            pivotState = false
+            clawPivotServo.position = Constants.PIVOT_SERVO_TARGET // BUG: Maybe seems backwards?
         })
     }
 
     /**
      * Pivot the active intake downwards for intake.
      */
-    fun pivot(): InstantCommand {
+    fun joint2Pivot(): Command {
         return InstantCommand({
-            if (pivotState) return@InstantCommand // Return if we're already in the desired state.
-            pivotServo.position = Constants.PIVOT_SERVO_HOME
-            pivotState = true
-            Log.i("ROBO", "true")
+            clawPivotServo.position = Constants.PIVOT_SERVO_HOME
+        })
+    }
+
+    fun joint2PivotTransfer(): Command {
+        return InstantCommand({
+            clawPivotServo.position = Constants.PIVOT_SERVO_TRANSFER
         })
     }
 
@@ -177,7 +189,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         return InstantCommand({
             lipState = LipState.SWALLOWING
             Log.i("ROBO", "Swallowing")
-            intakeServo.power = 1.0
+            clawServo.position = Constants.CLAW_SERVO_TARGET
+        })
+    }
+
+    fun swallowHarder(): InstantCommand {
+        return InstantCommand({
+            lipState = LipState.SWALLOWING
+            clawServo.position = Constants.CLAW_SERVO_CLENCH
         })
     }
 
@@ -187,15 +206,25 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun spit(): InstantCommand {
         return InstantCommand({
             lipState = LipState.SPITTING
-            intakeServo.power = -1.0
+            clawServo.position = Constants.CLAW_SERVO_HOME
         })
     }
 
-    fun stopSpit(): InstantCommand {
+    fun joint1PivotIntake(): InstantCommand {
         return InstantCommand({
-            lipState = LipState.STOPPED
-            Log.i("ROBO", "Stopped Swallowing/spitting")
-            intakeServo.power = 0.0
+            intakePivot.position = Constants.STRIKE_SERVO_TARGET
+        })
+    }
+
+    fun joint1UnPivotIntake(): InstantCommand {
+        return InstantCommand({
+            intakePivot.position = Constants.STRIKE_SERVO_HOME
+        })
+    }
+
+    fun joint1Transfer(): InstantCommand {
+        return InstantCommand({
+            intakePivot.position = Constants.STRIKE_SERVO_TRANSFER
         })
     }
 
@@ -203,17 +232,46 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //Sucking should be bound to a separate button.
 
     fun aim(): Command =
-        extendCommand().andThen(WaitCommand(500)).andThen(pivot()).andThen(InstantCommand({ aimState = true }))
+        extendCommand()
+            .andThen(WaitCommand(500))
+            .andThen(joint2Pivot())
+            .andThen(joint1PivotIntake())
+            .andThen(InstantCommand({ aimState = true }))
 
     /**
      * Grab the sample and bring it into the robot.
      */
-    fun goHome(): Command = unpivot().andThen(retractCommand()).andThen(InstantCommand({ aimState = false }))
+    fun goHome(): Command =
+            retractCommand()
+            .andThen(joint1Transfer())
+            .andThen(joint2PivotTransfer())
+            .andThen(InstantCommand({ aimState = false }))
+
+    //Move the claw to the home state.
+    fun pivotClawToHome(): Command =
+//            .andThen(pivot())
+            joint1UnPivotIntake()
+            .andThen(InstantCommand({pivotState = false}))
+
+    //Move the claw to the grabbing state.
+    fun pivotClawToPick(): Command =
+//            .andThen(unpivot())
+            joint1PivotIntake()
+            .andThen(InstantCommand({pivotState = true}))
 
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
 
-    fun suckToggle() = ConditionalCommand(stopSpit(), swallow()) { this.lipState == LipState.SWALLOWING }
+    // toggle the Intake Pivot
+    fun toggleIntakePivot() = ConditionalCommand(pivotClawToHome(), pivotClawToPick()) { pivotState }
+
+//    fun toggleIntake
+    // TODO: Break this into a different function.
+    fun toggleIntakeClaw() = ConditionalCommand(spit().andThen(InstantCommand({clawState  = !clawState })), swallow().andThen(InstantCommand({clawState = !clawState}) )) { clawState }
+
+    fun clawClenchCommand(): Command =
+        swallowHarder()
+            .andThen(InstantCommand({ aimState = true }))
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {
