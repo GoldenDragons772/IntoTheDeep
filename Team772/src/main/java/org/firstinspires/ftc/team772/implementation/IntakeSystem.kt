@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.team772.implementation
 
 import android.util.Log
-import com.arcrobotics.ftclib.command.*
+import com.arcrobotics.ftclib.command.* //Stop dumping all the tools out of the toolbox
 import com.arcrobotics.ftclib.controller.PIDFController
-import com.qualcomm.robotcore.hardware.*
+import com.qualcomm.robotcore.hardware.* //Stop dumping all the tools out of the toolbox
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
@@ -76,11 +76,16 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         clawPivotServo.direction = Servo.Direction.REVERSE
         clawPivotServo.position = Constants.PIVOT_SERVO_HOME
 
+
+
         // Claw Defaults
         clawServo.position = Constants.CLAW_SERVO_HOME
 
         // Strike positions Defaults
         intakePivot.position = Constants.STRIKE_SERVO_HOME
+
+        //Lock Wrist
+        swivelServo.position = Constants.INTAKE_WRIST_HOME
 
 //        slideMotor.direction = DcMotorSimple.Direction.REVERSE
         //We might have to reverse motors
@@ -207,6 +212,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         return InstantCommand({
             lipState = LipState.SPITTING
             clawServo.position = Constants.CLAW_SERVO_HOME
+            Log.i("ROBO", "Spitting")
         })
     }
 
@@ -225,6 +231,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun joint1Transfer(): InstantCommand {
         return InstantCommand({
             intakePivot.position = Constants.STRIKE_SERVO_TRANSFER
+        })
+    }
+
+    fun lockWrist(): InstantCommand {
+        return InstantCommand({
+            swivelServo.position = Constants.INTAKE_WRIST_HOME
         })
     }
 

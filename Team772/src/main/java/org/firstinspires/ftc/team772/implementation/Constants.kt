@@ -44,6 +44,9 @@ object Constants {
 
     @JvmField var STRIKE_SERVO_TRANSFER = 0.635
 
+    //Intake Wrist Positions
+    @JvmField var INTAKE_WRIST_HOME = 0.07
+
     // Claw Positions
     @JvmField var CLAW_SERVO_HOME = 0.635
     @JvmField var CLAW_SERVO_TARGET = 0.95
@@ -60,7 +63,7 @@ object Constants {
      * Values for the outtake. Change for tuning.
      * */
     @JvmField var SWING_SERVO_TARGET = 0.0
-    @JvmField var WRIST_SERVO_HOME = 0.0
+    @JvmField var WRIST_SERVO_HOME = 0.35
 
     /**
      * Claw home position.
