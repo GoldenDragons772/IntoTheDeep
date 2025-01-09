@@ -27,10 +27,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.team772.pedroPathing.localization.Localizer;
 import org.firstinspires.ftc.team772.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.team772.pedroPathing.localization.PoseUpdater;
 import org.firstinspires.ftc.team772.pedroPathing.pathGeneration.BezierPoint;
@@ -155,6 +157,16 @@ public class Follower {
     }
 
     /**
+     * This creates a new Follower given a HardwareMap and a localizer.
+     * @param hardwareMap HardwareMap required
+     * @param localizer the localizer you wish to use
+     */
+    public Follower(HardwareMap hardwareMap, Localizer localizer) {
+        this.hardwareMap = hardwareMap;
+        initialize(localizer);
+    }
+
+    /**
      * This initializes the follower.
      * In this, the DriveVectorScaler and PoseUpdater is instantiated, the drive motors are
      * initialized and their behavior is set, and the variables involved in approximating first and
@@ -172,6 +184,49 @@ public class Follower {
         leftRear.setDirection(leftRearMotorDirection);
         rightFront.setDirection(rightFrontMotorDirection);
         rightRear.setDirection(rightRearMotorDirection);
+
+        motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
+
+        for (DcMotorEx motor : motors) {
+            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+            motor.setMotorType(motorConfigurationType);
+        }
+
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+
+        dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
+
+        breakFollowing();
+    }
+
+    /**
+     * This initializes the follower.
+     * In this, the DriveVectorScaler and PoseUpdater is instantiated, the drive motors are
+     * initialized and their behavior is set, and the variables involved in approximating first and
+     * second derivatives for teleop are set.
+     * @param localizer the localizer you wish to use
+     */
+
+    public void initialize(Localizer localizer) {
+        driveVectorScaler = new DriveVectorScaler(FollowerConstants.frontLeftVector);
+        poseUpdater = new PoseUpdater(hardwareMap, localizer);
+
+        //        rightFront = hardwareMap.get(DcMotorEx.class, "motor_rf");
+        //        rightRear = hardwareMap.get(DcMotorEx.class, "motor_rb");
+        //        leftFront = hardwareMap.get(DcMotorEx.class, "motor_lf");
+        //        leftRear = hardwareMap.get(DcMotorEx.class, "motor_lb");
+
+        leftFront = hardwareMap.get(DcMotorEx.class, leftFrontMotorName);
+        leftRear = hardwareMap.get(DcMotorEx.class, leftRearMotorName);
+        rightRear = hardwareMap.get(DcMotorEx.class, rightRearMotorName);
+        rightFront = hardwareMap.get(DcMotorEx.class, rightFrontMotorName);
+
+        // TODO: Make sure that this is the direction your motors need to be reversed in.
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
 
