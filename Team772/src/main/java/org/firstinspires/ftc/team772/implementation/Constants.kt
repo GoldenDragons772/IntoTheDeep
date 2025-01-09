@@ -46,6 +46,7 @@ object Constants {
 
     //Intake Wrist Positions
     @JvmField var INTAKE_WRIST_HOME = 0.07
+    @JvmField var INTAKE_WRIST_PERP = 0.4
 
     // Claw Positions
     @JvmField var CLAW_SERVO_HOME = 0.635

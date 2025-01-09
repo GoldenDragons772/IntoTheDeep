@@ -137,8 +137,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
 
         // Claw Commands
-        setPressedBinding(mapping.pickMapping, robot!!.intakeSystem.toggleIntakePivot())
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
+        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.wristToTransferPos())
+        setPressedBinding(mapping.perpendicMapping, robot!!.intakeSystem.wristToPerpendicPos())
+
     }
 
     /**
@@ -156,7 +158,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val gripMapping: Pair<GamepadKeys.Button, Int>,
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val calibrateMapping: Pair<GamepadKeys.Button, Int>,
-        val pickMapping: Pair<GamepadKeys.Button, Int>,
-        val clawMapping: Pair<GamepadKeys.Trigger, Int>
+        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
+        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val perpendicMapping: Pair<GamepadKeys.Button, Int>
     )
 }

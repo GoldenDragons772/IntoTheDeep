@@ -234,9 +234,15 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
-    fun lockWrist(): InstantCommand {
+    fun wristToTransferPos(): InstantCommand {
         return InstantCommand({
             swivelServo.position = Constants.INTAKE_WRIST_HOME
+        })
+    }
+
+    fun wristToPerpendicPos(): InstantCommand {
+        return InstantCommand({
+            swivelServo.position = Constants.INTAKE_WRIST_PERP
         })
     }
 
@@ -307,7 +313,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         if (position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.4
-        else if(position == Constants.SLIDE_TARGET) intake.slideMotor.power = 0.5
+        else if(position == Constants.SLIDE_TARGET) intake.slideMotor.power = 1.0
         else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
         pidf.setTolerance(25.0)
 //      pidf.atSetPoint()
