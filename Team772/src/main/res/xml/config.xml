@@ -7,9 +7,9 @@
             <goBILDA5202SeriesMotor name="slideMotor" port="3" />
             <Servo name="slideServoLeft" port="0" />
             <Servo name="clawServo" port="1" />
-            <Servo name="clawPivotServo" port="2" />
+            <Servo name="joint2" port="2" />
             <Servo name="swivelServo" port="3" />
-            <Servo name="intakePivot" port="4" />
+            <Servo name="joint1" port="4" />
             <RevTouchSensor name="hardStop" port="0" />
         </LynxModule>
         <LynxModule name="Control Hub" port="173">

@@ -3,6 +3,9 @@ package org.firstinspires.ftc.team772.implementation
 import android.util.Log
 import com.arcrobotics.ftclib.command.* //Stop dumping all the tools out of the toolbox
 import com.arcrobotics.ftclib.controller.PIDFController
+import com.arcrobotics.ftclib.hardware.motors.Motor
+import com.arcrobotics.ftclib.hardware.motors.Motor.GoBILDA
+import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.qualcomm.robotcore.hardware.* //Stop dumping all the tools out of the toolbox
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
@@ -10,13 +13,15 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
-    val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+    //val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+    val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
+    val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
     val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
 
     private val clawServo: Servo = hw.get(Servo::class.java, "clawServo") // Port 1
-    private val clawPivotServo: Servo = hw.get(Servo::class.java, "clawPivotServo")
+    private val clawPivotServo: Servo = hw.get(Servo::class.java, "joint2")
     private val swivelServo: Servo = hw.get(Servo::class.java, "swivelServo")
-    private val intakePivot: Servo = hw.get(Servo::class.java, "intakePivot")
+    private val intakePivot: Servo = hw.get(Servo::class.java, "joint1")
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
@@ -69,8 +74,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     init {
 
-        slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        //slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        slideMotor.setRunMode(Motor.RunMode.PositionControl)
+        slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
 
         // Set Home Positions for Servo
         clawPivotServo.direction = Servo.Direction.REVERSE
@@ -103,7 +110,8 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Stops and resets the slide motor power
      */
     fun stopResetSlide() {
-        slideMotor.power = Constants.SLIDE_MOTOR_SPEED
+        //slideMotor.setVelocity(Constants.SLIDE_MOTOR_SPEED)
+        TODO("Figure out the FTC lib to reset slides")
     }
 
     /**
@@ -130,7 +138,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * @param power The power being supplied to the robo
      */
     fun setSlidePower(power: Double) {
-        slideMotor.power = power
+        slideMotor.set(power)
     }
 
     /**
@@ -304,33 +312,28 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     override fun initialize() {
         isEnded = false
         //Set the Target Position
-        intake.slideMotor.targetPosition = position
+        intake.slideMotor.setTargetPosition(position)
 
         //Set the motor mode
-        intake.slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        intake.slideMotor.setRunMode(Motor.RunMode.PositionControl)
 
         //Set the stop behavior for the motor
-        intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        intake.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
 
-        if (position == Constants.SLIDE_EDGE) intake.slideMotor.power = 0.4
-        else if(position == Constants.SLIDE_TARGET) intake.slideMotor.power = 1.0
-        else intake.slideMotor.power = Constants.SLIDE_MOTOR_SPEED
-        pidf.setTolerance(25.0)
-//      pidf.atSetPoint()
-//
-//        //Sets the pid input to the target position
-        pidf.setPoint = position.toDouble()
-//        while(!pidf.atSetPoint()) {
-//            //Get the position of the motor and input it into the pid equation
-//        }
+        when(position){
+            Constants.SLIDE_EDGE -> intake.slideMotor.set(0.4)
+            Constants.SLIDE_TARGET -> intake.slideMotor.set(1.0)
+            else -> intake.slideMotor.set(Constants.SLIDE_MOTOR_SPEED)
+        }
+
+
+
     }
 
     override fun execute() {
         if (this.isEnded) return
-        val output = pidf.calculate(intake.slideMotor.currentPosition.toDouble())
         if (intake.stopSwitch.isPressed){
-            intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            intake.slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+            intake.slideMotor.resetEncoder()
         }
         Log.i("ROBO", "looping")
     }
