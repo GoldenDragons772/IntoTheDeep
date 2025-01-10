@@ -13,9 +13,9 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
-    //val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
-    val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
-    val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
+    val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+    //val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
+    //val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
     val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
 
     private val clawServo: Servo = hw.get(Servo::class.java, "clawServo") // Port 1
@@ -74,10 +74,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     init {
 
-        //slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        //slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        slideMotor.setRunMode(Motor.RunMode.PositionControl)
-        slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
+        slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //slideMotor.setRunMode(Motor.RunMode.PositionControl)
+        //slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
 
         // Set Home Positions for Servo
         clawPivotServo.direction = Servo.Direction.REVERSE
@@ -138,7 +138,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * @param power The power being supplied to the robo
      */
     fun setSlidePower(power: Double) {
-        slideMotor.set(power)
+        slideMotor.power = power
     }
 
     /**
@@ -315,15 +315,15 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         intake.slideMotor.setTargetPosition(position)
 
         //Set the motor mode
-        intake.slideMotor.setRunMode(Motor.RunMode.PositionControl)
+        intake.slideMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         //Set the stop behavior for the motor
-        intake.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
+        intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         when(position){
-            Constants.SLIDE_EDGE -> intake.slideMotor.set(0.4)
-            Constants.SLIDE_TARGET -> intake.slideMotor.set(1.0)
-            else -> intake.slideMotor.set(Constants.SLIDE_MOTOR_SPEED)
+            Constants.SLIDE_EDGE -> intake.slideMotor.power = 0.4
+            Constants.SLIDE_TARGET -> intake.slideMotor.power = 1.0
+            else -> intake.slideMotor.power = (Constants.SLIDE_MOTOR_SPEED)
         }
 
 
@@ -333,7 +333,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     override fun execute() {
         if (this.isEnded) return
         if (intake.stopSwitch.isPressed){
-            intake.slideMotor.resetEncoder()
+            //intake.slideMotor.resetEncoder()
         }
         Log.i("ROBO", "looping")
     }
