@@ -32,7 +32,7 @@ object Constants {
     @JvmField var SLIDE_HOME = 0 //70 works well
     @JvmField var SLIDE_EDGE = 400
     @JvmField var SLIDE_RECALIBRATE = -100
-    @JvmField var SLIDE_TARGET = 1
+    @JvmField var SLIDE_TARGET = 1000
 
     // Strike Position (Joint 1)
     @JvmField var STRIKE_SERVO_HOME = 0.885
