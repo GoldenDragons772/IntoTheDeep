@@ -331,10 +331,11 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     }
 
     override fun execute() {
-        if (this.isEnded) return
         if (intake.stopSwitch.isPressed){
-            //intake.slideMotor.resetEncoder()
+            intake.slideMotor.power = 0.0
+            intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         }
+        if (this.isEnded) return
         Log.i("ROBO", "looping")
     }
 
