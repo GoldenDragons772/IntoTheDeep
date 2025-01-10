@@ -10,8 +10,10 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.team772.implementation.TransferPixelCommand
+import kotlin.math.log
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -22,6 +24,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     var robot: ParallelPlateDrivesystem? = null
 
+    // Stop Swatch
+    var stopSwitch: TouchSensor
     /**
      * Controllers
      */
@@ -33,6 +37,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         gamepad2 = GamepadEx(gp2)
         robot = ParallelPlateDrivesystem(hardwareMap)
         initializeBindings(mapping)
+        stopSwitch = hardwareMap.get(TouchSensor::class.java, "hardStop")
     }
 
     /**
@@ -45,6 +50,15 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
             gamepad1!!.rightY,
             gamepad1!!.rightX
         );
+
+        if(stopSwitch.isPressed) {
+            robot!!.drive(
+                1.0,
+                1.0,
+                1.0
+            )
+        }
+
     }
 
     /**

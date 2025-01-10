@@ -11,6 +11,7 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
+import kotlin.math.abs
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
@@ -40,7 +41,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     //Create PIDF Controller
     val pidf = PIDFController(kp, ki, kd, kf)
-    var extendPos: ExtendPos = ExtendPos.HOME
+
 
     companion object {
 
@@ -62,13 +63,15 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
         @JvmField
         var extendPoint = 1100
+
+        @JvmField
+        var extendPos: ExtendPos = ExtendPos.HOME
     }
 
     //Sets the positions of the arm to a enum.
     enum class ExtendPos(val position: Int) {
         HOME(Constants.SLIDE_HOME),
         TARGET(Constants.SLIDE_TARGET),
-        EDGE(Constants.SLIDE_EDGE),
         RECALIBRATE(Constants.SLIDE_RECALIBRATE)
     }
 
@@ -146,13 +149,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      */
     fun extendCommand(): SlideCommand {
         return setSlideToPos(ExtendPos.TARGET.position)
-    }
-
-    /**
-     * Sets the intake to the edge position
-     */
-    fun edgeCommand(): SlideCommand {
-        return setSlideToPos(ExtendPos.EDGE.position)
     }
 
     /**
@@ -321,21 +317,18 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         when(position){
-            Constants.SLIDE_EDGE -> intake.slideMotor.power = 0.4
             Constants.SLIDE_TARGET -> intake.slideMotor.power = 1.0
             else -> intake.slideMotor.power = (Constants.SLIDE_MOTOR_SPEED)
         }
-
-
-
     }
 
     override fun execute() {
         if (intake.stopSwitch.isPressed){
             intake.slideMotor.power = 0.0
             intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            Log.i("ROBO", "Slide Limit Hit!")
+            if (this.isEnded) return
         }
-        if (this.isEnded) return
         Log.i("ROBO", "looping")
     }
 
@@ -349,6 +342,12 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         // TODO: don't stop when extended
         Log.i("ROBO", "finished looping")
         this.isEnded = true
+
+        if(IntakeSystem.extendPos.position == IntakeSystem.ExtendPos.HOME.position) {
+            var diff = abs(IntakeSystem.extendPos.position - IntakeSystem.ExtendPos.HOME.position)
+            Log.i("ROBO", diff.toString())
+            return diff < 50
+        }
         return true //THIS NEEDS TO RETURN TRUE!!! IF THE CODE TRIES TO RETURN ANYTHING ELSE, IT WILL LOOP OVER ITSELF UNTILL FOREVER!
     }
 }

@@ -30,15 +30,14 @@ object Constants {
      * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
      * */
     @JvmField var SLIDE_HOME = 0 //70 works well
-    @JvmField var SLIDE_EDGE = 400
     @JvmField var SLIDE_RECALIBRATE = -100
-    @JvmField var SLIDE_TARGET = 1500
+    @JvmField var SLIDE_TARGET = 1800
 
     // Strike Position (Joint 1)
     @JvmField var STRIKE_SERVO_HOME = 0.885
-    @JvmField var STRIKE_SERVO_TARGET = 0.53
+    @JvmField var STRIKE_SERVO_TARGET = 0.565
 
-    @JvmField var STRIKE_SERVO_TRANSFER = 0.635
+    @JvmField var STRIKE_SERVO_TRANSFER = 0.68
 
     //Intake Wrist Positions
     @JvmField var INTAKE_WRIST_HOME = 0.07
