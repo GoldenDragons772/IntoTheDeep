@@ -23,7 +23,7 @@ class TransferPixelCommand(private val intake: IntakeSystem, private val outtake
                     //WaitCommand(1000),
                     intake.wristToTransferPos(),
                     intake.goHome(),
-                    WaitCommand(700),
+                    WaitCommand(1000),
                     outtake.swingToHome(),
                     WaitCommand(500),
                     outtake.gripIt(),

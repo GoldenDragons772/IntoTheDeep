@@ -26,8 +26,7 @@ class Solo : CommandOpMode() {
             gripMapping = Pair(GamepadKeys.Button.X, 1),
             calibrateMapping = Pair(GamepadKeys.Button.DPAD_RIGHT, 1),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
-            perpendicMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
-            parallelMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 1)
+            parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
     }

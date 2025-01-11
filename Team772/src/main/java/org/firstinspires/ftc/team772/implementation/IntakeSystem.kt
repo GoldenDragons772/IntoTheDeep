@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team772.implementation
 
 import android.util.Log
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.* //Stop dumping all the tools out of the toolbox
 import com.arcrobotics.ftclib.controller.PIDFController
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -15,6 +17,7 @@ import kotlin.math.abs
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
+
     //val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
     //val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
     val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
@@ -29,6 +32,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     var pivotState = false
     var aimState = false
     var clawState = false
+    var wristState = false
 
     //Stores the states of the intake into an Enum object.
     enum class LipState {
@@ -85,7 +89,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         // Set Home Positions for Servo
         clawPivotServo.direction = Servo.Direction.REVERSE
         clawPivotServo.position = Constants.PIVOT_SERVO_HOME
-
 
 
         // Claw Defaults
@@ -241,12 +244,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun wristToTransferPos(): InstantCommand {
         return InstantCommand({
             swivelServo.position = Constants.INTAKE_WRIST_HOME
+            wristState = false
         })
     }
 
     fun wristToPerpendicPos(): InstantCommand {
         return InstantCommand({
             swivelServo.position = Constants.INTAKE_WRIST_PERP
+            wristState = true
         })
     }
 
@@ -258,13 +263,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(WaitCommand(500))
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
+            .andThen(swallow())
             .andThen(InstantCommand({ aimState = true }))
 
     /**
      * Grab the sample and bring it into the robot.
      */
     fun goHome(): Command =
-            retractCommand()
+        retractCommand()
             .andThen(joint1Transfer())
             .andThen(joint2PivotTransfer())
             .andThen(InstantCommand({ aimState = false }))
@@ -272,24 +278,31 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //Move the claw to the home state.
     fun pivotClawToHome(): Command =
 //            .andThen(pivot())
-            joint1UnPivotIntake()
-            .andThen(InstantCommand({pivotState = false}))
+        joint1UnPivotIntake()
+            .andThen(InstantCommand({ pivotState = false }))
 
     //Move the claw to the grabbing state.
     fun pivotClawToPick(): Command =
 //            .andThen(unpivot())
-            joint1PivotIntake()
-            .andThen(InstantCommand({pivotState = true}))
+        joint1PivotIntake()
+            .andThen(InstantCommand({ pivotState = true }))
 
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
 
-    // toggle the Intake Pivot
-    fun toggleIntakePivot() = ConditionalCommand(pivotClawToHome(), pivotClawToPick()) { pivotState }
+    fun swivelToggle() = ConditionalCommand(wristToTransferPos(), wristToPerpendicPos()) {wristState}
 
-//    fun toggleIntake
+    // toggle the Intake Pivot
+    fun toggleIntakePivot() =
+        ConditionalCommand(pivotClawToHome(), pivotClawToPick()) { pivotState }
+
+    //    fun toggleIntake
     // TODO: Break this into a different function.
-    fun toggleIntakeClaw() = ConditionalCommand(spit().andThen(InstantCommand({clawState  = !clawState })), swallow().andThen(InstantCommand({clawState = !clawState}) )) { clawState }
+    fun toggleIntakeClaw() =
+        ConditionalCommand(
+            spit().andThen(InstantCommand({ clawState = !clawState })),
+            swallow().andThen(InstantCommand({ clawState = !clawState }))
+        ) { clawState }
 
     fun clawClenchCommand(): Command =
         swallowHarder()
@@ -316,19 +329,28 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         //Set the stop behavior for the motor
         intake.slideMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        when(position){
+        when (position) {
             Constants.SLIDE_TARGET -> intake.slideMotor.power = 1.0
             else -> intake.slideMotor.power = (Constants.SLIDE_MOTOR_SPEED)
         }
+
     }
 
     override fun execute() {
-        if (intake.stopSwitch.isPressed){
+
+        val packet = TelemetryPacket()
+        packet.addLine("${intake.slideMotor.currentPosition}")
+        packet.addLine("${intake.slideMotor.targetPosition}")
+        FtcDashboard.getInstance().sendTelemetryPacket(packet)
+
+        if (intake.stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
             intake.slideMotor.power = 0.0
             intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             Log.i("ROBO", "Slide Limit Hit!")
             if (this.isEnded) return
         }
+
+        if (this.isEnded) return
         Log.i("ROBO", "looping")
     }
 
@@ -343,12 +365,27 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         Log.i("ROBO", "finished looping")
         this.isEnded = true
 
-        if(IntakeSystem.extendPos.position == IntakeSystem.ExtendPos.HOME.position) {
-            var diff = abs(IntakeSystem.extendPos.position - IntakeSystem.ExtendPos.HOME.position)
-            Log.i("ROBO", diff.toString())
-            return diff < 50
+        var diff = 0
+        var returnVal = 0
+
+        when (position) {
+            Constants.SLIDE_HOME -> {
+                diff = abs(IntakeSystem.extendPos.position - IntakeSystem.ExtendPos.HOME.position)
+                returnVal = 50
+            }
+
+            Constants.SLIDE_TARGET -> {
+                diff = abs(IntakeSystem.extendPos.position - IntakeSystem.ExtendPos.TARGET.position)
+                returnVal = 1850
+            }
         }
-        return true //THIS NEEDS TO RETURN TRUE!!! IF THE CODE TRIES TO RETURN ANYTHING ELSE, IT WILL LOOP OVER ITSELF UNTILL FOREVER!
+
+        Log.i("ROBO", diff.toString())
+
+        return diff < returnVal
+
+        //return intake.slideMotor.currentPosition == intake.slideMotor.targetPosition //THIS NEEDS TO RETURN TRUE FOR THE CODE TO FINISH!!! IF THE CODE TRIES TO RETURN ANYTHING ELSE, IT WILL LOOP OVER ITSELF UNTILL TRUE IS RETURNED!
     }
+
 }
 

@@ -47,6 +47,7 @@ interface ControlSystem : ClimbExtension {
     fun initBulkReads() {
         for (hub in hubs) {
             hub.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL
+
         }
     }
 

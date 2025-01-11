@@ -35,7 +35,7 @@ object Constants {
 
     // Strike Position (Joint 1)
     @JvmField var STRIKE_SERVO_HOME = 0.885
-    @JvmField var STRIKE_SERVO_TARGET = 0.565
+    @JvmField var STRIKE_SERVO_TARGET = 0.58
 
     @JvmField var STRIKE_SERVO_TRANSFER = 0.68
 

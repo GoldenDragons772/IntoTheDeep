@@ -67,7 +67,7 @@ class ParallelPlateDrivesystem(
         get() = this.odometry.pose
 
     init {
-        super.initBulkReads()
+        //super.initBulkReads()
         encoderLeft.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)

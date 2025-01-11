@@ -51,13 +51,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
             gamepad1!!.rightX
         );
 
-        if(stopSwitch.isPressed) {
-            robot!!.drive(
-                1.0,
-                1.0,
-                1.0
-            )
-        }
 
     }
 
@@ -152,8 +145,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
-        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.wristToTransferPos())
-        setPressedBinding(mapping.perpendicMapping, robot!!.intakeSystem.wristToPerpendicPos())
+        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.swivelToggle())
 
     }
 
@@ -173,7 +165,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val calibrateMapping: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
-        val parallelMapping: Pair<GamepadKeys.Button, Int>,
-        val perpendicMapping: Pair<GamepadKeys.Button, Int>
+        val parallelMapping: Pair<GamepadKeys.Button, Int>
     )
 }
