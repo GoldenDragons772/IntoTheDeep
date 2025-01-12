@@ -113,21 +113,5 @@ class ParallelPlateDrivesystem(
         halt()
     }
 
-    // TODO: Modify the climb subsystem so that everything is a command.
-    override fun highclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
-    }
-
-    override fun lowclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
-    }
-
-    override fun unclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
-    }
-
-    fun specHangPrep(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.SPECPREP)
-    }
 
 }

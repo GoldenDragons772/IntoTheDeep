@@ -236,4 +236,20 @@ class SetArmPosCommand(
         return pos in (destination - epsilon)..(destination + epsilon)
 //        return true
     }
+
+    // TODO: Modify the climb subsystem so that everything is a command.
+    fun highclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+    }
+
+    fun lowclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
+    }
+
+    fun unclimb(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
+    }
+    fun specHangPrep(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.SPECPREP)
+    }
 }
