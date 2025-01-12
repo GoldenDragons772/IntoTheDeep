@@ -339,8 +339,8 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
     override fun execute() {
 
         val packet = TelemetryPacket()
-        packet.addLine("${intake.slideMotor.currentPosition}")
-        packet.addLine("${intake.slideMotor.targetPosition}")
+        packet.addLine("Current Position: ${intake.slideMotor.currentPosition}")
+        packet.addLine("Target Position: ${intake.slideMotor.targetPosition}")
         FtcDashboard.getInstance().sendTelemetryPacket(packet)
 
         if (intake.stopSwitch.isPressed && position == Constants.SLIDE_HOME) {

@@ -35,12 +35,12 @@ object Constants {
 
     // Strike Position (Joint 1)
     @JvmField var STRIKE_SERVO_HOME = 0.885
-    @JvmField var STRIKE_SERVO_TARGET = 0.58
+    @JvmField var STRIKE_SERVO_TARGET = 0.59
 
     @JvmField var STRIKE_SERVO_TRANSFER = 0.68
 
     //Intake Wrist Positions
-    @JvmField var INTAKE_WRIST_HOME = 0.07
+    @JvmField var INTAKE_WRIST_HOME = 0.05
     @JvmField var INTAKE_WRIST_PERP = 0.4
 
     // Claw Positions

@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @TeleOp(name = "DebugWheelFinder") // Disable for comps
 class DebugWheelFinderOpMode : LinearOpMode() {
     override fun runOpMode() {
-        val FLMotor = MotorEx(hardwareMap, "Motor1")
-        val FRMotor = MotorEx(hardwareMap, "Motor2")
-        val BLMotor = MotorEx(hardwareMap, "Motor3")
-        val BRMotor = MotorEx(hardwareMap, "Motor4")
+        val FLMotor = MotorEx(hardwareMap, "FLMotor")
+        val FRMotor = MotorEx(hardwareMap, "FRMotor")
+        val BLMotor = MotorEx(hardwareMap, "BLMotor")
+        val BRMotor = MotorEx(hardwareMap, "BRMotor")
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
         FRMotor.setRunMode(Motor.RunMode.RawPower)
