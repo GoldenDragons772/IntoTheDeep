@@ -19,17 +19,17 @@ class TransferPixelCommand(private val intake: IntakeSystem, private val outtake
 
             ParallelCommandGroup(
                 SequentialCommandGroup(
-                    outtake.unGrip(),
+                    outtake.gripIt(),
                     //WaitCommand(1000),
                     intake.wristToTransferPos(),
                     intake.goHome(),
-                    WaitCommand(1000),
+                    WaitCommand(700),
                     outtake.swingToHome(),
                     WaitCommand(500),
-                    outtake.gripIt(),
+                    outtake.unGrip(),
                     WaitCommand(300),
-                    intake.swallow(),
-                    WaitCommand(500),
+                    intake.spit(),
+                    WaitCommand(100),
                     outtake.swingToTarget(),
                     WaitCommand(500),
 //                    intake.recalCommand()

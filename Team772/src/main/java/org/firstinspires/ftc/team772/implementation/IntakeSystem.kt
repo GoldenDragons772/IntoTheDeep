@@ -263,7 +263,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(WaitCommand(500))
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
-            .andThen(swallow())
+            .andThen(spit())
             .andThen(InstantCommand({ aimState = true }))
 
     /**
