@@ -163,6 +163,22 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
     fun getArmPos(): ArmPos {
         return armPos
     }
+
+    // TODO: Modify the climb subsystem so that everything is a command.
+    fun highclimb(): InstantCommand {
+        return setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+    }
+
+    fun lowclimb(): InstantCommand {
+        return setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
+    }
+
+    fun unclimb(): InstantCommand {
+        return setArmToPos(ClimbSystem.ArmPos.HOME)
+    }
+    fun specHangPrep(): InstantCommand {
+        return setArmToPos(ClimbSystem.ArmPos.SPECPREP)
+    }
 }
 
 /**
@@ -235,21 +251,5 @@ class SetArmPosCommand(
         val pos = climbSystem.getAvgArmPosition()
         return pos in (destination - epsilon)..(destination + epsilon)
 //        return true
-    }
-
-    // TODO: Modify the climb subsystem so that everything is a command.
-    fun highclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
-    }
-
-    fun lowclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
-    }
-
-    fun unclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
-    }
-    fun specHangPrep(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.SPECPREP)
     }
 }

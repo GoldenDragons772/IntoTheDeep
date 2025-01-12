@@ -134,10 +134,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(mapping.lowclimbMapping, robot!!.lowclimb())// :: for the pointer to the function.
-        setPressedBinding(mapping.highclimbMapping, robot!!.highclimb())
-        setPressedBinding(mapping.unClimbMapping, robot!!.unclimb())
-        setPressedBinding(mapping.hangSpecMapping, robot!!.specHangPrep())
+        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.lowclimb())// :: for the pointer to the function.
+        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
+        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
+        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangPrep())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())

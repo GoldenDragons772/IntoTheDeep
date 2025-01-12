@@ -113,5 +113,17 @@ class ParallelPlateDrivesystem(
         halt()
     }
 
+    override fun lowclimb(): InstantCommand {
+        TODO("Not yet implemented")
+    }
+
+    override fun highclimb(): InstantCommand {
+        TODO("Not yet implemented")
+    }
+
+    override fun unclimb(): InstantCommand {
+        TODO("Not yet implemented")
+    }
+
 
 }
