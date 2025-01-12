@@ -25,6 +25,7 @@ object Constants {
     @JvmField var ARM_HOME = 0
     @JvmField var ARM_HIGH_CLIMB = 2950 // Moved up by 150
     @JvmField var ARM_LOW_CLIMB = 1350
+    @JvmField var SPEC_HANG_PREP = 1000
 
     /**
      * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
@@ -38,10 +39,12 @@ object Constants {
     @JvmField var STRIKE_SERVO_TARGET = 0.59
 
     @JvmField var STRIKE_SERVO_TRANSFER = 0.68
+    @JvmField var STRIKE_SERVO_TRANSFER_SPEC = 0.8
 
     //Intake Wrist Positions
     @JvmField var INTAKE_WRIST_HOME = 0.07
     @JvmField var INTAKE_WRIST_PERP = 0.4
+    @JvmField var INTAKE_WRIST_SPEC = 0.74
 
     // Claw Positions
     @JvmField var CLAW_SERVO_HOME = 0.53

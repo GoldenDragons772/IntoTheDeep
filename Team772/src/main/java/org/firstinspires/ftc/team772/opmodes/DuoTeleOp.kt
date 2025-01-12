@@ -24,7 +24,8 @@ class clsDuoTeleOp: CommandOpMode() {
             gripMapping = Pair(GamepadKeys.Button.X, 2),
             calibrateMapping = Pair(GamepadKeys.Button.DPAD_RIGHT, 2),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
-            parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2)
+            parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2),
+            hangSpecMapping = Pair(GamepadKeys.Button.DPAD_RIGHT, 2)
         )
 
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)

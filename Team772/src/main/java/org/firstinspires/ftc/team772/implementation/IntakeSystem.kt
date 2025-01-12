@@ -5,9 +5,6 @@ import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.* //Stop dumping all the tools out of the toolbox
 import com.arcrobotics.ftclib.controller.PIDFController
-import com.arcrobotics.ftclib.hardware.motors.Motor
-import com.arcrobotics.ftclib.hardware.motors.Motor.GoBILDA
-import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.qualcomm.robotcore.hardware.* //Stop dumping all the tools out of the toolbox
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
@@ -235,6 +232,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
+    fun joint1SpecPose(): InstantCommand {
+        return InstantCommand({
+            intakePivot.position = Constants.STRIKE_SERVO_TRANSFER_SPEC
+        })
+    }
+
     fun joint1Transfer(): InstantCommand {
         return InstantCommand({
             intakePivot.position = Constants.STRIKE_SERVO_TRANSFER
@@ -255,12 +258,20 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
+    fun wristToSpecPos(): InstantCommand {
+        return InstantCommand({
+            swivelServo.position = Constants.INTAKE_WRIST_SPEC
+            wristState = true
+        })
+    }
+
     //As driver request: Aim and goHome set as toggle.
     //Sucking should be bound to a separate button.
 
     fun aim(): Command =
         extendCommand()
             .andThen(WaitCommand(500))
+            .andThen(wristToTransferPos())
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
             .andThen(spit())
@@ -271,6 +282,13 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      */
     fun goHome(): Command =
         retractCommand()
+            .andThen(joint1Transfer())
+            .andThen(joint2PivotTransfer())
+            .andThen(InstantCommand({ aimState = false }))
+
+    fun goHomeForSpec(): Command =
+        retractCommand()
+            .andThen(wristToSpecPos())
             .andThen(joint1Transfer())
             .andThen(joint2PivotTransfer())
             .andThen(InstantCommand({ aimState = false }))
@@ -288,7 +306,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(InstantCommand({ pivotState = true }))
 
     //    fun aimToggle() = if (!aimState) aim() else goHome()
-    fun aimToggle() = ConditionalCommand(goHome(), aim()) { aimState }
+    fun aimToggle() = ConditionalCommand(goHomeForSpec(), aim()) { aimState }
 
     fun swivelToggle() = ConditionalCommand(wristToTransferPos(), wristToPerpendicPos()) {wristState}
 

@@ -126,4 +126,8 @@ class ParallelPlateDrivesystem(
         return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
     }
 
+    fun specHangPrep(): InstantCommand {
+        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.SPECPREP)
+    }
+
 }

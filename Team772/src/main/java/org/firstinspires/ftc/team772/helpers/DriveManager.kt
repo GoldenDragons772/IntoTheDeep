@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.team772.implementation.TransferPixelCommand
+import org.firstinspires.ftc.team772.implementation.TransferSpecimenCommand
 import kotlin.math.log
 
 /**
@@ -136,10 +137,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!.lowclimb())// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!.highclimb())
         setPressedBinding(mapping.unClimbMapping, robot!!.unclimb())
+        setPressedBinding(mapping.hangSpecMapping, robot!!.specHangPrep())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
-        setPressedBinding(mapping.transferMapping, TransferPixelCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
+        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
         setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
 
@@ -165,6 +167,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val calibrateMapping: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
-        val parallelMapping: Pair<GamepadKeys.Button, Int>
+        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
     )
 }

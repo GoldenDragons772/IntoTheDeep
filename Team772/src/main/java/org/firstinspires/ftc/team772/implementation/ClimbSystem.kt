@@ -57,7 +57,7 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         HOME(Constants.ARM_HOME),
         LOWCLIMB(Constants.ARM_LOW_CLIMB),
         HIGHCLIMB(Constants.ARM_HIGH_CLIMB),
-
+        SPECPREP(Constants.SPEC_HANG_PREP)
     }
 
     init {
