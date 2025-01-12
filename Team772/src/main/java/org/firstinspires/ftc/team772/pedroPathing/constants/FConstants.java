@@ -11,14 +11,14 @@ public class FConstants {
         FollowerConstants.localizers = Localizers.THREE_WHEEL;
 
         FollowerConstants.leftFrontMotorName = "FLMotor";
-        FollowerConstants.leftRearMotorName = "BLMotor";
+        FollowerConstants.leftRearMotorName = "BRMotor";
         FollowerConstants.rightFrontMotorName = "FRMotor";
-        FollowerConstants.rightRearMotorName = "BRMotor";
+        FollowerConstants.rightRearMotorName = "BLMotor";
 
         FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
-        FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
+        FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
-        FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.REVERSE;
+        FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
         FollowerConstants.mass = 13.38;
 

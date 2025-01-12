@@ -74,6 +74,7 @@ public class MotorDirections extends OpMode {
         rightFront.setDirection(rightFrontMotorDirection);
         rightRear.setDirection(rightRearMotorDirection);
 
+
         if(gamepad1.a)
             leftFront.setPower(1);
 
