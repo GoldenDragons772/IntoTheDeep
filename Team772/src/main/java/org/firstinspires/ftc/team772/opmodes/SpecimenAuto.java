@@ -19,6 +19,7 @@ import org.firstinspires.ftc.team772.autos.SpecimenPath;
 import org.firstinspires.ftc.team772.implementation.ClimbSystem;
 import org.firstinspires.ftc.team772.implementation.IntakeSystem;
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem;
+import org.firstinspires.ftc.team772.implementation.TransferSpecimenCommand;
 import org.firstinspires.ftc.team772.implementation.commands.FollowPathCommand;
 import org.firstinspires.ftc.team772.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants;
@@ -53,11 +54,11 @@ public class SpecimenAuto extends CommandOpMode {
                 climbSystem.specHangPrep(),
                 outtakeSystem.swingToTarget(),
                 new FollowPathCommand(follower, SpecimenPath.startSpecimenPath),
-                climbSystem.lowclimb(),
-                new WaitCommand(2000),
+                climbSystem.specHangAttach(),
+                new WaitCommand(1000),
                 outtakeSystem.unGrip(),
                     new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.knockSpecsIntoZone),
+                    new FollowPathCommand(follower, SpecimenPath.knockSpecsIntoZone).setMaxPower(0.1),
                     climbSystem.unclimb()
                     )
             )

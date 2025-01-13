@@ -11,6 +11,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandBase
 import com.arcrobotics.ftclib.command.CommandScheduler
+import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.Subsystem
@@ -51,13 +52,15 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
     //Climb Variables
     /*private*/ val leftArmMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "LeftClimb")
     /*private*/ val rightArmMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "RightClimb")
+    var specPos = false
 
     //Enum object that holds the values for arm presets
     enum class ArmPos(val position: Int) {
         HOME(Constants.ARM_HOME),
         LOWCLIMB(Constants.ARM_LOW_CLIMB),
         HIGHCLIMB(Constants.ARM_HIGH_CLIMB),
-        SPECPREP(Constants.SPEC_HANG_PREP)
+        SPECPREP(Constants.SPEC_HANG_PREP),
+        SPECSCORE(Constants.SPEC_HANG),
     }
 
     init {
@@ -176,9 +179,22 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
     fun unclimb(): InstantCommand {
         return setArmToPos(ClimbSystem.ArmPos.HOME)
     }
+
     fun specHangPrep(): InstantCommand {
-        return setArmToPos(ClimbSystem.ArmPos.SPECPREP)
+        return InstantCommand({
+            specPos = false
+            setArmToPos(ClimbSystem.ArmPos.SPECPREP)
+        })
     }
+
+    fun specHangAttach(): InstantCommand {
+        return InstantCommand({
+            specPos = true
+            setArmToPos(ClimbSystem.ArmPos.SPECSCORE)
+        })
+    }
+
+    fun specHangToggle() = ConditionalCommand(specHangAttach(), specHangPrep()) { specPos }
 }
 
 /**

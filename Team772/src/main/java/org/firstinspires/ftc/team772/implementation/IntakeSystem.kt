@@ -239,6 +239,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
+    fun joint1SmackPose(): InstantCommand {
+        return InstantCommand({
+            intakePivot.position = Constants.STRIKE_SERVO_SMACK
+        })
+    }
+
     fun joint1Transfer(): InstantCommand {
         return InstantCommand({
             intakePivot.position = Constants.STRIKE_SERVO_TRANSFER
@@ -275,6 +281,15 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(wristToTransferPos())
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
+            .andThen(spit())
+            .andThen(InstantCommand({ aimState = true }))
+
+    fun aimToSmack(): Command =
+        extendCommand()
+            .andThen(WaitCommand(500))
+            .andThen(wristToPerpendicPos())
+            .andThen(joint2Pivot())
+            .andThen(joint1SmackPose())
             .andThen(spit())
             .andThen(InstantCommand({ aimState = true }))
 

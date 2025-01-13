@@ -137,7 +137,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.lowclimb())// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
         setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
-        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangPrep())
+        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
         // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
