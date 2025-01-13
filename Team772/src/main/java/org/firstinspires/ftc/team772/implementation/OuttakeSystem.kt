@@ -31,6 +31,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     init {
         wristServo.position = Constants.WRIST_SERVO_HOME //Lock Wrist Servo
         swingServo.position = Constants.SWING_SERVO_INIT
+        gripper.position = Constants.GRIPPY
     }
 
     /**

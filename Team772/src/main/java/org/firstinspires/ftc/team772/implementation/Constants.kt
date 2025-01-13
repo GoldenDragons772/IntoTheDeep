@@ -24,8 +24,8 @@ object Constants {
      */
     @JvmField var ARM_HOME = 0
     @JvmField var ARM_HIGH_CLIMB = 2950 // Moved up by 150
-    @JvmField var ARM_LOW_CLIMB = 1350
-    @JvmField var SPEC_HANG_PREP = 1000
+    @JvmField var ARM_LOW_CLIMB = 1500
+    @JvmField var SPEC_HANG_PREP = 600
 
     /**
      * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
@@ -67,7 +67,7 @@ object Constants {
     /**
      * Claw home position.
      */
-    @JvmField var UNGRIPPY = 0.62
+    @JvmField var UNGRIPPY = 0.3
     @JvmField var SWING_SERVO_HOME = 0.95
     @JvmField var WRIST_SERVO_TARGET = 0.25
     @JvmField var SWING_SERVO_INIT = 0.75
@@ -75,5 +75,5 @@ object Constants {
     /**
      * Claw target position.
      */
-    @JvmField var GRIPPY = 0.3
+    @JvmField var GRIPPY = 0.8
 }

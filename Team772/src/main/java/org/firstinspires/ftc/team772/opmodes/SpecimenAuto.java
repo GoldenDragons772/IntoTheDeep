@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team772.opmodes;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -10,6 +11,7 @@ import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -38,21 +40,26 @@ public class SpecimenAuto extends CommandOpMode {
 
         follower.setStartingPose(new Pose(7.852, 55.945, Math.toRadians(180)));
 
-        follower.setMaxPower(0.4);
+
 
         schedule(
             new WaitUntilCommand(this::opModeIsActive),
             new RunCommand(() -> {
                 follower.update();
+                follower.setMaxPower(0.4);
             }),
             new SequentialCommandGroup(
+                    outtakeSystem.gripIt(),
                 climbSystem.specHangPrep(),
                 outtakeSystem.swingToTarget(),
-                outtakeSystem.gripIt(),
                 new FollowPathCommand(follower, SpecimenPath.startSpecimenPath),
                 climbSystem.lowclimb(),
                 new WaitCommand(2000),
-                outtakeSystem.unGrip()
+                outtakeSystem.unGrip(),
+                    new ParallelCommandGroup(
+                    new FollowPathCommand(follower, SpecimenPath.knockSpecsIntoZone),
+                    climbSystem.unclimb()
+                    )
             )
         );
     }
