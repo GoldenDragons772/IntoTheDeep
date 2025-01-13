@@ -11,18 +11,19 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
 import kotlin.math.abs
+import kotlin.text.get
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
 
     //val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
     //val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
-    val stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
 
     private val clawServo: Servo = hw.get(Servo::class.java, "clawServo") // Port 1
     private val clawPivotServo: Servo = hw.get(Servo::class.java, "joint2")
     private val swivelServo: Servo = hw.get(Servo::class.java, "swivelServo")
     private val intakePivot: Servo = hw.get(Servo::class.java, "joint1")
+    var stopSwitch: TouchSensor = hw.get(TouchSensor::class.java, "hardStop")
 
     // States
     // Right now these are all binary, but in the future some of these might need to be in an enum.
@@ -390,6 +391,11 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
             Constants.SLIDE_HOME -> {
                 diff = abs(IntakeSystem.extendPos.position - IntakeSystem.ExtendPos.HOME.position)
                 returnVal = 50
+                if (intake.stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
+                    intake.slideMotor.power = 0.0
+                    intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                    Log.i("ROBO", "Slide Limit Hit!")
+                }
             }
 
             Constants.SLIDE_TARGET -> {

@@ -10,14 +10,14 @@ class TransferSpecimenCommand(private val intake: IntakeSystem, private val outt
         super.addCommands(
 
             SequentialCommandGroup(
-                outtake.gripIt(),
+                outtake.unGrip(),
                 //WaitCommand(1000),
                 intake.wristToSpecPos(),
                 intake.goHome(),
                 WaitCommand(700),
                 outtake.swingToHome(),
                 WaitCommand(500),
-                outtake.unGrip(),
+                outtake.gripIt(),
                 WaitCommand(300),
                 intake.spit(),
                 intake.joint1SpecPose(),
