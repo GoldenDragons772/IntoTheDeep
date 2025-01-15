@@ -58,7 +58,7 @@ public class SpecimenAuto extends CommandOpMode {
                 new WaitCommand(1000),
                 outtakeSystem.unGrip(),
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.knockSpecsIntoZone).setMaxPower(0.1),
+                    new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZone).setMaxPower(0.1),
                     climbSystem.unclimb()
                 ),
                 intakeSystem.aim(),
@@ -72,8 +72,9 @@ public class SpecimenAuto extends CommandOpMode {
                 ),
                 //new WaitCommand(2000),
                 climbSystem.specHangAttach(),
-                new WaitCommand(2000),
-                outtakeSystem.unGrip()
+                new WaitCommand(1000),
+                outtakeSystem.unGrip(),
+                    new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber)
             )
         );
     }
