@@ -13,6 +13,7 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.util.Constants;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.team772.autos.SpecimenPath;
@@ -38,6 +39,7 @@ public class SpecimenAuto extends CommandOpMode {
         IntakeSystem intakeSystem = new IntakeSystem(hardwareMap);
         OuttakeSystem outtakeSystem = new OuttakeSystem(hardwareMap);
         ClimbSystem climbSystem = new ClimbSystem(hardwareMap);
+        TransferSpecimenCommand transferSpecimenCommand = new TransferSpecimenCommand(intakeSystem, outtakeSystem);
 
         follower.setStartingPose(new Pose(7.852, 55.945, Math.toRadians(180)));
 
@@ -47,20 +49,33 @@ public class SpecimenAuto extends CommandOpMode {
             new WaitUntilCommand(this::opModeIsActive),
             new RunCommand(() -> {
                 follower.update();
-                follower.setMaxPower(0.4);
+                follower.setMaxPower(0.8);
             }),
             new SequentialCommandGroup(
-                    outtakeSystem.gripIt(),
+                outtakeSystem.gripIt(),
                 climbSystem.specHangPrep(),
                 outtakeSystem.swingToTarget(),
                 new FollowPathCommand(follower, SpecimenPath.startSpecimenPath),
                 climbSystem.specHangAttach(),
                 new WaitCommand(1000),
                 outtakeSystem.unGrip(),
-                    new ParallelCommandGroup(
+                new ParallelCommandGroup(
                     new FollowPathCommand(follower, SpecimenPath.knockSpecsIntoZone).setMaxPower(0.1),
                     climbSystem.unclimb()
-                    )
+                ),
+                intakeSystem.aim(),
+                new WaitCommand(2000),
+                intakeSystem.swallow(),
+                new WaitCommand(2000),
+                transferSpecimenCommand,
+                new ParallelCommandGroup(
+                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4),
+                    climbSystem.specHangPrep()
+                ),
+                new WaitCommand(2000),
+                climbSystem.specHangAttach(),
+                new WaitCommand(2000),
+                outtakeSystem.unGrip()
             )
         );
     }

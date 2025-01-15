@@ -52,7 +52,7 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
     //Climb Variables
     /*private*/ val leftArmMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "LeftClimb")
     /*private*/ val rightArmMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "RightClimb")
-    var specPos = false
+    private var specAttached = false
 
     //Enum object that holds the values for arm presets
     enum class ArmPos(val position: Int) {
@@ -180,21 +180,14 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         return setArmToPos(ClimbSystem.ArmPos.HOME)
     }
 
-    fun specHangPrep(): InstantCommand {
-        return InstantCommand({
-            specPos = false
-            setArmToPos(ClimbSystem.ArmPos.SPECPREP)
-        })
-    }
+    fun specHangPrep(): Command =
+        setArmToPos(ArmPos.SPECPREP)
 
-    fun specHangAttach(): InstantCommand {
-        return InstantCommand({
-            specPos = true
-            setArmToPos(ClimbSystem.ArmPos.SPECSCORE)
-        })
-    }
+    fun specHangAttach(): Command =
+        setArmToPos(ArmPos.SPECSCORE)
 
-    fun specHangToggle() = ConditionalCommand(specHangAttach(), specHangPrep()) { specPos }
+
+    fun specHangToggle() = ConditionalCommand(specHangAttach().andThen(InstantCommand({specAttached = !specAttached})), specHangPrep().andThen(InstantCommand({specAttached = !specAttached}))) { specAttached }
 }
 
 /**

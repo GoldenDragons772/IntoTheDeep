@@ -126,7 +126,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * @param pos The desired position
      */
     private fun setSlideToPos(pos: Int): SlideCommand {
-        val command = SlideCommand(this, pos)
+        val command = SlideCommand(this, pos, switch = stopSwitch)
         return command
     }
 
@@ -324,7 +324,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHomeForSpec(), aim()) { aimState }
 
-    fun swivelToggle() = ConditionalCommand(wristToTransferPos(), wristToPerpendicPos()) {wristState}
+    fun swivelToggle() = ConditionalCommand(wristToTransferPos(), wristToPerpendicPos()) { wristState }
 
     // toggle the Intake Pivot
     fun toggleIntakePivot() =
@@ -343,9 +343,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(InstantCommand({ aimState = true }))
 }
 
-class SlideCommand(private val intake: IntakeSystem, private val position: Int) : CommandBase() {
+class SlideCommand(private val intake: IntakeSystem, private val position: Int, switch: TouchSensor) : CommandBase() {
     private val pidf = PIDFController(kp, ki, kd, kf)
     private var isEnded = false;
+    private val stopSwitch = switch
 
     init {
         isEnded = false// Try to reset isEnded every time
@@ -377,7 +378,7 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int) 
         packet.addLine("Target Position: ${intake.slideMotor.targetPosition}")
         FtcDashboard.getInstance().sendTelemetryPacket(packet)
 
-        if (intake.stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
+        if (stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
             intake.slideMotor.power = 0.0
             intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             Log.i("ROBO", "Slide Limit Hit!")

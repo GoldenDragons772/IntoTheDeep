@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team772.implementation
 
 import com.acmerobotics.dashboard.config.Config
-import com.qualcomm.robotcore.hardware.HardwareMap
 
 @Config
 object Constants {
@@ -20,13 +19,19 @@ object Constants {
     @JvmField var MIN_GOAL_DISTANCE = 1
 
     /**
+     * PedroPathing Constants (So I don't go insane
+     */
+    @JvmField var BLUE_CHAMBER_XDISTANCE = 33.000
+    @JvmField var BLUE_SPEC_PICKUP_XDISTANCE = 15.000
+
+    /**
      * Values for arm.
      */
     @JvmField var ARM_HOME = 0
-    @JvmField var ARM_HIGH_CLIMB = 2950 // Moved up by 150
+    @JvmField var ARM_HIGH_CLIMB = 3100 // Moved up by 150
     @JvmField var ARM_LOW_CLIMB = 1500
-    @JvmField var SPEC_HANG_PREP = 600
-    @JvmField var SPEC_HANG = 1000
+    @JvmField var SPEC_HANG_PREP = 750
+    @JvmField var SPEC_HANG = 1300
 
     /**
      * Values for the intake. Change these for tuning. (Must supply a value between 0.0 and 1.0)
@@ -37,10 +42,10 @@ object Constants {
 
     // Strike Position (Joint 1)
     @JvmField var STRIKE_SERVO_HOME = 0.885
-    @JvmField var STRIKE_SERVO_TARGET = 0.59
+    @JvmField var STRIKE_SERVO_TARGET = 0.42
     @JvmField var STRIKE_SERVO_SMACK = 0.65
 
-    @JvmField var STRIKE_SERVO_TRANSFER = 0.68
+    @JvmField var STRIKE_SERVO_TRANSFER = 0.55
     @JvmField var STRIKE_SERVO_TRANSFER_SPEC = 0.8
 
     //Intake Wrist Positions
