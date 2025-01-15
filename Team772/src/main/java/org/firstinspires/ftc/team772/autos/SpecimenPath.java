@@ -124,33 +124,33 @@ public class SpecimenPath {
                     new BezierCurve(
                             new Point(23.006, 15.905, Point.CARTESIAN),
                             new Point(40.615, 32.947, Point.CARTESIAN),
-                            new Point(18.746, 25.278, Point.CARTESIAN)
+                            new Point(2.000, 44.876, Point.CARTESIAN)
                     )
             )
-            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(230))
+            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
             .build();
 
     public static PathChain goToChamberFromZone = new PathBuilder()
             .addPath(
                     // Line 1
                     new BezierCurve(
-                            new Point(18.462, 44.024, Point.CARTESIAN),
+                            new Point(7.101, 44.876, Point.CARTESIAN),
                             new Point(13.349, 65.893, Point.CARTESIAN),
-                            new Point(28.000, 68.845, Point.CARTESIAN)
+                            new Point(30.000, 69.000, Point.CARTESIAN)
                     )
             )
-            .setLinearHeadingInterpolation(Math.toRadians(230), Math.toRadians(180))
+            .setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
             .build();
     public static PathChain goToZoneFromChamber = new PathBuilder()
             .addPath(
                     // Line 1
                     new BezierCurve(
-                            new Point(28.000, 69.000, Point.CARTESIAN),
+                            new Point(30.000, 69.000, Point.CARTESIAN),
                             new Point(13.349, 65.893, Point.CARTESIAN),
-                            new Point(18.462, 44.024, Point.CARTESIAN)
+                            new Point(7.100, 44.875, Point.CARTESIAN)
                     )
             )
-            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(230))
+            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
             .build();
 
 }

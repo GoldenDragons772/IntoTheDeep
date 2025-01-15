@@ -74,7 +74,20 @@ public class SpecimenAuto extends CommandOpMode {
                 climbSystem.specHangAttach(),
                 new WaitCommand(1000),
                 outtakeSystem.unGrip(),
-                    new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber)
+                    new ParallelCommandGroup(
+                    new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
+                            climbSystem.unclimb()
+                            ),
+                    intakeSystem.aim(),
+                    new WaitCommand(1000),
+                    intakeSystem.swallow(),
+                    new WaitCommand(750),
+                    transferSpecimenCommand,
+                    new ParallelCommandGroup(
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4),
+                            climbSystem.specHangPrep()
+                    ),
+                    climbSystem.specHangAttach()
             )
         );
     }
