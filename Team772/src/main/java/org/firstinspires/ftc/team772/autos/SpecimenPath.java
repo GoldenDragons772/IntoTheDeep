@@ -90,7 +90,7 @@ public class SpecimenPath {
                     new BezierCurve(
                             new Point(18.462, 44.024, Point.CARTESIAN),
                             new Point(13.349, 65.893, Point.CARTESIAN),
-                            new Point(29.000, 69.000, Point.CARTESIAN)
+                            new Point(30.000, 68.845, Point.CARTESIAN)
                     )
             )
             .setLinearHeadingInterpolation(Math.toRadians(230), Math.toRadians(180))

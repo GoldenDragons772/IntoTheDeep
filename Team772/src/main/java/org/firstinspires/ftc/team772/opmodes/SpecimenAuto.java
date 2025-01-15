@@ -43,8 +43,6 @@ public class SpecimenAuto extends CommandOpMode {
 
         follower.setStartingPose(new Pose(7.852, 55.945, Math.toRadians(180)));
 
-
-
         schedule(
             new WaitUntilCommand(this::opModeIsActive),
             new RunCommand(() -> {
@@ -64,15 +62,15 @@ public class SpecimenAuto extends CommandOpMode {
                     climbSystem.unclimb()
                 ),
                 intakeSystem.aim(),
-                new WaitCommand(2000),
+                new WaitCommand(1000),
                 intakeSystem.swallow(),
-                new WaitCommand(2000),
+                new WaitCommand(750),
                 transferSpecimenCommand,
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4),
                     climbSystem.specHangPrep()
                 ),
-                new WaitCommand(2000),
+                //new WaitCommand(2000),
                 climbSystem.specHangAttach(),
                 new WaitCommand(2000),
                 outtakeSystem.unGrip()
