@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team772.opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -27,15 +29,13 @@ import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants;
 
 @Autonomous(name = "Specimen Auto", group = "Pedro")
 public class SpecimenAuto extends CommandOpMode {
-
-    Follower follower;
-
     @Override
     public void initialize() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Constants.setConstants(FConstants.class, LConstants.class);
 
-        follower = new Follower(hardwareMap);
+        Follower follower = new Follower(hardwareMap);
         IntakeSystem intakeSystem = new IntakeSystem(hardwareMap);
         OuttakeSystem outtakeSystem = new OuttakeSystem(hardwareMap);
         ClimbSystem climbSystem = new ClimbSystem(hardwareMap);
@@ -48,6 +48,9 @@ public class SpecimenAuto extends CommandOpMode {
             new RunCommand(() -> {
                 follower.update();
                 follower.setMaxPower(0.8);
+                if(follower.isBusy()) {
+                    follower.telemetryDebug(telemetry);
+                }
             }),
             new SequentialCommandGroup(
                     //Preload
@@ -70,7 +73,7 @@ public class SpecimenAuto extends CommandOpMode {
                 new WaitCommand(750),
                 transferSpecimenCommand,
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4).setCompletionThreshold(0.75),
+                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4).setCompletionThreshold(0.9),
                     climbSystem.specHangPrep()
                 ),
                 //new WaitCommand(2000),
