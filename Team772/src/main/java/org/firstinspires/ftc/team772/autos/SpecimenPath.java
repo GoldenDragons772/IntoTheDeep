@@ -130,7 +130,7 @@ public class SpecimenPath {
             .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
             .setZeroPowerAccelerationMultiplier(16).build();
 
-    public static PathChain goToChamberFromZone = new PathBuilder()
+    public static PathChain goToChamberFromZoneSpec2 = new PathBuilder()
             .addPath(
                     // Line 1
                     new BezierCurve(
@@ -149,6 +149,45 @@ public class SpecimenPath {
             )
             .setConstantHeadingInterpolation(Math.toRadians(185))
             .build();
+    public static PathChain goToChamberFromZoneSpec3 = new PathBuilder()
+            .addPath(
+                    // Line 1
+                    new BezierCurve(
+                            new Point(7.101, 44.876, Point.CARTESIAN),
+                            new Point(13.349, 65.893, Point.CARTESIAN),
+                            new Point(26.000, 65.000, Point.CARTESIAN)
+                    )
+            )
+            .setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(185))
+            .addPath(
+                    // Line 2
+                    new BezierLine(
+                            new Point(26.000, 65.000, Point.CARTESIAN),
+                            new Point(28.000, 70.000, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(185))
+            .build();
+
+    public static PathChain goToChamberFromZoneSpec4 = new PathBuilder()
+            .addPath(
+                    // Line 1
+                    new BezierCurve(
+                            new Point(7.101, 44.876, Point.CARTESIAN),
+                            new Point(13.349, 65.893, Point.CARTESIAN),
+                            new Point(26.000, 65.000, Point.CARTESIAN)
+                    )
+            )
+            .setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(185))
+            //.addPath(
+                    // Line 2
+                    //new BezierLine(
+                            //new Point(26.000, 65.000, Point.CARTESIAN),
+                            //new Point(28.000, 69.000, Point.CARTESIAN)
+                    //)
+            //)
+            //.setConstantHeadingInterpolation(Math.toRadians(185))
+            .build();
     public static PathChain goToZoneFromChamber = new PathBuilder()
             .addPath(
                     // Line 1
@@ -156,6 +195,18 @@ public class SpecimenPath {
                             new Point(28.000, 69.000, Point.CARTESIAN),
                             new Point(13.349, 65.893, Point.CARTESIAN),
                             new Point(7.100, 44.875, Point.CARTESIAN)
+                    )
+            )
+            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
+            .build();
+
+    public static PathChain parkFromChamber = new PathBuilder()
+            .addPath(
+                    // Line 1
+                    new BezierCurve(
+                            new Point(28.000, 69.000, Point.CARTESIAN),
+                            new Point(13.349, 65.893, Point.CARTESIAN),
+                            new Point(7.100, 24.875, Point.CARTESIAN)
                     )
             )
             .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))

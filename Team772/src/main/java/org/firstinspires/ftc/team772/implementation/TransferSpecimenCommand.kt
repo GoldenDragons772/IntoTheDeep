@@ -18,7 +18,7 @@ class TransferSpecimenCommand(private val intake: IntakeSystem, private val outt
                 outtake.swingToHome(),
                 WaitCommand(500),
                 outtake.gripIt(),
-                WaitCommand(300),
+                WaitCommand(500),
                 intake.spit(),
                 intake.joint1SpecPose(),
                 WaitCommand(100),
