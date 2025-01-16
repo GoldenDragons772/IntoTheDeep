@@ -21,7 +21,7 @@ object Constants {
     /**
      * PedroPathing Constants (So I don't go insane
      */
-    @JvmField var BLUE_CHAMBER_XDISTANCE = 33.000
+    @JvmField var BLUE_CHAMBER_XDISTANCE = 35.000
     @JvmField var BLUE_SPEC_PICKUP_XDISTANCE = 15.000
 
     /**

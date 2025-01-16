@@ -50,6 +50,7 @@ public class SpecimenAuto extends CommandOpMode {
                 follower.setMaxPower(0.8);
             }),
             new SequentialCommandGroup(
+                    //Preload
                 outtakeSystem.gripIt(),
                 climbSystem.specHangPrep(),
                 outtakeSystem.swingToTarget(),
@@ -57,17 +58,19 @@ public class SpecimenAuto extends CommandOpMode {
                 climbSystem.specHangAttach(),
                 new WaitCommand(1000),
                 outtakeSystem.unGrip(),
+                //Knock Samples
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZone).setMaxPower(0.1),
                     climbSystem.unclimb()
                 ),
+                //Spec 2
                 intakeSystem.aim(),
                 new WaitCommand(1000),
                 intakeSystem.swallow(),
                 new WaitCommand(750),
                 transferSpecimenCommand,
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4),
+                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4).setCompletionThreshold(0.75),
                     climbSystem.specHangPrep()
                 ),
                 //new WaitCommand(2000),
@@ -78,16 +81,41 @@ public class SpecimenAuto extends CommandOpMode {
                     new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
                             climbSystem.unclimb()
                             ),
+                    //Spec 3
                     intakeSystem.aim(),
                     new WaitCommand(1000),
                     intakeSystem.swallow(),
                     new WaitCommand(750),
                     transferSpecimenCommand,
                     new ParallelCommandGroup(
-                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4),
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4).setCompletionThreshold(0.8),
                             climbSystem.specHangPrep()
                     ),
-                    climbSystem.specHangAttach()
+                    climbSystem.specHangAttach(),
+                    new WaitCommand(1000),
+                    outtakeSystem.unGrip(),
+                    new ParallelCommandGroup(
+                            new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
+                            climbSystem.unclimb()
+                    ),
+                    //Spec 4
+                    intakeSystem.aim(),
+                    new WaitCommand(1000),
+                    intakeSystem.swallow(),
+                    new WaitCommand(750),
+                    transferSpecimenCommand,
+                    new ParallelCommandGroup(
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZone).setMaxPower(0.4).setCompletionThreshold(0.8),
+                            climbSystem.specHangPrep()
+                    ),
+                    climbSystem.specHangAttach(),
+                    new WaitCommand(1000),
+                    outtakeSystem.unGrip(),
+                    new ParallelCommandGroup(
+                            new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
+                            climbSystem.unclimb()
+                    )
+                    //Done!
             )
         );
     }
