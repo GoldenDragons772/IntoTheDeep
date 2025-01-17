@@ -3,7 +3,9 @@ package org.firstinspires.ftc.team772.opmodes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.RepeatCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -69,7 +71,7 @@ public class SpecimenAuto extends CommandOpMode {
                 new WaitCommand(750),
                 transferSpecimenCommand,
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec2).setMaxPower(0.4).setCompletionThreshold(0.9),
+                    new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec2, 0.4).setCompletionThreshold(0.9),
                     climbSystem.specHangPrep()
                 ),
                 //new WaitCommand(2000),
@@ -87,7 +89,7 @@ public class SpecimenAuto extends CommandOpMode {
                     new WaitCommand(750),
                     transferSpecimenCommand,
                     new ParallelCommandGroup(
-                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec3).setMaxPower(0.4).setCompletionThreshold(0.8),
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec3,0.4).setCompletionThreshold(0.8),
                             climbSystem.specHangPrep()
                     ),
                     climbSystem.specHangAttach(),
@@ -104,11 +106,11 @@ public class SpecimenAuto extends CommandOpMode {
                     new WaitCommand(750),
                     transferSpecimenCommand,
                     new ParallelCommandGroup(
-                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec4).setMaxPower(0.4).setCompletionThreshold(0.9),
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec4, 0.4).setCompletionThreshold(0.9),
                             climbSystem.specHangPrep()
                     ),
                     climbSystem.specHangAttach(),
-                    new WaitCommand(2000),
+                    new WaitCommand(1000),
                     outtakeSystem.unGrip(),
                     new ParallelCommandGroup(
                             new FollowPathCommand(follower, SpecimenPath.parkFromChamber),
