@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -58,7 +59,7 @@ public class SpecimenAuto extends CommandOpMode {
                 outtakeSystem.unGrip(),
                 //Knock Samples
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZone).setMaxPower(0.1),
+                    new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZoneRevised).setMaxPower(0.1),
                     climbSystem.unclimb()
                 ),
                 //Spec 2
@@ -76,9 +77,9 @@ public class SpecimenAuto extends CommandOpMode {
                 new WaitCommand(1000),
                 outtakeSystem.unGrip(),
                     new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
-                            climbSystem.unclimb()
-                            ),
+                        new FollowPathCommand(follower, SpecimenPath.goToZoneFromChamber),
+                        climbSystem.unclimb()
+                    ),
                     //Spec 3
                     intakeSystem.aim(),
                     new WaitCommand(1000),
@@ -103,7 +104,7 @@ public class SpecimenAuto extends CommandOpMode {
                     new WaitCommand(750),
                     transferSpecimenCommand,
                     new ParallelCommandGroup(
-                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec4).setMaxPower(0.4).setCompletionThreshold(0.8),
+                            new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec4).setMaxPower(0.4).setCompletionThreshold(0.9),
                             climbSystem.specHangPrep()
                     ),
                     climbSystem.specHangAttach(),
