@@ -12,37 +12,52 @@ public class FollowPathCommand extends CommandBase {
     private boolean holdEnd = true;
     private double maxPower = 1;
     private double completionThreshold = 0.99;
+    private int timeout = 0;
+    private long startTime;
 
     public FollowPathCommand(Follower follower, PathChain path) {
         this.follower = follower;
         this.path = path;
+        this.timeout = 0;
     }
 
-    public FollowPathCommand(Follower follower, PathChain pathChain, double maxPower) {
+    public FollowPathCommand(Follower follower, PathChain path, int timeout) {
+        this.follower = follower;
+        this.path = path;
+        this.timeout = timeout;
+    }
+
+    public FollowPathCommand(Follower follower, PathChain pathChain, int timeout, double maxPower) {
         this.follower = follower;
         this.path = pathChain;
         this.maxPower = maxPower;
+        this.timeout = timeout;
     }
 
-    public FollowPathCommand(Follower follower, PathChain pathChain, boolean holdEnd) {
+    public FollowPathCommand(Follower follower, PathChain pathChain, int timeout, boolean holdEnd) {
         this.follower = follower;
         this.path = pathChain;
         this.holdEnd = holdEnd;
+        this.timeout = timeout;
     }
 
-    public FollowPathCommand(Follower follower, PathChain pathChain, boolean holdEnd, double maxPower) {
+    public FollowPathCommand(Follower follower, PathChain pathChain, int timeout, boolean holdEnd, double maxPower) {
         this.follower = follower;
         this.path = pathChain;
         this.holdEnd = holdEnd;
         this.maxPower = maxPower;
+        this.timeout = timeout;
     }
 
     public FollowPathCommand(Follower follower, Path path) {
         this(follower, new PathChain(path));
     }
+    public FollowPathCommand(Follower follower, Path path, int timeout) {
+        this(follower, new PathChain(path), timeout);
+    }
 
-    public FollowPathCommand(Follower follower, Path path, double maxPower) {
-        this(follower, new PathChain(path), maxPower);
+    public FollowPathCommand(Follower follower, Path path, int timeout, double maxPower) {
+        this(follower, new PathChain(path), timeout, maxPower);
     }
 
     /**
@@ -80,10 +95,16 @@ public class FollowPathCommand extends CommandBase {
     public void initialize() {
         follower.followPath(path, holdEnd);
         follower.setMaxPower(this.maxPower);
+        startTime = System.currentTimeMillis();
     }
 
     @Override
     public boolean isFinished() {
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime >= timeout && timeout > 0) {
+            return true;
+        }
+
         if ( follower.getCurrentPathNumber() == this.path.size() - 1 && Math.abs(follower.headingError) < 0.1 ) {
             return follower.getCurrentTValue() >= this.completionThreshold;
         }

@@ -97,9 +97,12 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
         //Lock Wrist
         swivelServo.position = Constants.INTAKE_WRIST_HOME
+        swivelServo.scaleRange(0.07, 0.8)
 
 //        slideMotor.direction = DcMotorSimple.Direction.REVERSE
         //We might have to reverse motors
+
+
     }
 
     /**
@@ -177,7 +180,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     }
 
     /**
-     * Pivot the active intake downwards for intake.
+     * Pivot the active intake downwards for intake.        swivelServo.direction = Servo.Direction.REVERSE
      */
     fun joint2Pivot(): Command {
         return InstantCommand({
@@ -272,12 +275,31 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
+    fun intakeWristAutoPrep(): InstantCommand {
+        return InstantCommand({
+            swivelServo.position = Constants.INTAKE_WRIST_AUTO_PREP
+            wristState = true
+        })
+    }
+
     //As driver request: Aim and goHome set as toggle.
     //Sucking should be bound to a separate button.
 
     fun aim(): Command =
         extendCommand()
             .andThen(WaitCommand(500))
+            .andThen(intakeWristAutoPrep())
+            .andThen(WaitCommand(250))
+            .andThen(wristToTransferPos())
+            .andThen(joint2Pivot())
+            .andThen(joint1PivotIntake())
+            .andThen(spit())
+            .andThen(InstantCommand({ aimState = true }))
+
+    fun autoAim(): Command =
+        extendCommand()
+            .andThen(intakeWristAutoPrep())
+            .andThen(WaitCommand(250))
             .andThen(wristToTransferPos())
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
@@ -374,16 +396,18 @@ class SlideCommand(private val intake: IntakeSystem, private val position: Int, 
     override fun execute() {
 
         val packet = TelemetryPacket()
+
+        if (stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
+            intake.slideMotor.mode = DcMotor.RunMode.RESET_ENCODERS
+            intake.slideMotor.power = 0.0
+            Log.i("ROBO", "Slide Limit Hit!")
+            this.isEnded = true
+            return
+        }
+
         packet.addLine("Current Position: ${intake.slideMotor.currentPosition}")
         packet.addLine("Target Position: ${intake.slideMotor.targetPosition}")
         FtcDashboard.getInstance().sendTelemetryPacket(packet)
-
-        if (stopSwitch.isPressed && position == Constants.SLIDE_HOME) {
-            intake.slideMotor.power = 0.0
-            intake.slideMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            Log.i("ROBO", "Slide Limit Hit!")
-            if (this.isEnded) return
-        }
 
         if (this.isEnded) return
         Log.i("ROBO", "looping")

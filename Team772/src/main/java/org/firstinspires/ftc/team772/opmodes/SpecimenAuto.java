@@ -10,7 +10,6 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -49,21 +48,27 @@ public class SpecimenAuto extends CommandOpMode {
                 }
             }),
             new SequentialCommandGroup(
-                    //Preload
+                //Preload
+
                 outtakeSystem.gripIt(),
                 climbSystem.specHangPrep(),
                 outtakeSystem.swingToTarget(),
                 new FollowPathCommand(follower, SpecimenPath.startSpecimenPath),
-                climbSystem.specHangAttach(),
-                new WaitCommand(1000),
-                outtakeSystem.unGrip(),
+
+                climbSystem.specHangAttach().andThen(
+                        new WaitCommand(1000)
+                ),
+
+                outtakeSystem.unGrip().andThen(
+                        new WaitCommand(250) // to allow the servo to let go on the preload.
+                ),
                 //Knock Samples
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZoneRevised).setMaxPower(0.1),
                     climbSystem.unclimb()
                 ),
                 //Spec 2
-                intakeSystem.aim(),
+                intakeSystem.autoAim(),
                 new WaitCommand(1000),
                 intakeSystem.swallow(),
                 new WaitCommand(750),
@@ -81,7 +86,7 @@ public class SpecimenAuto extends CommandOpMode {
                         climbSystem.unclimb()
                     ),
                     //Spec 3
-                    intakeSystem.aim(),
+                    intakeSystem.autoAim(),
                     new WaitCommand(1000),
                     intakeSystem.swallow(),
                     new WaitCommand(750),
@@ -98,7 +103,7 @@ public class SpecimenAuto extends CommandOpMode {
                             climbSystem.unclimb()
                     ),
                     //Spec 4
-                    intakeSystem.aim(),
+                    intakeSystem.autoAim(),
                     new WaitCommand(1000),
                     intakeSystem.swallow(),
                     new WaitCommand(750),
@@ -108,7 +113,8 @@ public class SpecimenAuto extends CommandOpMode {
                             climbSystem.specHangPrep()
                     ),
                     climbSystem.specHangAttach(),
-                    new WaitCommand(2000),
+                    new WaitCommand(1250),
+
                     outtakeSystem.unGrip(),
                     new ParallelCommandGroup(
                             new FollowPathCommand(follower, SpecimenPath.parkFromChamber),

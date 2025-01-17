@@ -49,9 +49,10 @@ object Constants {
     @JvmField var STRIKE_SERVO_TRANSFER_SPEC = 0.8
 
     //Intake Wrist Positions
-    @JvmField var INTAKE_WRIST_HOME = 0.07
-    @JvmField var INTAKE_WRIST_PERP = 0.4
-    @JvmField var INTAKE_WRIST_SPEC = 0.74
+    @JvmField var INTAKE_WRIST_HOME = 0.0
+    @JvmField var INTAKE_WRIST_PERP = 0.45
+    @JvmField var INTAKE_WRIST_SPEC = 1.0
+    @JvmField var INTAKE_WRIST_AUTO_PREP = 0.8
 
     // Claw Positions
     @JvmField var CLAW_SERVO_HOME = 0.53
