@@ -147,7 +147,7 @@ public class SpecimenPath {
             .addPath(
                     // Line 2
                     new BezierLine(
-                            new Point(55.000, 25.562, Point.CARTESIAN),
+                            new Point(53.000, 25.562, Point.CARTESIAN),
                             new Point(23.006, 22.154, Point.CARTESIAN)
                     )
             )
@@ -166,7 +166,7 @@ public class SpecimenPath {
             .addPath(
                     // Line 4
                     new BezierLine(
-                            new Point(55.945, 14.442, Point.CARTESIAN),
+                            new Point(53.000, 14.442, Point.CARTESIAN),
                             new Point(22.995, 14.863, Point.CARTESIAN)
                     )
             )
