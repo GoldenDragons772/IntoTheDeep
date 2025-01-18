@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team772.opmodes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -14,6 +15,7 @@ import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.team772.autos.SpecimenPath;
+import org.firstinspires.ftc.team772.implementation.AutoTransferSpecimenCommand;
 import org.firstinspires.ftc.team772.implementation.ClimbSystem;
 import org.firstinspires.ftc.team772.implementation.IntakeSystem;
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem;
@@ -34,8 +36,8 @@ public class SpecimenAuto extends CommandOpMode {
         IntakeSystem intakeSystem = new IntakeSystem(hardwareMap);
         OuttakeSystem outtakeSystem = new OuttakeSystem(hardwareMap);
         ClimbSystem climbSystem = new ClimbSystem(hardwareMap);
-        TransferSpecimenCommand transferSpecimenCommand = new TransferSpecimenCommand(intakeSystem, outtakeSystem);
-
+        //TransferSpecimenCommand transferSpecimenCommand = new TransferSpecimenCommand(intakeSystem, outtakeSystem);
+        AutoTransferSpecimenCommand autoTransferSpecimenCommand = new AutoTransferSpecimenCommand(intakeSystem, outtakeSystem);
         follower.setStartingPose(new Pose(7.852, 55.945, Math.toRadians(180)));
 
         schedule(
@@ -63,18 +65,21 @@ public class SpecimenAuto extends CommandOpMode {
                         new WaitCommand(500) // to allow the servo to let go on the preload.
                 ),
 //                Knock Samples
+
+                new InstantCommand(() -> { follower.setMaxPower(0.9); }), // increase speed to make this faster
                 new ParallelCommandGroup(
-                    new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZoneRevised).setMaxPower(0.1),
+                    new FollowPathCommand(follower, SpecimenPath.knock2SpecsIntoZoneRevised, 0, 0.9),
                     new WaitCommand(500).andThen(
                         climbSystem.unclimb()
                     )
                 ),
+                new InstantCommand(() -> { follower.setMaxPower(0.8); }),
                 //Spec 2
                 intakeSystem.autoAim(),
-                new WaitCommand(1000),
-                intakeSystem.swallow(),
                 new WaitCommand(750),
-                transferSpecimenCommand,
+                intakeSystem.swallow(),
+                new WaitCommand(500),
+                autoTransferSpecimenCommand,
                 new ParallelCommandGroup(
                     new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec2).setMaxPower(0.4).setCompletionThreshold(0.9),
                     climbSystem.specHangPrep()
@@ -88,10 +93,10 @@ public class SpecimenAuto extends CommandOpMode {
                 ),
                 //Spec 3
                 intakeSystem.autoAim(),
-                new WaitCommand(1000),
-                intakeSystem.swallow(),
                 new WaitCommand(750),
-                transferSpecimenCommand,
+                intakeSystem.swallow(),
+                new WaitCommand(500),
+                autoTransferSpecimenCommand,
                 new ParallelCommandGroup(
                         new FollowPathCommand(follower, SpecimenPath.goToChamberFromZoneSpec3).setMaxPower(0.4).setCompletionThreshold(0.8),
                         climbSystem.specHangPrep()
@@ -117,6 +122,8 @@ public class SpecimenAuto extends CommandOpMode {
 //                    climbSystem.specHangAttach(),
 //                    new WaitCommand(1250),
 //                    outtakeSystem.unGrip(),
+
+                    new InstantCommand(() -> { follower.setMaxPower(1.0); } ),
 
                     new ParallelCommandGroup(
                             new FollowPathCommand(follower, SpecimenPath.parkFromChamber),

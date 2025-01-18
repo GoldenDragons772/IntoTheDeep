@@ -153,34 +153,34 @@ public class SpecimenPath {
             )
             .setPathEndVelocityConstraint(0.1)
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .addPath(
-                    // Line 3
-                    new BezierCurve(
-                            new Point(22.574, 25.940, Point.CARTESIAN),
-                            new Point(41.924, 42.064, Point.CARTESIAN),
-                            new Point(55.945, 14.442, Point.CARTESIAN)
-                    )
-            )
-            .setPathEndVelocityConstraint(0.1)
-            .setConstantHeadingInterpolation(Math.toRadians(180))
-            .addPath(
-                    // Line 4
-                    new BezierLine(
-                            new Point(53.000, 14.442, Point.CARTESIAN),
-                            new Point(22.995, 14.863, Point.CARTESIAN)
-                    )
-            )
-            .setPathEndVelocityConstraint(0.1)
-            .setConstantHeadingInterpolation(Math.toRadians(180))
+//            .addPath(
+//                    // Line 3
+//                    new BezierCurve(
+//                            new Point(22.574, 25.940, Point.CARTESIAN),
+//                            new Point(41.924, 42.064, Point.CARTESIAN),
+//                            new Point(55.945, 14.442, Point.CARTESIAN)
+//                    )
+//            )
+//            .setPathEndVelocityConstraint(0.1)
+//            .setConstantHeadingInterpolation(Math.toRadians(180))
+//            .addPath(
+//                    // Line 4
+//                    new BezierLine(
+//                            new Point(53.000, 14.442, Point.CARTESIAN),
+//                            new Point(22.995, 14.863, Point.CARTESIAN)
+//                    )
+//            )
+//            .setPathEndVelocityConstraint(0.1)
+//            .setConstantHeadingInterpolation(Math.toRadians(180))
             .addPath(
                     // Line 5
                     new BezierCurve(
-                            new Point(23.290, 9.657, Point.CARTESIAN),
+                            new Point(23.290, 22.154, Point.CARTESIAN),
                             new Point(40.615, 32.947, Point.CARTESIAN),
-                            new Point(2.6, 41, Point.CARTESIAN)
+                            new Point(2.6, 44, Point.CARTESIAN)
                     )
             )
-            .setConstantHeadingInterpolation(Math.toRadians(273))
+            .setConstantHeadingInterpolation(Math.toRadians(270))
             .setPathEndVelocityConstraint(0.1)
             .setZeroPowerAccelerationMultiplier(16)
             .build();
@@ -200,7 +200,7 @@ public class SpecimenPath {
                     // Line 2
                     new BezierLine(
                             new Point(26.000, 65.000, Point.CARTESIAN),
-                            new Point(28.000, 65.000, Point.CARTESIAN)
+                            new Point(28.000, 62.500, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(185))
@@ -209,6 +209,7 @@ public class SpecimenPath {
     public static PathChain goToChamberFromZoneSpec3 = new PathBuilder()
             .addPath(
                     // Line 1
+
                     new BezierCurve(
                             new Point(3.101, 44, Point.CARTESIAN),
                             new Point(13.349, 65.893, Point.CARTESIAN),
@@ -220,7 +221,7 @@ public class SpecimenPath {
                     // Line 2
                     new BezierLine(
                             new Point(26.000, 65.000, Point.CARTESIAN),
-                            new Point(28.000, 62.000, Point.CARTESIAN)
+                            new Point(28.000, 60.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(185))
