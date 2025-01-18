@@ -200,7 +200,7 @@ public class SpecimenPath {
                     // Line 2
                     new BezierLine(
                             new Point(26.000, 65.000, Point.CARTESIAN),
-                            new Point(28.000, 67.000, Point.CARTESIAN)
+                            new Point(28.000, 65.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(185))
@@ -220,7 +220,7 @@ public class SpecimenPath {
                     // Line 2
                     new BezierLine(
                             new Point(26.000, 65.000, Point.CARTESIAN),
-                            new Point(28.000, 66.000, Point.CARTESIAN)
+                            new Point(28.000, 62.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(185))
