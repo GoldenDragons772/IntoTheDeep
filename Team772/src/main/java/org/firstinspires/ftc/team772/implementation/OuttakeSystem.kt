@@ -15,7 +15,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     //Defines servos
     private val swingServo: Servo = hw.get(Servo::class.java, "swingServo")
     private val wristServo: Servo = hw.get(Servo::class.java, "wristServo")
-    private val gripper: Servo = hw.get(Servo::class.java, "clawServo")
+    private val gripper: Servo = hw.get(Servo::class.java, "outtakeClaw")
 
     //Other Utilites
     var gripState = true
@@ -31,6 +31,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
     init {
         wristServo.position = Constants.WRIST_SERVO_HOME //Lock Wrist Servo
         swingServo.position = Constants.SWING_SERVO_INIT
+        gripper.position = Constants.GRIPPY
     }
 
     /**
@@ -135,8 +136,7 @@ class OuttakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Pivot the servo that pivots the outtake.
      */
 //    fun toggleSwing() = if (!swingState) swingToTarget() else swingToHome()
-    fun toggleSwing() = ConditionalCommand(swingToHome(), swingToTarget()) {swingState}  // if swung, swing home. if unswuing (home), swing out
-
+    fun toggleSwing() = ConditionalCommand(swingToHome(), swingToTarget()) { swingState }  // if swung, swing home. if unswuing (home), swing out
 
 }
 

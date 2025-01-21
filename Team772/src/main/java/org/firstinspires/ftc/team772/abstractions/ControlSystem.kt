@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.geometry.Pose2d
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.helpers.PIDController
-
 /**
  * Main drive system: OpModes (or helpers) should use this in order to move the robot.
  * This is basically an abstraction over the robot: If the autos or teleop need to do something, it should go through here.
@@ -46,7 +45,7 @@ interface ControlSystem : ClimbExtension {
      */
     fun initBulkReads() {
         for (hub in hubs) {
-            hub.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL
+            hub.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
         }
     }
 

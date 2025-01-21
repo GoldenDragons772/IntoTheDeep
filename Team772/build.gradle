@@ -1,5 +1,5 @@
 //
-// build.gradle in TeamCode
+// build.gradle in Team772
 //
 // Most of the definitions for building your module reside in a common, shared
 // file 'build.common.gradle'. Being factored in this way makes it easier to
@@ -32,6 +32,8 @@ android {
 
 repositories {
     maven { url = 'https://maven.brott.dev/' }
+    maven { url= 'https://maven.pedropathing.com/' }
+
 }
 dependencies {
     implementation project(':FtcRobotController')
@@ -43,4 +45,5 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:core:1.0.0"
     implementation "com.acmerobotics.roadrunner:actions:1.0.0"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+    implementation 'com.pedropathing:pedro:1.0.6'
 }

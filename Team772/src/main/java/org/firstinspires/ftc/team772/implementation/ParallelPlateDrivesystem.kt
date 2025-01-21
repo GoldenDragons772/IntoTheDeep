@@ -16,10 +16,10 @@ import kotlin.math.max
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
-    val FLMotor: MotorEx = MotorEx(hw, "Motor1"),
-    val FRMotor: MotorEx = MotorEx(hw, "Motor2"),
-    val BLMotor: MotorEx = MotorEx(hw, "Motor3"),
-    val BRMotor: MotorEx = MotorEx(hw, "Motor4"),
+    val FLMotor: MotorEx = MotorEx(hw, "FLMotor"),
+    val FRMotor: MotorEx = MotorEx(hw, "FRMotor"),
+    val BLMotor: MotorEx = MotorEx(hw, "BLMotor"),
+    val BRMotor: MotorEx = MotorEx(hw, "BRMotor"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
@@ -81,7 +81,6 @@ class ParallelPlateDrivesystem(
     }
 
     override fun update() {
-        super.update()
         odometry.updatePose()
     }
 
@@ -113,17 +112,17 @@ class ParallelPlateDrivesystem(
         halt()
     }
 
-    // TODO: Modify the climb subsystem so that everything is a command.
-    override fun highclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+    override fun lowclimb(): InstantCommand {
+        TODO("Not yet implemented")
     }
 
-    override fun lowclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
+    override fun highclimb(): InstantCommand {
+        TODO("Not yet implemented")
     }
 
     override fun unclimb(): InstantCommand {
-        return climbSystem!!.setArmToPos(ClimbSystem.ArmPos.HOME)
+        TODO("Not yet implemented")
     }
+
 
 }

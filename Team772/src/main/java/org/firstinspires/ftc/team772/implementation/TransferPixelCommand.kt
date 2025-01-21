@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team772.implementation
 
 import com.arcrobotics.ftclib.command.CommandBase
+import com.arcrobotics.ftclib.command.ParallelCommandGroup
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.qualcomm.hardware.ams.AMSColorSensor.Wait
@@ -15,26 +16,26 @@ class TransferPixelCommand(private val intake: IntakeSystem, private val outtake
 
     init {
         super.addCommands(
-            outtake.unGrip(),
-            outtake.wristHome(),
-            outtake.swingToHome(),
-            WaitCommand(1000),
-            intake.goHome(),
-            WaitCommand(500),
-            outtake.gripIt(),
-            WaitCommand(300),
-            intake.spit(),
-            outtake.gripIt(),
-            intake.edgeCommand(),
-            WaitCommand(500),
-            outtake.gripIt(),
-            outtake.swingToTarget(),
-            WaitCommand(500),
-            outtake.gripIt(),
-            intake.recalCommand(),
-            WaitCommand(500),
-            intake.retractCommand(),
-            intake.stopSpit()
+
+            ParallelCommandGroup(
+                SequentialCommandGroup(
+                    outtake.gripIt(),
+                    //WaitCommand(1000),
+                    intake.wristToTransferPos(),
+                    intake.goHome(),
+                    WaitCommand(700),
+                    outtake.swingToHome(),
+                    WaitCommand(500),
+                    outtake.unGrip(),
+                    WaitCommand(300),
+                    intake.spit(),
+                    WaitCommand(100),
+                    outtake.swingToTarget(),
+                    WaitCommand(500),
+//                    intake.recalCommand()
+                ),
+
+            )
 
             /*
             outtake.unGrip(),
