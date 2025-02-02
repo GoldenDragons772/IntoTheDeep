@@ -21,12 +21,8 @@ class ParallelPlateDrivesystem(
     val BLMotor: MotorEx = MotorEx(hw, "BLMotor"),
     val BRMotor: MotorEx = MotorEx(hw, "BRMotor"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
-    override var climbState: Boolean = false,
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
-    val climbSystem: ClimbSystem = ClimbSystem(hw)
-    val intakeSystem: IntakeSystem = IntakeSystem(hw)
-    val outtakeSystem: OuttakeSystem = OuttakeSystem(hw)
 
     companion object {
         // Constants. Change these to tune, et cetera.
@@ -111,18 +107,4 @@ class ParallelPlateDrivesystem(
         super.stop()
         halt()
     }
-
-    override fun lowclimb(): InstantCommand {
-        TODO("Not yet implemented")
-    }
-
-    override fun highclimb(): InstantCommand {
-        TODO("Not yet implemented")
-    }
-
-    override fun unclimb(): InstantCommand {
-        TODO("Not yet implemented")
-    }
-
-
 }
