@@ -17,8 +17,9 @@ class OuttakeSystem(hw: HardwareMap) {
     private val wristServo: Servo = hw.get(Servo::class.java, "wristServo")
     private val clawServo: Servo = hw.get(Servo::class.java, "clawServo")
 
-    //States
+    //State Machine!!!
     var clawState = false
+    var homeState = false
 
 
     init {
@@ -31,15 +32,34 @@ class OuttakeSystem(hw: HardwareMap) {
         return InstantCommand({pivotServo.position = Constants.PIVOT_SERVO_HOME})
     }
 
+    fun pivotScore(): InstantCommand{
+        return InstantCommand({pivotServo.position = Constants.PIVOT_SERVO_SCORE})
+    }
+
     fun strikeHome(): InstantCommand{
         return InstantCommand({
+            if(homeState) return@InstantCommand
             rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
             lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
+            homeState = true
+        })
+    }
+
+    fun strikeScore(): InstantCommand{
+        return InstantCommand({
+            if(!homeState) return@InstantCommand
+            rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
+            lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+            homeState = false
         })
     }
 
     fun wristHome(): InstantCommand{
         return InstantCommand({wristServo.position = Constants.WRIST_SERVO_HOME})
+    }
+
+    fun wristScore(): InstantCommand{
+        return InstantCommand({wristServo.position = Constants.WRIST_SERVO_TARGET})
     }
 
     fun clawOpen(): InstantCommand{
@@ -61,5 +81,12 @@ class OuttakeSystem(hw: HardwareMap) {
             .andThen(pivotHome())
             .andThen(wristHome())
 
-    fun toggleClaw() = ConditionalCommand(clawOpen(), clawClosed(), {clawState})
+    fun moveArmToScore(): Command =
+        strikeScore()
+            .andThen(pivotScore())
+            .andThen(wristScore())
+
+
+
+    fun toggleClaw() = ConditionalCommand(clawOpen(), clawClosed()) { clawState }
 }
