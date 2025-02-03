@@ -60,14 +60,21 @@ object Constants {
     @JvmField var CLAW_SERVO_CLENCH = 1.0
 
     // Pivot Positions (Joint 2)
-    @JvmField var PIVOT_SERVO_HOME = 0.1//TODO: Swap variable names -- Home is on the ground?
+    @JvmField var PIVOT_SERVO_HOME = 0.6
     @JvmField var PIVOT_SERVO_TARGET = 1.0
     @JvmField var PIVOT_SERVO_TRANSFER = 1.0
 
     @JvmField var SLIDE_MOTOR_SPEED = 0.7
 
     /**
-     * Values for the outtake. Change for tuning.
+     * Values for stage 1 of the outtake
+     */
+    @JvmField var OUT_STRIKE_R_HOME = 0.27
+    @JvmField var OUT_STRIKE_L_HOME = 0.73
+
+
+    /**
+     * Values for stage 2 of the outtake. Change for tuning.
      * */
     @JvmField var SWING_SERVO_TARGET = 0.0
     @JvmField var SWING_SERVO_HOME = 0.95
@@ -76,8 +83,8 @@ object Constants {
     /**
      * Wrist Positions
      */
-    @JvmField var WRIST_SERVO_HOME = 0.35
-    @JvmField var WRIST_SERVO_TARGET = 0.25
+    @JvmField var WRIST_SERVO_HOME = 0.0
+    @JvmField var WRIST_SERVO_TARGET = 0.5
 
     /**
      * Claw Positions.

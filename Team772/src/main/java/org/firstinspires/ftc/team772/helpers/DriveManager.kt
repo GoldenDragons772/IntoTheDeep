@@ -11,6 +11,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TouchSensor
+import org.firstinspires.ftc.team772.implementation.Constants
+import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import kotlin.math.log
 
@@ -23,8 +25,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     var robot: ParallelPlateDrivesystem? = null
 
-    // Stop Swatch
-    var stopSwitch: TouchSensor
     /**
      * Controllers
      */
@@ -36,7 +36,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         gamepad2 = GamepadEx(gp2)
         robot = ParallelPlateDrivesystem(hardwareMap)
         initializeBindings(mapping)
-        stopSwitch = hardwareMap.get(TouchSensor::class.java, "hardStop")
     }
 
     /**
@@ -140,12 +139,16 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 //        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
 //        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
 //        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
-//        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleGripper())
+        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
 //        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
 //
 //        // Claw Commands
 //        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
 //        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.swivelToggle())
+
+        setPressedBinding(mapping.testMapping,  robot!!.outtakeSystem.moveArmToHome())
+
+
 
     }
 
@@ -161,11 +164,13 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 //        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
 //        val aimMapping: Pair<GamepadKeys.Button, Int>,
 //        val swingMapping: Pair<GamepadKeys.Button, Int>,
-//        val gripMapping: Pair<GamepadKeys.Button, Int>,
+        val gripMapping: Pair<GamepadKeys.Button, Int>,
 //        val transferMapping: Pair<GamepadKeys.Button, Int>,
 //        val calibrateMapping: Pair<GamepadKeys.Button, Int>,
 //        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
 //        val parallelMapping: Pair<GamepadKeys.Button, Int>,
 //        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
+
+        val testMapping: Pair<GamepadKeys.Button, Int>
     )
 }
