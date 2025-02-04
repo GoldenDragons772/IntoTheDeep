@@ -55,13 +55,13 @@ object Constants {
     @JvmField var INTAKE_WRIST_AUTO_PREP = 0.8
 
     // Claw Positions
-    @JvmField var CLAW_SERVO_HOME = 0.53
-    @JvmField var CLAW_SERVO_TARGET = 0.81
+    @JvmField var CLAW_SERVO_HOME = 0.25
+    @JvmField var CLAW_SERVO_TARGET = 0.0
     @JvmField var CLAW_SERVO_CLENCH = 1.0
 
     // Pivot Positions (Joint 2)
     @JvmField var PIVOT_SERVO_HOME = 0.6
-    @JvmField var PIVOT_SERVO_SCORE = 1.0
+    @JvmField var PIVOT_SERVO_SCORE = 0.55
     @JvmField var PIVOT_SERVO_TRANSFER = 1.0
 
     @JvmField var SLIDE_MOTOR_SPEED = 0.7
@@ -71,8 +71,8 @@ object Constants {
      */
     @JvmField var OUT_STRIKE_R_HOME = 0.27
     @JvmField var OUT_STRIKE_L_HOME = 0.73
-    @JvmField var OUT_STRIKE_R_SCORE = 0.73
-    @JvmField var OUT_STRIKE_L_SCORE = 0.27
+    @JvmField var OUT_STRIKE_R_SCORE = 0.2
+    @JvmField var OUT_STRIKE_L_SCORE = 0.8
 
 
     /**
@@ -85,8 +85,8 @@ object Constants {
     /**
      * Wrist Positions
      */
-    @JvmField var WRIST_SERVO_HOME = 0.0
-    @JvmField var WRIST_SERVO_TARGET = 0.5
+    @JvmField var WRIST_SERVO_HOME = 0.3
+    @JvmField var WRIST_SERVO_TARGET = 0.96
 
     /**
      * Claw Positions.

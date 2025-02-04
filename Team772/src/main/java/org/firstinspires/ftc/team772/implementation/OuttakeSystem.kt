@@ -86,7 +86,7 @@ class OuttakeSystem(hw: HardwareMap) {
             .andThen(pivotScore())
             .andThen(wristScore())
 
-
+    fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToHome()) { homeState }
 
     fun toggleClaw() = ConditionalCommand(clawOpen(), clawClosed()) { clawState }
 }

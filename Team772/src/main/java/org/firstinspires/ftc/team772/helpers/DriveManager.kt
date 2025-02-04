@@ -146,7 +146,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 //        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
 //        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.swivelToggle())
 
-        setPressedBinding(mapping.testMapping,  robot!!.outtakeSystem.moveArmToHome())
+        setPressedBinding(mapping.testMapping,  robot!!.outtakeSystem.toggleArm())
 
 
 

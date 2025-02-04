@@ -1,16 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Robot type="FirstInspires-FTC">
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
-        <!--<LynxModule name="Expansion Hub 2" port="2">
-            <goBILDA5202SeriesMotor name="RightClimb" port="0" />
-            <goBILDA5202SeriesMotor name="FLMotor" port="2" />
-            <goBILDA5202SeriesMotor name="slideMotor" port="3" />
-            <Servo name="slideServoLeft" port="0" />
-            <Servo name="clawServo" port="1" />
-            <Servo name="joint2" port="2" />
-            <Servo name="swivelServo" port="3" />
-            <Servo name="joint1" port="4" />
-        </LynxModule>-->
+        --<LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="climbMotor1" port="0" />
+            <goBILDA5202SeriesMotor name="climbMotor2" port="0" />
+            <Servo name="lStrikeServo" port="0" />
+        </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="FLMotor" port="0" />
             <goBILDA5202SeriesMotor name="FRMotor" port="1" />
@@ -20,7 +15,6 @@
             <Servo name="clawServo" port="2" />
             <Servo name="wristServo" port="0" />
             <Servo name="rStrikeServo" port="3" />
-            <Servo name="lStrikeServo" port="4" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
