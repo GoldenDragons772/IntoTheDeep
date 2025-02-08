@@ -7,85 +7,136 @@ import com.arcrobotics.ftclib.command.InstantCommand
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
+/**
+ * Controls the outtake system and its related servos.
+ * It does not control the climb system, which must be changed separately in order to actually climb.
+ */
 class OuttakeSystem(hw: HardwareMap) {
 
-    //Defines servos
+    // Defines servos
     private val rstrikeServo: Servo = hw.get(Servo::class.java, "rStrikeServo")
     private val lstrikeServo: Servo = hw.get(Servo::class.java, "lStrikeServo")
     private val pivotServo: Servo = hw.get(Servo::class.java, "outPivotServo")
     private val wristServo: Servo = hw.get(Servo::class.java, "outWristServo")
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
-    //State Machine!!!
+    // State Machine
     var clawState = false
     var homeState = false
-
 
     init {
         pivotHome()
     }
 
-
-    fun pivotHome(): InstantCommand{
+    /**
+     * Moves the pivot servo to the home position.
+     */
+    fun pivotHome(): InstantCommand {
         Log.i("ROBO", "Pivoted Pivot")
-        return InstantCommand({pivotServo.position = Constants.PIVOT_SERVO_HOME})
+        return InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
     }
 
-    fun pivotScore(): InstantCommand{
-        return InstantCommand({pivotServo.position = Constants.PIVOT_SERVO_SCORE})
+    /**
+     * Moves the pivot servo to the scoring position.
+     * @return A command to be executed later.
+     */
+    fun pivotScore(): InstantCommand {
+        return InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
     }
 
-    fun strikeHome(): InstantCommand{
+    /**
+     * Moves the strike servos to the home position.
+     * @return A command to be executed later.
+     */
+    fun strikeHome(): InstantCommand {
         return InstantCommand({
-            if(homeState) return@InstantCommand
+            if (homeState) return@InstantCommand
             rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
             lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
             homeState = true
         })
     }
 
-    fun strikeScore(): InstantCommand{
+    /**
+     * Moves the strike servos to the scoring position.
+     * @return A command to be executed later.
+     */
+    fun strikeScore(): InstantCommand {
         return InstantCommand({
-            if(!homeState) return@InstantCommand
+            if (!homeState) return@InstantCommand
             rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
             lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
             homeState = false
         })
     }
 
-    fun wristHome(): InstantCommand{
-        return InstantCommand({wristServo.position = Constants.WRIST_SERVO_HOME})
+    /**
+     * Moves the wrist servo to the home position.
+     * @return A command to be executed later.
+     */
+    fun wristHome(): InstantCommand {
+        return InstantCommand({ wristServo.position = Constants.WRIST_SERVO_HOME })
     }
 
-    fun wristScore(): InstantCommand{
-        return InstantCommand({wristServo.position = Constants.WRIST_SERVO_TARGET})
+    /**
+     * Moves the wrist servo to the scoring position.
+     * @return A command to be executed later.
+     */
+    fun wristScore(): InstantCommand {
+        return InstantCommand({ wristServo.position = Constants.WRIST_SERVO_TARGET })
     }
 
-    fun clawOpen(): InstantCommand{
+    /**
+     * Opens the claw to score.
+     * @return A command to be executed later.
+     */
+    fun clawOpen(): InstantCommand {
         return InstantCommand({
-            if(!clawState) return@InstantCommand
+            if (!clawState) return@InstantCommand
             clawServo.position = Constants.CLAW_SERVO_TARGET
-            clawState = false})
+            clawState = false
+        })
     }
 
-    fun clawClosed(): InstantCommand{
+    /**
+     * Closes the claw, with or without a specimen.
+     * @return A command to be executed later.
+     */
+    fun clawClose(): InstantCommand {
         return InstantCommand({
-            if(clawState) return@InstantCommand
+            if (clawState) return@InstantCommand
             clawServo.position = Constants.CLAW_SERVO_HOME
-            clawState = true})
+            clawState = true
+        })
     }
 
+    /**
+     * Moves the entire arm assembly to the home position.
+     * @return A command to be executed later.
+     */
     fun moveArmToHome(): Command =
         strikeHome()
             .andThen(pivotHome())
             .andThen(wristHome())
 
+    /**
+     * Moves the entire arm to the scoring position.
+     * @return A command to be executed later.
+     */
     fun moveArmToScore(): Command =
         strikeScore()
             .andThen(pivotScore())
             .andThen(wristScore())
 
+    /**
+     * Toggles the arm between the home position and the scoring position based on the saved arm state.
+     * @return A command to be executed later.
+     */
     fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToHome()) { homeState }
 
-    fun toggleClaw() = ConditionalCommand(clawOpen(), clawClosed()) { clawState }
+    /**
+     * Toggles teh claw between the open (ready to score) position and the closed position.
+     * @return A command to be executed later.
+     */
+    fun toggleClaw() = ConditionalCommand(clawOpen(), clawClose()) { clawState }
 }
