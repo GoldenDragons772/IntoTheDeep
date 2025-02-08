@@ -44,9 +44,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     // TODO: Fix the arguments.
     fun update() {
         robot!!.drive(
-            -gamepad1!!.leftX,
+            -gamepad1!!.rightX,
             gamepad1!!.rightY,
-            gamepad1!!.rightX
+            gamepad1!!.leftX
         );
 
 

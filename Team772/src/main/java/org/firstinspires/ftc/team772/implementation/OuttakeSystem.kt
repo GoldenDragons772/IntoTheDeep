@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo
 
 class OuttakeSystem(hw: HardwareMap) {
 
-
     //Defines servos
     private val rstrikeServo: Servo = hw.get(Servo::class.java, "rStrikeServo")
     private val lstrikeServo: Servo = hw.get(Servo::class.java, "lStrikeServo")
