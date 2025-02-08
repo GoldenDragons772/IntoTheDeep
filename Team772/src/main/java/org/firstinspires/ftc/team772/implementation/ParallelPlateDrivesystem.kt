@@ -22,7 +22,6 @@ class ParallelPlateDrivesystem(
     val climbSystem: ClimbSystem = ClimbSystem(hw),
     val intakeSubsystem: IntakeSubsystem = IntakeSubsystem(hw)
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
-    // TODO: Implement things from control theory: Motion Profiling, PID.
 
     companion object {
         // Constants. Change these to tune, et cetera.

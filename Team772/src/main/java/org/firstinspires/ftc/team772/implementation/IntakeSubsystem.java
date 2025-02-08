@@ -7,7 +7,11 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import kotlin.NotImplementedError;
 
+/**
+ * Controlling class for the components of the Intake.
+ */
 @Config
 public class IntakeSubsystem {
 
@@ -34,6 +38,10 @@ public class IntakeSubsystem {
     boolean wristState = false;
 
     // positions
+
+    /**
+     * Enum of positions to pass into intake functions.
+     */
     public enum IntakePosition {
         HOME,
         TARGET,
@@ -76,135 +84,135 @@ public class IntakeSubsystem {
 
     }
 
-    public Command setLinkage(IntakePosition pos)  {
-
-        switch (pos) {
-            case HOME -> {
-                return new InstantCommand(() -> {
+    /**
+     * Sets the linkage to an IntakePosition.
+     * @param pos the intake position
+     * @return a command to be executed later.
+     */
+    public Command setLinkage(IntakePosition pos) {
+        return switch (pos) {
+            case HOME -> new InstantCommand(() -> {
                     leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
                     rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
                 });
-            }
-            case TARGET -> {
-                return new InstantCommand(() -> {
+            case TARGET -> new InstantCommand(() -> {
                     leftLinkageServo.setPosition(LEFT_LINKAGE_TARGET);
                     rightLinkageServo.setPosition(RIGHT_LINKAGE_TARGET);
                 });
-            }
-            case TRANSFER -> {
+            case TRANSFER -> new InstantCommand(() -> {
                     leftLinkageServo.setPosition(LEFT_LINKAGE_TRANSFER);
                     rightLinkageServo.setPosition(RIGHT_LINKAGE_TRANSFER);
-            }
-       }
-
-        return null; // return null if nothing works out
+                });
+        };
     }
 
-    public Command setStrike(IntakePosition pos)  {
+    /**
+     * Sets the strike servos to an IntakePosition.
+     * @param pos an IntakePosition.
+     * @return A command to be executed later.
+     */
+    public Command setStrike(IntakePosition pos) {
 
-        switch (pos) {
+        return switch (pos) {
             case HOME -> {
                 pivotState = true;
-                return new InstantCommand(() -> {
+                yield new InstantCommand(() -> {
                     leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
                     rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
                 });
             }
             case TARGET -> {
                 pivotState = false;
-                return new InstantCommand(() -> {
+                yield new InstantCommand(() -> {
                     leftStrikeServo.setPosition(LEFT_PIVOT_TARGET);
                     rightStrikeServo.setPosition(RIGHT_PIVOT_TARGET);
                 });
             }
-            case TRANSFER -> {
-                return new InstantCommand(() -> {
+            case TRANSFER -> new InstantCommand(() -> {
                     leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
                     rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
                 });
-            }
-        }
+        };
 
-        return null; // return null if nothing works out
     }
 
-    public Command setPivot(IntakePosition pos){
-        switch (pos){
+    /**
+     * Sets the pivot servos to an IntakePosition.
+     * @param pos an IntakePosition.
+     * @return A command to be executed later.
+     */
+    public Command setPivot(IntakePosition pos) {
+        return switch (pos) {
             case HOME -> {
                 pivotState = true;
-                return new InstantCommand(() ->{
-                    pivotServo.setPosition(PIVOT_HOME);
-                });
+                yield new InstantCommand(() -> pivotServo.setPosition(PIVOT_HOME));
             }
             case TARGET -> {
                 pivotState = false;
-                return new InstantCommand(() ->{
-                    pivotServo.setPosition(PIVOT_TARGET);
-                });
+                yield new InstantCommand(() -> pivotServo.setPosition(PIVOT_TARGET));
             }
-            case TRANSFER -> {
-                return new InstantCommand(() ->{
-                    pivotServo.setPosition(PIVOT_TRANSFER);
-                });
-            }
-        }
+            case TRANSFER -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_TRANSFER));
+        };
 
-        return null;
     }
 
-    public Command setWrist(IntakePosition pos){
-        switch (pos){
+    /**
+     * Sets the wrist servo to the IntakePosition.
+     * @param pos an IntakePosition.
+     * @return A command to be executed later.
+     */
+    public Command setWrist(IntakePosition pos) {
+        return switch (pos) {
             case HOME -> {
                 wristState = false;
-                return new InstantCommand(() ->{
-                    wristServo.setPosition(WRIST_HOME);
-                });
+                yield new InstantCommand(() -> wristServo.setPosition(WRIST_HOME));
             }
             case TARGET -> {
                 wristState = true;
-                return new InstantCommand(() ->{
-                    wristServo.setPosition(WRIST_TARGET);
-                });
+                yield new InstantCommand(() -> wristServo.setPosition(WRIST_TARGET));
             }
-        }
-
-        return null;
+            case TRANSFER -> throw new NotImplementedError("TRANSFER is unimplemented for setWrist()"); // TODO: Create a case for transfer wrist position.
+        };
     }
 
-    public Command setClaw(IntakePosition pos){
-        switch (pos){
+    /**
+     * Sets the claw servo to an IntakePosition.
+     * @param pos an IntakePosition.
+     * @return A command to be executed later.
+     */
+    public Command setClaw(IntakePosition pos) {
+        return switch (pos) {
             case HOME -> {
                 clawState = false;
-                return new InstantCommand(() ->{
-                    clawServo.setPosition(CLAW_HOME);
-                });
+                yield new InstantCommand(() -> clawServo.setPosition(CLAW_HOME));
             }
             case TARGET -> {
                 clawState = true;
-                return new InstantCommand(() ->{
-                    clawServo.setPosition(CLAW_TARGET);
-                });
+                yield new InstantCommand(() -> clawServo.setPosition(CLAW_TARGET));
             }
-            case TRANSFER -> {
-                return new InstantCommand(() ->{
-                    clawServo.setPosition(CLAW_STROKE);
-                });
-            }
-        }
+            case TRANSFER -> new InstantCommand(() -> clawServo.setPosition(CLAW_STROKE));
+        };
 
-        return null;
     }
 
-    public Command moveToHome(){
+    /**
+     * Moves the intake system to the home position.
+     * @return A command to be executed later.
+     */
+    public Command moveToHome() {
         return new SequentialCommandGroup(
                 setWrist(IntakePosition.HOME),
                 setLinkage(IntakePosition.HOME),
-            setStrike(IntakePosition.HOME),
-            setPivot(IntakePosition.HOME)
+                setStrike(IntakePosition.HOME),
+                setPivot(IntakePosition.HOME)
         );
     }
 
-    public Command moveToTransfer(){
+    /**
+     * Moves the intake system to the transfer position.
+     * @return A command to be executed later.
+     */
+    public Command moveToTransfer() {
         return new SequentialCommandGroup(
                 setWrist(IntakePosition.HOME),
                 setLinkage(IntakePosition.HOME),
@@ -213,7 +221,11 @@ public class IntakeSubsystem {
         );
     }
 
-    public Command moveToTarget(){
+    /**
+     * Move the intake system to the target position.
+     * @return A command to be executed later.
+     */
+    public Command moveToTarget() {
         return new SequentialCommandGroup(
                 setLinkage(IntakePosition.TARGET),
                 setClaw(IntakePosition.HOME),
@@ -222,7 +234,11 @@ public class IntakeSubsystem {
         );
     }
 
-    public ConditionalCommand toggleIntake(){
+    /**
+     * Toggle the intake between the home and target positions.
+     * @return A command to be executed later.
+     */
+    public ConditionalCommand toggleIntake() {
         return new ConditionalCommand(
                 moveToHome(),
                 moveToTarget(),
@@ -233,7 +249,11 @@ public class IntakeSubsystem {
         );
     }
 
-    public ConditionalCommand toggleClaw(){
+    /**
+     * Toggles the claw between the closed and open positions.
+     * @return A command to be executed later.
+     */
+    public ConditionalCommand toggleClaw() {
         return new ConditionalCommand(
                 setClaw(IntakePosition.HOME),
                 setClaw(IntakePosition.TARGET),
@@ -244,7 +264,11 @@ public class IntakeSubsystem {
         );
     }
 
-    public ConditionalCommand toggleWrist(){
+    /**
+     * Toggles the wrist between the home and target positions.
+     * @return A command to be executed later.
+     */
+    public ConditionalCommand toggleWrist() {
         return new ConditionalCommand(
                 setWrist(IntakePosition.HOME),
                 setWrist(IntakePosition.TARGET),
