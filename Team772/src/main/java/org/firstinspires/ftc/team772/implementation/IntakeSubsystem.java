@@ -204,7 +204,7 @@ public class IntakeSubsystem {
     public Command moveToTarget(){
         return new SequentialCommandGroup(
                 setLinkage(IntakePosition.TARGET),
-                setClaw(IntakePosition.TARGET),
+                setClaw(IntakePosition.HOME),
                 setStrike(IntakePosition.TARGET),
                 setPivot(IntakePosition.TARGET)
         );
