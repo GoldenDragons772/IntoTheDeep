@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team772.implementation
 
-import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -10,9 +9,7 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.max
+import kotlin.math.*
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
@@ -70,9 +67,8 @@ class ParallelPlateDrivesystem(
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
 
-        FRMotor.inverted = true;
-        BLMotor.inverted = true;
-        BRMotor.inverted = true;
+        FRMotor.inverted = true
+        BRMotor.inverted = true
 
 
     }
@@ -85,6 +81,9 @@ class ParallelPlateDrivesystem(
     override fun drive(x: Double, y: Double, theta: Double) {
         // Calculate the denominator so that it scales from [-1, 1]
         val denominator: Double = max(abs(y) + abs(x) + abs(theta), 1.0)
+        val xSquared = x.pow(2) * x.sign
+        val ySquared = y.pow(2) * y.sign
+        val thSquared = theta.pow(2) * theta.sign // TODO: dk if this is like whatever or whatever yk fr trust
 
         // Drive the robot
         FRMotor.setRunMode(Motor.RunMode.RawPower)
@@ -92,12 +91,11 @@ class ParallelPlateDrivesystem(
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
+        FLMotor.set((ySquared + xSquared - thSquared) / denominator)
+        BLMotor.set((ySquared - xSquared - thSquared) / denominator)
 
-        FLMotor.set((y + x - theta) / denominator)
-        BLMotor.set((y - x - theta) / denominator)
-
-        FRMotor.set((y - x + theta) / denominator)
-        BRMotor.set((y + x + theta) / denominator)
+        FRMotor.set((ySquared - xSquared + thSquared) / denominator)
+        BRMotor.set((ySquared + xSquared + thSquared) / denominator)
     }
 
     override fun halt() {
