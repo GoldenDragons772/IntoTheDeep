@@ -16,11 +16,11 @@ public class IntakeSubsystem {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.25, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.25, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.45, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.45, RIGHT_PIVOT_TRANSFER = 0.5;
 
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0.5, PIVOT_TRANSFER = 0.5;
+    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0, PIVOT_TRANSFER = 1;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32;
@@ -70,6 +70,9 @@ public class IntakeSubsystem {
         clawServo = hw.get(Servo.class, "intakeClawServo");
 
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
+        rightStrikeServo.setDirection(Servo.Direction.REVERSE);
+
+//        pivotServo.setDirection(Servo.Direction.REVERSE);
 
         moveToHome();
         setClaw(IntakePosition.HOME);
@@ -118,6 +121,7 @@ public class IntakeSubsystem {
                 });
             }
             case TRANSFER -> {
+                pivotState = true;
                 return new InstantCommand(() -> {
                     leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
                     rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
@@ -143,6 +147,7 @@ public class IntakeSubsystem {
                 });
             }
             case TRANSFER -> {
+                pivotState = true;
                 return new InstantCommand(() ->{
                     pivotServo.setPosition(PIVOT_TRANSFER);
                 });
@@ -186,6 +191,7 @@ public class IntakeSubsystem {
                 });
             }
             case TRANSFER -> {
+                clawState = false;
                 return new InstantCommand(() ->{
                     clawServo.setPosition(CLAW_STROKE);
                 });
@@ -195,16 +201,16 @@ public class IntakeSubsystem {
         return null;
     }
 
-    public Command moveToHome(){
+    public Command moveToHome() {
         return new SequentialCommandGroup(
-                setWrist(IntakePosition.HOME),
-                setLinkage(IntakePosition.HOME),
+            setWrist(IntakePosition.HOME),
+            setLinkage(IntakePosition.HOME),
             setStrike(IntakePosition.HOME),
             setPivot(IntakePosition.HOME)
         );
     }
 
-    public Command moveToTransfer(){
+    public Command moveToTransfer() {
         return new SequentialCommandGroup(
                 setWrist(IntakePosition.HOME),
                 setLinkage(IntakePosition.HOME),
@@ -224,7 +230,7 @@ public class IntakeSubsystem {
 
     public ConditionalCommand toggleIntake(){
         return new ConditionalCommand(
-                moveToHome(),
+                moveToTransfer(),
                 moveToTarget(),
                 () -> {
                     pivotState = !pivotState;
