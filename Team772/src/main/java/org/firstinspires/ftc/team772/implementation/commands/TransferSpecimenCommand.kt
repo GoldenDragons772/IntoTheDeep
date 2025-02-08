@@ -14,7 +14,7 @@ class TransferSpecimenCommand(private val intakeSystem: IntakeSubsystem, private
         super.addCommands(
              // It's unknown if this actually needs to be placed in two SequentialCommandGroups
             outtakeSystem.clawOpen(),
-            intakeSystem.setPivot(IntakeSubsystem.IntakePosition.TRANSFER),
+            intakeSystem.setStrike(IntakeSubsystem.IntakePosition.TRANSFER),
             intakeSystem.setLinkage(IntakeSubsystem.IntakePosition.TRANSFER),
             WaitCommand(700), // These have default values from the previous codebase.
             outtakeSystem.moveArmToHome(),

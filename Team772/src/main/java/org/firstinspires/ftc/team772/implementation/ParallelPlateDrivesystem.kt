@@ -19,7 +19,8 @@ class ParallelPlateDrivesystem(
     val BRMotor: MotorEx = MotorEx(hw, "BRMotor"),
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     val outtakeSystem: OuttakeSystem = OuttakeSystem(hw),
-    val climbSystem: ClimbSystem = ClimbSystem(hw)
+    val climbSystem: ClimbSystem = ClimbSystem(hw),
+    val intakeSubsystem: IntakeSubsystem = IntakeSubsystem(hw)
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
     // TODO: Implement things from control theory: Motion Profiling, PID.
 

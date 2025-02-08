@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.team772.implementation.Constants
+import org.firstinspires.ftc.team772.implementation.IntakeSubsystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import kotlin.math.log
@@ -136,17 +137,16 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
 //        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
 //        // Toggle extending the arm out and prime for picking up pixels.
-//        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
-//        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
+        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
 //        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
-        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
-//        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSystem.recalCommand())
+        setPressedTriggerBinding(mapping.gripMapping, robot!!.intakeSubsystem.toggleClaw())
+//        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSubsystem.toggleIntake())
 //
 //        // Claw Commands
 //        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
-//        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.swivelToggle())
+        setPressedBinding(mapping.parallelMapping, robot!!.intakeSubsystem.toggleWrist())
 
-        setPressedBinding(mapping.testMapping,  robot!!.outtakeSystem.toggleArm())
 
 
 
@@ -162,15 +162,14 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-//        val aimMapping: Pair<GamepadKeys.Button, Int>,
-//        val swingMapping: Pair<GamepadKeys.Button, Int>,
-        val gripMapping: Pair<GamepadKeys.Button, Int>,
+        val aimMapping: Pair<GamepadKeys.Button, Int>,
+        val swingMapping: Pair<GamepadKeys.Button, Int>,
+        val gripMapping: Pair<GamepadKeys.Trigger, Int>,
 //        val transferMapping: Pair<GamepadKeys.Button, Int>,
 //        val calibrateMapping: Pair<GamepadKeys.Button, Int>,
 //        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
-//        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val parallelMapping: Pair<GamepadKeys.Button, Int>,
 //        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
 
-        val testMapping: Pair<GamepadKeys.Button, Int>
     )
 }

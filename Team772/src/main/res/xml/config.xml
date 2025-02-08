@@ -4,9 +4,9 @@
         --<LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="climbMotor1" port="0" />
             <goBILDA5202SeriesMotor name="climbMotor2" port="1" />
-            <Servo name="hLeftPivot" port="0" />
+            <Servo name="hPivot" port="0" />
             <Servo name="lStrikeServo" port="1" />
-            <Servo name="hLeftStrikeServo" port="2" />
+            <Servo name="hLeftStrike" port="2" />
             <Servo name="hSwivelServo" port="3" />
             <Servo name="lLinkageServo" port="4" />
             <Servo name="intakeClawServo" port="5" />
@@ -20,7 +20,7 @@
             <Servo name="outClawServo" port="0" />
             <Servo name="outWristServo" port="3" />
             <Servo name="rStrikeServo" port="2" />
-            <Servo name="hRightPivot" port="4" />
+            <Servo name="hRightStrike" port="4" />
             <Servo name="rLinkageServo" port="5" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
