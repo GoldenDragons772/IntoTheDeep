@@ -4,20 +4,24 @@
         --<LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="climbMotor1" port="0" />
             <goBILDA5202SeriesMotor name="climbMotor2" port="0" />
-            <Servo name="hLeftPivot" port="0" />
-            <Servo name="hLeftPivot" port="1" />
-            <Servo name="lStrikeServo" port="2" />
+            <Servo name="hPivot" port="0" />
+            <Servo name="lStrikeServo" port="1" />
+            <Servo name="hLeftStrikeServo" port="2" />
+            <Servo name="hSwivelServo" port="3" />
+            <Servo name="lLinkageServo" port="4" />
+            <Servo name="intakeClawServo" port="5" />
         </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="FLMotor" port="1" />
             <goBILDA5202SeriesMotor name="FRMotor" port="2" />
             <goBILDA5202SeriesMotor name="BLMotor" port="0" />
             <goBILDA5202SeriesMotor name="BRMotor" port="3" />
-            <Servo name="pivotServo" port="1" />
-            <Servo name="clawServo" port="2" />
-            <Servo name="wristServo" port="0" />
-            <Servo name="rStrikeServo" port="3" />
+            <Servo name="outPivotServo" port="1" />
+            <Servo name="outClawServo" port="0" />
+            <Servo name="outWristServo" port="3" />
+            <Servo name="rStrikeServo" port="2" />
             <Servo name="hRightPivot" port="4" />
+            <Servo name="rLinkageServo" port="5" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

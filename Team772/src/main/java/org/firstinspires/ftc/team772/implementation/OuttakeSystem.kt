@@ -12,9 +12,9 @@ class OuttakeSystem(hw: HardwareMap) {
     //Defines servos
     private val rstrikeServo: Servo = hw.get(Servo::class.java, "rStrikeServo")
     private val lstrikeServo: Servo = hw.get(Servo::class.java, "lStrikeServo")
-    private val pivotServo: Servo = hw.get(Servo::class.java, "pivotServo")
-    private val wristServo: Servo = hw.get(Servo::class.java, "wristServo")
-    private val clawServo: Servo = hw.get(Servo::class.java, "clawServo")
+    private val pivotServo: Servo = hw.get(Servo::class.java, "outPivotServo")
+    private val wristServo: Servo = hw.get(Servo::class.java, "outWristServo")
+    private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
     //State Machine!!!
     var clawState = false
