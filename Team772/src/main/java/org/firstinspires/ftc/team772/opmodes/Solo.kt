@@ -17,7 +17,10 @@ class Solo: CommandOpMode() {
 
         val mapping = DriveManager.Mapping(
             testMapping = Pair(GamepadKeys.Button.A, 1),
-            gripMapping = Pair(GamepadKeys.Button.B, 1)
+            gripMapping = Pair(GamepadKeys.Button.B, 1),
+            lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
+            unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
+            highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
 

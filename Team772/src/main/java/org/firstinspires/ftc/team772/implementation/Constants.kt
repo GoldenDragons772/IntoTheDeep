@@ -29,7 +29,7 @@ object Constants {
      */
     @JvmField var ARM_HOME = 0
     @JvmField var ARM_HIGH_CLIMB = 3100 // Moved up by 150
-    @JvmField var ARM_LOW_CLIMB = 1500
+    @JvmField var ARM_LOW_CLIMB = 200
     @JvmField var SPEC_HANG_PREP = 750
     @JvmField var SPEC_HANG = 1300
 

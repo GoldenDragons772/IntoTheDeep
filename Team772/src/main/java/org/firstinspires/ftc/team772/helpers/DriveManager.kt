@@ -131,9 +131,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-//        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.lowclimb())// :: for the pointer to the function.
-//        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
-//        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
+        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.lowclimb())// :: for the pointer to the function.
+        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
+        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
 //        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
 //        // Toggle extending the arm out and prime for picking up pixels.
 //        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
@@ -159,9 +159,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         /**
          * Added mapping for climbing
          */
-//        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
-//        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
-//        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
+        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
 //        val aimMapping: Pair<GamepadKeys.Button, Int>,
 //        val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
