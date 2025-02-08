@@ -4,7 +4,7 @@
         --<LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="climbMotor1" port="0" />
             <goBILDA5202SeriesMotor name="climbMotor2" port="0" />
-            <Servo name="hPivot" port="0" />
+            <Servo name="hLeftPivot" port="0" />
             <Servo name="lStrikeServo" port="1" />
             <Servo name="hLeftStrikeServo" port="2" />
             <Servo name="hSwivelServo" port="3" />
