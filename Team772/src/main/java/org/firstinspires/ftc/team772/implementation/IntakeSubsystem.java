@@ -71,6 +71,9 @@ public class IntakeSubsystem {
 
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
 
+        moveToHome();
+        setClaw(IntakePosition.HOME);
+
     }
 
     public Command setLinkage(IntakePosition pos)  {
@@ -198,6 +201,15 @@ public class IntakeSubsystem {
                 setLinkage(IntakePosition.HOME),
             setStrike(IntakePosition.HOME),
             setPivot(IntakePosition.HOME)
+        );
+    }
+
+    public Command moveToTransfer(){
+        return new SequentialCommandGroup(
+                setWrist(IntakePosition.HOME),
+                setLinkage(IntakePosition.HOME),
+                setStrike(IntakePosition.TRANSFER),
+                setPivot(IntakePosition.TRANSFER)
         );
     }
 
