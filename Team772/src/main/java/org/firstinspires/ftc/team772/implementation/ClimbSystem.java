@@ -17,7 +17,7 @@ public class ClimbSystem extends SubsystemBase {
     public enum CLIMB_STATE {
         HOME(0),
         LOW_CHAMBER(100),
-        LOW_BASKET(150),
+        LOW_BASKET(1100),
         HIGH_CHAMBER(200),
         HIGH_BASKET(2200);
 
