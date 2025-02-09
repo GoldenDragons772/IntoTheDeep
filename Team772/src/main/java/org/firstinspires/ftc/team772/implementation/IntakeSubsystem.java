@@ -16,11 +16,11 @@ public class IntakeSubsystem {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.45, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.45, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.5, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.35, RIGHT_PIVOT_TRANSFER = 0.5;
 
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0, PIVOT_TRANSFER = 1;
+    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0, PIVOT_TRANSFER = 0.75;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32;

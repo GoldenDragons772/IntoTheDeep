@@ -1,21 +1,14 @@
 package org.firstinspires.ftc.team772.helpers
 
-import android.util.Log
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
-import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RepeatCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.TouchSensor
-import org.firstinspires.ftc.team772.implementation.Constants
-import org.firstinspires.ftc.team772.implementation.IntakeSubsystem
-import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
-import kotlin.math.log
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -140,11 +133,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
 //        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
-        setPressedTriggerBinding(mapping.gripMapping, robot!!.intakeSubsystem.toggleClaw())
+        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
 //        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSubsystem.toggleIntake())
 //
 //        // Claw Commands
-//        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleIntakeClaw())
+        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSubsystem.toggleClaw())
         setPressedBinding(mapping.parallelMapping, robot!!.intakeSubsystem.toggleWrist())
 
 
@@ -165,10 +158,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
-        val gripMapping: Pair<GamepadKeys.Trigger, Int>,
+        val gripMapping: Pair<GamepadKeys.Button, Int>,
 //        val transferMapping: Pair<GamepadKeys.Button, Int>,
 //        val calibrateMapping: Pair<GamepadKeys.Button, Int>,
-//        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
+        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
 //        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
 

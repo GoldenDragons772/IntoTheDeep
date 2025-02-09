@@ -25,7 +25,7 @@ class OuttakeSystem(hw: HardwareMap) {
     var homeState = false
 
     init {
-        pivotHome()
+        moveArmToHome()
     }
 
     /**
@@ -34,6 +34,10 @@ class OuttakeSystem(hw: HardwareMap) {
     fun pivotHome(): InstantCommand {
         Log.i("ROBO", "Pivoted Pivot")
         return InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
+    }
+
+    fun pivotTransfer(): InstantCommand {
+        return InstantCommand({pivotServo.position = Constants.PIVOT_SERVO_TRANSFER})
     }
 
     /**
@@ -53,6 +57,15 @@ class OuttakeSystem(hw: HardwareMap) {
             if (homeState) return@InstantCommand
             rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
             lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
+            homeState = true
+        })
+    }
+
+    fun strikeTransfer(): InstantCommand {
+        return InstantCommand({
+            if (homeState) return@InstantCommand
+            rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER
+            lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER
             homeState = true
         })
     }
@@ -128,11 +141,15 @@ class OuttakeSystem(hw: HardwareMap) {
             .andThen(pivotScore())
             .andThen(wristScore())
 
+    fun moveArmToTransfer(): Command =
+        strikeTransfer()
+            .andThen(pivotTransfer())
+            .andThen(wristHome())
     /**
      * Toggles the arm between the home position and the scoring position based on the saved arm state.
      * @return A command to be executed later.
      */
-    fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToHome()) { homeState }
+    fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToTransfer()) { homeState }
 
     /**
      * Toggles teh claw between the open (ready to score) position and the closed position.

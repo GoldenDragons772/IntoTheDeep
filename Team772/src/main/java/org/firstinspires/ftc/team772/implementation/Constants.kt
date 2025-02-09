@@ -73,6 +73,8 @@ object Constants {
     @JvmField var OUT_STRIKE_L_HOME = 0.73
     @JvmField var OUT_STRIKE_R_SCORE = 0.8
     @JvmField var OUT_STRIKE_L_SCORE = 0.2
+    @JvmField var OUT_STRIKE_R_TRANSFER = 0.45
+    @JvmField var OUT_STRIKE_L_TRANSFER = 0.54
 
 
     /**
