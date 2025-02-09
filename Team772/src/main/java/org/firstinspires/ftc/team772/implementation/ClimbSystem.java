@@ -19,7 +19,7 @@ public class ClimbSystem extends SubsystemBase {
         LOW_CHAMBER(100),
         LOW_BASKET(150),
         HIGH_CHAMBER(200),
-        HIGH_BASKET(250);
+        HIGH_BASKET(2200);
 
         public final double position;
 
@@ -64,9 +64,7 @@ public class ClimbSystem extends SubsystemBase {
 
     public Command setTargetPosition(CLIMB_STATE climbState) {
 
-        this.targetPosition = climbState.position;
-
-        return new InstantCommand(() -> {/* do nothing*/});
+        return new InstantCommand(() -> {this.targetPosition = climbState.position;});
     }
 
 }
