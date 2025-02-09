@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 @Config
 public class ClimbSystem extends SubsystemBase {
@@ -58,7 +57,7 @@ public class ClimbSystem extends SubsystemBase {
         climbMotor1.setPower(PID_output);
         climbMotor2.setPower(PID_output);
 
-        this.lastError = error;
+        lastError = error;
         timer.reset();
     }
 
