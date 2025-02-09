@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 
 /**
@@ -125,9 +126,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-//        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.lowclimb())// :: for the pointer to the function.
-//        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
-//        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
+        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.LOW_BASKET))// :: for the pointer to the function.
+        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_BASKET))
+        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HOME))
 //        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
 //        // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
@@ -152,9 +153,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         /**
          * Added mapping for climbing
          */
-//        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
-//        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
-//        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
+        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
 
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val swingMapping: Pair<GamepadKeys.Button, Int>,
