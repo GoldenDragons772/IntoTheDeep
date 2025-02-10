@@ -129,13 +129,13 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.LOW_BASKET))// :: for the pointer to the function.
         setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_BASKET))
         setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HOME))
-//        setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
+        setPressedBinding(mapping.hangSpecMapping, robot!!.outtakeSystem.toggleArmSpec())
 //        // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
 //        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
-//        setPressedBinding(mapping.calibrateMapping, robot!!.intakeSubsystem.toggleIntake())
+        setPressedBinding(mapping.climbToHangSpec, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_CHAMBER))
 //
 //        // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSubsystem.toggleClaw())
@@ -161,10 +161,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
 //        val transferMapping: Pair<GamepadKeys.Button, Int>,
-//        val calibrateMapping: Pair<GamepadKeys.Button, Int>,
+        val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
-//        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
+        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
 
     )
 }

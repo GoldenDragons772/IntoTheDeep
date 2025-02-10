@@ -17,7 +17,7 @@ public class ClimbSystem extends SubsystemBase {
         HOME(0),
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
-        HIGH_CHAMBER(200),
+        HIGH_CHAMBER(410),
         HIGH_BASKET(2200);
 
         public final double position;
@@ -36,6 +36,9 @@ public class ClimbSystem extends SubsystemBase {
     public ClimbSystem(HardwareMap hw) {
         climbMotor1 = hw.get(DcMotor.class, "climbMotor1");
         climbMotor2 = hw.get(DcMotor.class, "climbMotor2");
+
+        climbMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
     }

@@ -21,10 +21,12 @@ class Solo: CommandOpMode() {
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
             unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 1),
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 1),
+            climbToHangSpec = Pair(GamepadKeys.Button.DPAD_RIGHT, 1),
 
             aimMapping = Pair(GamepadKeys.Button.Y, 1),
             parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
-            clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1)
+            clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
+            hangSpecMapping = Pair(GamepadKeys.Button.B, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
 

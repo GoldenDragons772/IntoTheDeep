@@ -48,6 +48,10 @@ class OuttakeSystem(hw: HardwareMap) {
         return InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
     }
 
+    fun pivotScoreSpec(): InstantCommand {
+        return InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
+    }
+
     /**
      * Moves the strike servos to the home position.
      * @return A command to be executed later.
@@ -79,6 +83,15 @@ class OuttakeSystem(hw: HardwareMap) {
             if (!homeState) return@InstantCommand
             rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
             lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+            homeState = false
+        })
+    }
+
+    fun strikeScoreSpec(): InstantCommand {
+        return InstantCommand({
+            if (!homeState) return@InstantCommand
+            rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC
+            lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC
             homeState = false
         })
     }
@@ -141,6 +154,11 @@ class OuttakeSystem(hw: HardwareMap) {
             .andThen(pivotScore())
             .andThen(wristScore())
 
+    fun moveArmToScoreSpec(): Command =
+        strikeScoreSpec()
+            .andThen(pivotScoreSpec())
+            .andThen(wristScore())
+
     fun moveArmToTransfer(): Command =
         strikeTransfer()
             .andThen(pivotTransfer())
@@ -150,6 +168,12 @@ class OuttakeSystem(hw: HardwareMap) {
      * @return A command to be executed later.
      */
     fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToTransfer()) { homeState }
+
+    /**
+     * Toggles the arm between the home position and the Specimen scoring position based on the saved arm state.
+     * @return A command to be executed later.
+     */
+    fun toggleArmSpec() = ConditionalCommand(moveArmToScoreSpec(), moveArmToHome()) { homeState }
 
     /**
      * Toggles teh claw between the open (ready to score) position and the closed position.
