@@ -1,6 +1,9 @@
 # IntoTheDeep
 Code can be found in Team772/src/main/java/org/firstinspires/ftc/team772
 
+Github repository for FTC 772's Into the Deep 2024-25 Season.\
+Code for the first iteration of the robot is on the main branch. Code for the second iteration is on the v2 branch.
+
 Important Links
 ---
 - [FIRST SDK Documentation](https://ftc-docs.firstinspires.org/en/latest/ftc_sdk/overview/index.html)
@@ -11,18 +14,6 @@ Important Links
 - [FTC772 Org](https://github.com/GoldenDragons772)
 - [FTCLib](https://docs.ftclib.org)
 - [Purdue PurePursuit](https://wiki.purduesigbots.com/software/control-algorithms/basic-pure-pursuit)
-
-FTC
----
-Programs that run on FTC robots run through a connection between a Driver Hub and a Control Hub (and an optional Expansion Hub). 
-All of these devices run an outdated version of Android, requiring the programmer to use older libraries if they wish to use third-party libraries of any other form. Libraries designed specifically for FTC are almost certainly compatible with this outdated version.
-While the Driver Hub can mostly be circumvented with the FTC Dashboard, some functions may still require the programmer to use the Driver Hub.
-
-OpModes
----
-The only way to run robot functions is through OpModes. Every program starts at an OpMode, and and control of the robot must be passed down through the hardwareMap variable to helper functions and classes.
-
-See [Writing an OpMode](https://ftc-docs.firstinspires.org/en/latest/programming_resources/android_studio_java/opmode/opmode.html).
 
 Using
 ---
