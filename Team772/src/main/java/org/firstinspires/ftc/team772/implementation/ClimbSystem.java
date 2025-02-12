@@ -13,16 +13,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class ClimbSystem extends SubsystemBase {
 
-    public enum CLIMB_STATE {
+    public enum ClimbState {
         HOME(0),
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
         HIGH_CHAMBER(410),
-        HIGH_BASKET(2200);
+        HIGH_BASKET(2200),
+        SPEC_HANG(750);
 
         public final double position;
 
-        CLIMB_STATE(double position) {
+        ClimbState(double position) {
             this.position = position;
         }
     }
@@ -30,7 +31,7 @@ public class ClimbSystem extends SubsystemBase {
     public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.005, 0, 0.00003, 0.05);
     private final DcMotor climbMotor1, climbMotor2;
 
-    public static double targetPosition = CLIMB_STATE.HOME.position, lastError;
+    public static double targetPosition = ClimbState.HOME.position, lastError;
     private final ElapsedTime timer = new ElapsedTime();
 
     public ClimbSystem(HardwareMap hw) {
@@ -64,7 +65,7 @@ public class ClimbSystem extends SubsystemBase {
         timer.reset();
     }
 
-    public Command setTargetPosition(CLIMB_STATE climbState) {
+    public Command setTargetPosition(ClimbState climbState) {
 
         return new InstantCommand(() -> {this.targetPosition = climbState.position;});
     }

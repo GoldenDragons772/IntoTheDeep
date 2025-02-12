@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
-import kotlin.times
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
@@ -21,7 +20,9 @@ class ParallelPlateDrivesystem(
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     val outtakeSystem: OuttakeSystem = OuttakeSystem(hw),
     val climbSystem: ClimbSystem = ClimbSystem(hw),
-    val intakeSubsystem: IntakeSubsystem = IntakeSubsystem(hw)
+    val intakeSystem: IntakeSystem = IntakeSystem(
+        hw
+    )
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
 
     companion object {
