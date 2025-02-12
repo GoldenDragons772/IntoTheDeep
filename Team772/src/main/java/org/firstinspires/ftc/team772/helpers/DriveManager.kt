@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
+import org.firstinspires.ftc.team772.implementation.TransferSampleCommand
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -132,7 +133,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.hangSpecMapping, robot!!.outtakeSystem.toggleArmSpec())
 //        // Toggle extending the arm out and prime for picking up pixels.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
-        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
+        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
 //        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
         setPressedBinding(mapping.climbToHangSpec, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_CHAMBER))
