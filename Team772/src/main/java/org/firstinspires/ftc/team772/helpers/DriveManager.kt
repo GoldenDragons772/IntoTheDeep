@@ -42,10 +42,8 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         robot!!.drive(
             -gamepad1!!.rightX,
             gamepad1!!.rightY,
-            gamepad1!!.leftX
+            -gamepad1!!.leftX
         );
-
-
     }
 
     /**

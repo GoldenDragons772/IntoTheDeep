@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
+import kotlin.times
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
@@ -84,7 +85,7 @@ class ParallelPlateDrivesystem(
         val denominator: Double = max(abs(y) + abs(x) + abs(theta), 1.0)
         val xSquared = x.pow(2) * x.sign
         val ySquared = y.pow(2) * y.sign
-        val thSquared = theta.pow(2) * theta.sign // TODO: dk if this is like whatever or whatever yk fr trust
+        val thSquared = theta.pow(2) * theta.sign
 
         // Drive the robot
         FRMotor.setRunMode(Motor.RunMode.RawPower)
@@ -92,11 +93,16 @@ class ParallelPlateDrivesystem(
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
-        FLMotor.set((ySquared + xSquared - thSquared) / denominator)
-        BLMotor.set((ySquared - xSquared - thSquared) / denominator)
+        FLMotor.set((ySquared + xSquared + thSquared) / denominator)
+        BLMotor.set((ySquared - xSquared + thSquared) / denominator)
+        FRMotor.set((ySquared - xSquared - thSquared) / denominator)
+        BRMotor.set((ySquared + xSquared - thSquared) / denominator)
 
-        FRMotor.set((ySquared - xSquared + thSquared) / denominator)
-        BRMotor.set((ySquared + xSquared + thSquared) / denominator)
+//        FLMotor.set((y + x + theta) / denominator)
+//        BLMotor.set((y - x + theta) / denominator)
+//        FRMotor.set((y - x - theta) / denominator)
+//        BRMotor.set((y + x - theta) / denominator)
+
     }
 
     override fun halt() {
