@@ -43,7 +43,7 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.clawClose(),
                 climbSystem.setTargetPosition(ClimbSystem.ClimbState.SPEC_HANG),
                 outtakeSystem.moveArmToScoreSpec(),
-                FollowPathCommand(follower,)
+                //FollowPathCommand(follower, )
             )
         )
     }

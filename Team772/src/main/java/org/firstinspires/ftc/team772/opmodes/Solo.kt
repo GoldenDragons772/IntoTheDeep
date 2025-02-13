@@ -15,7 +15,7 @@ class Solo: CommandOpMode() {
         CommandScheduler.getInstance().reset()
 
         val mapping = DriveManager.Mapping(
-            swingMapping = Pair(GamepadKeys.Button.A, 1),
+            //swingMapping = Pair(GamepadKeys.Button.A, 1),
             gripMapping = Pair(GamepadKeys.Button.X, 1),
 
             lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 1),
@@ -26,7 +26,8 @@ class Solo: CommandOpMode() {
             aimMapping = Pair(GamepadKeys.Button.Y, 1),
             parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
-            hangSpecMapping = Pair(GamepadKeys.Button.B, 1)
+            hangSpecMapping = Pair(GamepadKeys.Button.B, 1),
+            transferMapping = Pair(GamepadKeys.Button.A, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
 

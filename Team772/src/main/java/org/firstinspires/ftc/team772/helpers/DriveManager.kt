@@ -125,21 +125,21 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.LOW_BASKET))// :: for the pointer to the function.
-        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_BASKET))
-        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HOME))
+        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))// :: for the pointer to the function.
+        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
+        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME))
         setPressedBinding(mapping.hangSpecMapping, robot!!.outtakeSystem.toggleArmSpec())
 //        // Toggle extending the arm out and prime for picking up pixels.
-        setPressedBinding(mapping.aimMapping, robot!!.intakeSubsystem.toggleIntake())
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.toggleIntake())
 //        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
-        setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
-//        setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
+        //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
+        setPressedBinding(mapping.transferMapping, TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
         setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
-        setPressedBinding(mapping.climbToHangSpec, robot!!.climbSystem.setTargetPosition(ClimbSystem.CLIMB_STATE.HIGH_CHAMBER))
+        setPressedBinding(mapping.climbToHangSpec, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
 //
 //        // Claw Commands
-        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSubsystem.toggleClaw())
-        setPressedBinding(mapping.parallelMapping, robot!!.intakeSubsystem.toggleWrist())
+        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())
+        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.toggleWrist())
 
 
 
@@ -158,9 +158,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
 
         val aimMapping: Pair<GamepadKeys.Button, Int>,
-        val swingMapping: Pair<GamepadKeys.Button, Int>,
+//        val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
-//        val transferMapping: Pair<GamepadKeys.Button, Int>,
+        val transferMapping: Pair<GamepadKeys.Button, Int>,
         val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,

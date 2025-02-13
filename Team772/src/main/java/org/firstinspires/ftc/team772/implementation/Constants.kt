@@ -63,7 +63,7 @@ object Constants {
     @JvmField var PIVOT_SERVO_HOME = 0.6
     @JvmField var PIVOT_SERVO_SCORE = 0.55
     @JvmField var PIVOT_SERVO_SPEC = 0.0
-    @JvmField var PIVOT_SERVO_TRANSFER = 1.0
+    @JvmField var PIVOT_SERVO_TRANSFER = 0.0
 
     @JvmField var SLIDE_MOTOR_SPEED = 0.7
 
@@ -74,8 +74,8 @@ object Constants {
     @JvmField var OUT_STRIKE_L_HOME = 0.8
     @JvmField var OUT_STRIKE_R_SCORE = 0.8
     @JvmField var OUT_STRIKE_L_SCORE = 0.8
-    @JvmField var OUT_STRIKE_R_TRANSFER = 0
-    @JvmField var OUT_STRIKE_L_TRANSFER = 0
+    @JvmField var OUT_STRIKE_R_TRANSFER = 0.32
+    @JvmField var OUT_STRIKE_L_TRANSFER = 0.32
     @JvmField var OUT_STRIKE_R_SPEC = 0.93
     @JvmField var OUT_STRIKE_L_SPEC = 0.07
 

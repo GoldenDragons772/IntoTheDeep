@@ -11,11 +11,13 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
         super.addCommands(
             SequentialCommandGroup(
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
+                outtakeSystem.clawOpen(),
                 intakeSystem.moveToTransfer(),
                 WaitCommand(1000),
                 outtakeSystem.moveArmToTransfer(),
                 WaitCommand(500),
                 outtakeSystem.clawClose(),
+                WaitCommand(500),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
                 outtakeSystem.moveArmToScore()
             )
