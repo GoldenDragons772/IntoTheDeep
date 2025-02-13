@@ -20,12 +20,14 @@ class OuttakeSystem(hw: HardwareMap) {
     private val wristServo: Servo = hw.get(Servo::class.java, "outWristServo")
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
+
     // State Machine
     var clawState = false
     var homeState = false
 
     init {
         moveArmToHome()
+        lstrikeServo.direction = Servo.Direction.REVERSE
     }
 
     /**

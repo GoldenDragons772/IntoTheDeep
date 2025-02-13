@@ -12,15 +12,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class IntakeSubsystem {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.45, LEFT_LINKAGE_TRANSFER = 0.5;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.4, LEFT_PIVOT_TRANSFER = 0.6;
-    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.28, RIGHT_PIVOT_TRANSFER = 0.6;
+    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.4, LEFT_PIVOT_TRANSFER = 0.24;
+    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.355, RIGHT_PIVOT_TRANSFER = 0.205;
 
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0, PIVOT_TRANSFER = 0.8;
+    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0.1, PIVOT_TRANSFER = 0.8;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32;
@@ -72,10 +72,9 @@ public class IntakeSubsystem {
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
 
-//        pivotServo.setDirection(Servo.Direction.REVERSE);
+        moveToTransfer();
 
-        moveToHome();
-        setClaw(IntakePosition.HOME);
+        // Set Default positions:
 
     }
 
