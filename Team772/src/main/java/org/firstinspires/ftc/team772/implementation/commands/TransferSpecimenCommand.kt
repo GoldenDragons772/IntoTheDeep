@@ -2,20 +2,20 @@ package org.firstinspires.ftc.team772.implementation.commands
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
-import org.firstinspires.ftc.team772.implementation.IntakeSubsystem
+import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 
 /**
  * Transfers a grabbed sample from the intake claw to the outtake claw and moves the outtake claw up to score.
  * This makes no guarantees that a specimen is actually grabbed, so it will still attempt to transfer without one.
  */
-class TransferSpecimenCommand(private val intakeSystem: IntakeSubsystem, private val outtakeSystem: OuttakeSystem): SequentialCommandGroup() {
+class TransferSpecimenCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem): SequentialCommandGroup() {
     init {
         super.addCommands(
              // It's unknown if this actually needs to be placed in two SequentialCommandGroups
             outtakeSystem.clawOpen(),
-            intakeSystem.setStrike(IntakeSubsystem.IntakePosition.TRANSFER),
-            intakeSystem.setLinkage(IntakeSubsystem.IntakePosition.TRANSFER),
+            intakeSystem.setStrike(IntakeSystem.IntakePosition.TRANSFER),
+            intakeSystem.setLinkage(IntakeSystem.IntakePosition.TRANSFER),
             WaitCommand(700), // These have default values from the previous codebase.
             outtakeSystem.moveArmToHome(),
             WaitCommand(500),

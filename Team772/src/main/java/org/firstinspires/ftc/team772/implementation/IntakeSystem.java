@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-public class IntakeSubsystem {
+public class IntakeSystem {
 
     // Set Positions for Linkage
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;
@@ -51,7 +51,7 @@ public class IntakeSubsystem {
     // Claw Servo
     Servo clawServo;
 
-    public IntakeSubsystem(HardwareMap hw) {
+    public IntakeSystem(HardwareMap hw) {
         // Linkage Servo
         leftLinkageServo = hw.get(Servo.class, "lLinkageServo");
         rightLinkageServo = hw.get(Servo.class, "rLinkageServo");
