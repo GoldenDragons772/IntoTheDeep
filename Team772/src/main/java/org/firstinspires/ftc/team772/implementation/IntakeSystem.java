@@ -16,11 +16,11 @@ public class IntakeSystem {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.4, LEFT_PIVOT_TRANSFER = 0.24;
-    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.355, RIGHT_PIVOT_TRANSFER = 0.205;
+    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.08, LEFT_PIVOT_TRANSFER = 0.24;
+    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.08, RIGHT_PIVOT_TRANSFER = 0.205;
 
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.0, PIVOT_TARGET = 0.1, PIVOT_TRANSFER = 0.8;
+    public static double PIVOT_HOME = 0.25, PIVOT_TARGET = 0.0, PIVOT_TRANSFER = 0.8;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32;
@@ -29,9 +29,9 @@ public class IntakeSystem {
     public static double CLAW_HOME = 0.2, CLAW_TARGET = 0.445, CLAW_STROKE = 0.5;
 
     //State stuff
-    boolean pivotState = false;
-    boolean clawState = false;
-    boolean wristState = false;
+    static boolean pivotState = false;
+    static boolean clawState = false;
+    static boolean wristState = false;
 
     // positions
     public enum IntakePosition {
@@ -72,9 +72,13 @@ public class IntakeSystem {
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
 
-        moveToTransfer();
-
         // Set Default positions:
+        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+        rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+        clawServo.setPosition(CLAW_HOME);
+        leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
+        rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
+        pivotServo.setPosition(PIVOT_TRANSFER);
 
     }
 
