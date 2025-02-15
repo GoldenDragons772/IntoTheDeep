@@ -22,6 +22,7 @@
             <Servo name="rStrikeServo" port="2" />
             <Servo name="hRightStrike" port="4" />
             <Servo name="rLinkageServo" port="5" />
+            <goBILDAPinpoint name="pinpoint" port="1" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
