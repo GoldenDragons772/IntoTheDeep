@@ -19,7 +19,6 @@ import org.firstinspires.ftc.team772.implementation.AutoTransferSpecimenCommand;
 import org.firstinspires.ftc.team772.implementation.ClimbSystem;
 import org.firstinspires.ftc.team772.implementation.IntakeSystem;
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem;
-import org.firstinspires.ftc.team772.implementation.TransferSpecimenCommand;
 import org.firstinspires.ftc.team772.implementation.commands.FollowPathCommand;
 import org.firstinspires.ftc.team772.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants;
@@ -77,7 +76,7 @@ public class SpecimenAuto extends CommandOpMode {
                 //Spec 2
                 intakeSystem.autoAim(),
                 new WaitCommand(750),
-                intakeSystem.swallow(),
+                intakeSystem.closeClaw(),
                 new WaitCommand(500),
                 autoTransferSpecimenCommand,
                 new ParallelCommandGroup(
@@ -94,7 +93,7 @@ public class SpecimenAuto extends CommandOpMode {
                 //Spec 3
                 intakeSystem.autoAim(),
                 new WaitCommand(750),
-                intakeSystem.swallow(),
+                intakeSystem.closeClaw(),
                 new WaitCommand(500),
                 autoTransferSpecimenCommand,
                 new ParallelCommandGroup(

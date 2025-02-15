@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.team772.implementation
 
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor

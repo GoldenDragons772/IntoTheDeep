@@ -6,17 +6,10 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.* //Stop dumping all the tools out of the toolbox
 import com.arcrobotics.ftclib.controller.PIDFController
 import com.qualcomm.robotcore.hardware.* //Stop dumping all the tools out of the toolbox
-import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kd
-import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
-import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
-import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
 import kotlin.math.abs
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
-
-    //val slideMotor: Motor = Motor(hw, "slideMotor", GoBILDA.RPM_435) // FTCLib Implementation
-    //val slideMotorEncoder: Motor.Encoder = slideMotor.encoder
 
     private val clawServo: Servo = hw.get(Servo::class.java, "clawServo") // Port 1
     private val clawPivotServo: Servo = hw.get(Servo::class.java, "joint2")
@@ -31,39 +24,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     var clawState = false
     var wristState = false
 
-    //Stores the states of the intake into an Enum object.
-    enum class LipState {
-        SPITTING,
-        SWALLOWING,
-        STOPPED
-    }
-
-    var lipState = LipState.STOPPED
-
-    //Create PIDF Controller
-    val pidf = PIDFController(kp, ki, kd, kf)
-
-
     companion object {
-
-        //@JvmField is a static keyword because java can't comprehend it.
-        @JvmField
-        var kp = 28.0
-
-        @JvmField
-        var ki = 0.0
-
-        @JvmField
-        var kd = 2.0
-
-        @JvmField
-        var kf = 0.0
 
         @JvmField
         var point = 0.0
-
-        @JvmField
-        var extendPoint = 1100
 
         @JvmField
         var extendPos: ExtendPos = ExtendPos.HOME
@@ -110,14 +74,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     fun setSlideToPos(pos: ExtendPos) {
         extendPos = pos
         setSlideToPos(pos.position)
-    }
-
-    /**
-     * Stops and resets the slide motor power
-     */
-    fun stopResetSlide() {
-        //slideMotor.setVelocity(Constants.SLIDE_MOTOR_SPEED)
-        TODO("Figure out the FTC lib to reset slides")
     }
 
     /**
@@ -192,22 +148,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         })
     }
 
-    //Ayo
     /**
      * Make the head begin to swallow elements.
      */
-    fun swallow(): InstantCommand {
+    fun closeClaw(): InstantCommand {
         return InstantCommand({
-            lipState = LipState.SWALLOWING
+            clawState = !clawState
             Log.i("ROBO", "Swallowing")
             clawServo.position = Constants.CLAW_SERVO_TARGET
-        })
-    }
-
-    fun swallowHarder(): InstantCommand {
-        return InstantCommand({
-            lipState = LipState.SWALLOWING
-            clawServo.position = Constants.CLAW_SERVO_CLENCH
         })
     }
 
@@ -216,7 +164,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      */
     fun openClaw(): InstantCommand {
         return InstantCommand({
-            lipState = LipState.SPITTING
+            clawState = !clawState
             clawServo.position = Constants.CLAW_SERVO_HOME
             Log.i("ROBO", "Spitting")
         })
@@ -331,17 +279,14 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 
     //Move the claw to the home state.
     fun pivotClawToHome(): Command =
-//            .andThen(pivot())
         joint1UnPivotIntake()
             .andThen(InstantCommand({ pivotState = false }))
 
     //Move the claw to the grabbing state.
     fun pivotClawToPick(): Command =
-//            .andThen(unpivot())
         joint1PivotIntake()
             .andThen(InstantCommand({ pivotState = true }))
 
-    //    fun aimToggle() = if (!aimState) aim() else goHome()
     fun aimToggle() = ConditionalCommand(goHomeForSpec(), aim()) { aimState }
 
     fun swivelToggle() = ConditionalCommand(wristToTransferPos(), wristToPerpendicPos()) { wristState }
@@ -353,13 +298,10 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     //    fun toggleIntake
     fun toggleIntakeClaw() =
         ConditionalCommand(
-            openClaw().andThen(InstantCommand({ clawState = !clawState })),
-            swallow().andThen(InstantCommand({ clawState = !clawState }))
+            openClaw(),
+            closeClaw()
         ) { clawState }
 
-    fun clawClenchCommand(): Command =
-        swallowHarder()
-            .andThen(InstantCommand({ aimState = true }))
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int, switch: TouchSensor) : CommandBase() {
