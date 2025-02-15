@@ -44,18 +44,18 @@ interface ControlSystem {
      * Sets up bulk reads/writes
      */
     fun initBulkReads() {
-        for (hub in hubs) {
-            hub.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
-        }
+//        for (hub in hubs) {
+//            hub.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
+//        }
     }
 
     /**
      * Utility to update robot cache.
      */
     fun bulkRead() {
-        for (hub in hubs) {
-            hub.clearBulkCache()
-        }
+//        for (hub in hubs) {
+//            hub.clearBulkCache()
+//        }
     }
 
 }
