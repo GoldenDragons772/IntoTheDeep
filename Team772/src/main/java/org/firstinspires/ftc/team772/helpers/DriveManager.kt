@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.team772.helpers
 
-import android.util.Log
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
-import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RepeatCommand
 import com.arcrobotics.ftclib.gamepad.GamepadEx
@@ -12,20 +10,17 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
-import org.firstinspires.ftc.team772.implementation.TransferPixelCommand
 import org.firstinspires.ftc.team772.implementation.TransferSpecimenCommand
-import kotlin.math.log
 
 /**
  * Manages driving and button mappings for TeleOps.
  */
-class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
+class DriveManager(hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad, mapping: Mapping, private val speed: Double = 1.0) {
     /**
      * Subsystems
      */
     var robot: ParallelPlateDrivesystem? = null
 
-    // Stop Swatch
     var stopSwitch: TouchSensor
     /**
      * Controllers
@@ -44,12 +39,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     /**
      * Start driving and processing input: Main drive loop.
      */
-    // TODO: Fix the arguments.
     fun update() {
         robot!!.drive(
-            -gamepad1!!.leftX,
-            gamepad1!!.rightY,
-            gamepad1!!.rightX
+            gamepad1!!.rightX* speed,
+            gamepad1!!.rightY* speed,
+            -gamepad1!!.leftX* speed,
         );
 
 
@@ -64,12 +58,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Binds a function to a button on the controller.
      */
     private fun setPressedBinding(
-        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
-    ) {
-        setPressedBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
-    }
-
-    private fun setPressedBinding(
         map: Pair<GamepadKeys.Button, Int>,
         function: Command,
         whenReleased: Command = InstantCommand()
@@ -79,12 +67,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         ).whenReleased(whenReleased)
     }
 
-
-    private fun setHeldBinding(
-        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
-    ) {
-        setHeldBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
-    }
 
     private fun setHeldBinding(
         map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command
@@ -130,7 +112,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         })))
     }
 
-    /*Weather*
+    /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
@@ -138,7 +120,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.highclimb())
         setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.unclimb())
         setPressedBinding(mapping.hangSpecMapping, robot!!.climbSystem.specHangToggle())
-        // Toggle extending the arm out and prime for picking up pixels.
+        // Toggle extending the arm out and prime for picking up samples.
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.aimToggle())
         setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleSwing())
         setPressedBinding(mapping.transferMapping, TransferSpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem))

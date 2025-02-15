@@ -19,7 +19,7 @@ class AutoTransferSpecimenCommand(private val intake: IntakeSystem, private val 
                 WaitCommand(500),
                 outtake.gripIt(),
                 WaitCommand(500),
-                intake.spit(),
+                intake.openClaw(),
                 intake.joint1SpecPose(),
                 WaitCommand(100),
                 outtake.swingToTarget(),

@@ -109,48 +109,6 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         return SetArmPosCommand(pos, this)
     }
 
-    /*
-        fun setArmPower(power: Double) {
-            leftArmMotor.power = power
-            rightArmMotor.power = power
-        }
-
-        fun setArmMode(mode: DcMotor.RunMode) {
-            if (mode != leftArmMotor.mode || mode != rightArmMotor.mode) {
-                leftArmMotor.mode = mode
-                rightArmMotor.mode = mode
-            }
-        }
-    */
-
-    /*
-        fun incrementArmPos() {
-            val nextPos = armPos.ordinal + 1
-            if (nextPos < ArmPos.values().size) {
-                armPos = ArmPos.values()[nextPos]
-                setArmToPos(armPos)
-            }
-
-            if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
-                leftArmMotor.power = 1.0
-                rightArmMotor.power = 1.0
-            }
-        }
-    */
-
-    /*    fun decrementArmPos() {
-            val nextPos = armPos.ordinal - 1
-            if (nextPos >= 0) {
-                armPos = ArmPos.values()[nextPos]
-                setArmToPos(armPos)
-            }
-
-            if (leftArmMotor.power == 0.0 || rightArmMotor.power == 0.0) {
-                leftArmMotor.power = 1.0
-                rightArmMotor.power = 1.0
-            }
-        }*/
-
     /**
      * Function that returns the Average of the two arms' heights.
      * @return An integer that represents the avg of the two arms
@@ -167,17 +125,16 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         return armPos
     }
 
-    // TODO: Modify the climb subsystem so that everything is a command.
     fun highclimb(): InstantCommand {
-        return setArmToPos(ClimbSystem.ArmPos.HIGHCLIMB)
+        return setArmToPos(ArmPos.HIGHCLIMB)
     }
 
     fun lowclimb(): InstantCommand {
-        return setArmToPos(ClimbSystem.ArmPos.LOWCLIMB)
+        return setArmToPos(ArmPos.LOWCLIMB)
     }
 
     fun unclimb(): InstantCommand {
-        return setArmToPos(ClimbSystem.ArmPos.HOME)
+        return setArmToPos(ArmPos.HOME)
     }
 
     fun specHangPrep(): Command =
@@ -187,7 +144,11 @@ class ClimbSystem(hw: HardwareMap) : SubsystemBase() {
         setArmToPos(ArmPos.SPECSCORE)
 
 
-    fun specHangToggle() = ConditionalCommand(specHangAttach().andThen(InstantCommand({specAttached = !specAttached})), specHangPrep().andThen(InstantCommand({specAttached = !specAttached}))) { specAttached }
+    fun specHangToggle() =
+        ConditionalCommand(
+            specHangAttach().andThen(InstantCommand({ specAttached = !specAttached })),
+            specHangPrep().andThen(InstantCommand({ specAttached = !specAttached }))
+        ) { specAttached }
 }
 
 /**
@@ -241,7 +202,8 @@ class SetArmPosCommand(
     override fun execute() {
         super.execute() //This function runs in a loop.
         val packet = TelemetryPacket()
-        val current_position = climbSystem.getAvgArmPosition().toDouble() // creates a variable that stores the current position of the arms for later refrence
+        val current_position = climbSystem.getAvgArmPosition()
+            .toDouble() // creates a variable that stores the current position of the arms for later refrence
         val output = pidf.calculate(current_position) //Gets the output of the pid loop
         packet.addLine("arm position: ${current_position}") //Debug stuff
         packet.addLine("pidf out: $output")

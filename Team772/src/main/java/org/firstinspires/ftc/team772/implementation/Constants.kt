@@ -5,19 +5,6 @@ import com.acmerobotics.dashboard.config.Config
 @Config
 object Constants {
 
-    //// Pure Pursuit config values
-    // The initial value to use as the lookahead.
-    @JvmField var LOOKAHEAD = 0.5
-
-    // The maximum value to use as a lookahead.
-    @JvmField var MAX_LOOKAHEAD = 1
-
-    // The search step to increase the lookahead by if no intersection is found.
-    @JvmField var LOOKAHEAD_STEP = 0.1
-
-    // The distance to the end of the path that the robot needs to be in order to consider itself finished.
-    @JvmField var MIN_GOAL_DISTANCE = 1
-
     /**
      * PedroPathing Constants (So I don't go insane
      */

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.team772.implementation
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 
-class TransferSpecimenCommand(private val intake: IntakeSystem, private val outtake: OuttakeSystem) : SequentialCommandGroup() {
+class TransferSpecimenCommand(intake: IntakeSystem, outtake: OuttakeSystem) : SequentialCommandGroup() {
 
     init{
 
@@ -19,7 +19,7 @@ class TransferSpecimenCommand(private val intake: IntakeSystem, private val outt
                 WaitCommand(500),
                 outtake.gripIt(),
                 WaitCommand(500),
-                intake.spit(),
+                intake.openClaw(),
                 intake.joint1SpecPose(),
                 WaitCommand(100),
                 outtake.swingToTarget(),

@@ -11,7 +11,6 @@ import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kf
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.ki
 import org.firstinspires.ftc.team772.implementation.IntakeSystem.Companion.kp
 import kotlin.math.abs
-import kotlin.text.get
 
 class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     val slideMotor: DcMotorEx = hw.get(DcMotorEx::class.java, "slideMotor") // Port 3
@@ -159,7 +158,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
      * Sets the intake to the home position.
      */
     fun retractCommand(): SlideCommand {
-        // TODO: Return if it's already there.
         return setSlideToPos(ExtendPos.HOME.position)
     }
 
@@ -216,7 +214,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
     /**
      * Make the head spit the elements back out.
      */
-    fun spit(): InstantCommand {
+    fun openClaw(): InstantCommand {
         return InstantCommand({
             lipState = LipState.SPITTING
             clawServo.position = Constants.CLAW_SERVO_HOME
@@ -293,7 +291,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(wristToTransferPos())
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
-            .andThen(spit())
+            .andThen(openClaw())
             .andThen(InstantCommand({ aimState = true }))
 
     fun autoAim(): Command =
@@ -303,7 +301,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(wristToTransferPos())
             .andThen(joint2Pivot())
             .andThen(joint1PivotIntake())
-            .andThen(spit())
+            .andThen(openClaw())
             .andThen(InstantCommand({ aimState = true }))
 
     fun aimToSmack(): Command =
@@ -312,7 +310,7 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
             .andThen(wristToPerpendicPos())
             .andThen(joint2Pivot())
             .andThen(joint1SmackPose())
-            .andThen(spit())
+            .andThen(openClaw())
             .andThen(InstantCommand({ aimState = true }))
 
     /**
@@ -353,10 +351,9 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
         ConditionalCommand(pivotClawToHome(), pivotClawToPick()) { pivotState }
 
     //    fun toggleIntake
-    // TODO: Break this into a different function.
     fun toggleIntakeClaw() =
         ConditionalCommand(
-            spit().andThen(InstantCommand({ clawState = !clawState })),
+            openClaw().andThen(InstantCommand({ clawState = !clawState })),
             swallow().andThen(InstantCommand({ clawState = !clawState }))
         ) { clawState }
 
@@ -366,7 +363,6 @@ class IntakeSystem(hw: HardwareMap) : SubsystemBase() {
 }
 
 class SlideCommand(private val intake: IntakeSystem, private val position: Int, switch: TouchSensor) : CommandBase() {
-    private val pidf = PIDFController(kp, ki, kd, kf)
     private var isEnded = false;
     private val stopSwitch = switch
 

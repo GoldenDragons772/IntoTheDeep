@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team772.implementation
 
-import com.arcrobotics.ftclib.command.InstantCommand
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -8,19 +9,16 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.team772.abstractions.ControlSystem
-import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
 
 class ParallelPlateDrivesystem(
-    override val hw: HardwareMap,
+    private val hw: HardwareMap,
     val FLMotor: MotorEx = MotorEx(hw, "FLMotor"),
     val FRMotor: MotorEx = MotorEx(hw, "FRMotor"),
     val BLMotor: MotorEx = MotorEx(hw, "BLMotor"),
     val BRMotor: MotorEx = MotorEx(hw, "BRMotor"),
-    override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
-    override var climbState: Boolean = false,
-) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
+    private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
+) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor){
     // TODO: Implement things from control theory: Motion Profiling, PID.
     val climbSystem: ClimbSystem = ClimbSystem(hw)
     val intakeSystem: IntakeSystem = IntakeSystem(hw)
@@ -36,14 +34,7 @@ class ParallelPlateDrivesystem(
         const val WHEEL_DIAMETER = 48 / MILLIMETERS_PER_INCH
         const val WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * PI
         const val TICKS_PER_INCHES = TICKS_PER_REVOLUTION / WHEEL_CIRCUMFERENCE
-
-        // PID coefficients for the path follower.
-        const val PFKP = 0.1
-        const val PFKD = 0.1
-        const val PFKI = 0.0
     }
-
-    override val pathFollowerPID = PIDController(PFKP, PFKI, PFKD)
 
     // Initialize the motors
     private val encoderLeft = BLMotor.encoder
@@ -58,37 +49,40 @@ class ParallelPlateDrivesystem(
         CENTER_WHEEL_OFFSET
     )
 
-    override val position: Pose2d
+    val position: Pose2d
         /**
          * Returns the position of the robot.
          */
         get() = this.odometry.pose
 
     init {
-        super.initBulkReads()
+        // Initialize bulk reads
+        for (hub in hubs){
+            hub.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
+        }
         encoderLeft.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDistancePerPulse(1 / TICKS_PER_INCHES)
         encoderRight.setDirection(Motor.Direction.REVERSE)
         encoderCenter.setDistancePerPulse(1 / TICKS_PER_INCHES)
 
-        FRMotor.inverted = true;
-        BLMotor.inverted = true;
-        BRMotor.inverted = true;
-
+        FRMotor.inverted = true
 
     }
 
-    override fun update() {
+    fun update() {
+        for (hub in hubs) {
+            hub.clearBulkCache()
+        }
         odometry.updatePose()
     }
 
 
-    override fun drive(x: Double, y: Double, theta: Double) {
+    fun drive(x: Double, y: Double, theta: Double) {
         // Calculate the denominator so that it scales from [-1, 1]
         val denominator: Double = max(abs(y) + abs(x) + abs(theta), 1.0)
         val squaredX = x.pow(2) * x.sign
         val squaredY = y.pow(2) * y.sign
-        val squaredTheta = theta.pow(3) * theta.sign * 0.5  // 0.5 for FLL
+        val squaredTheta = theta.pow(2) * theta.sign
 
         // Drive the robot
         FRMotor.setRunMode(Motor.RunMode.RawPower)
@@ -96,32 +90,20 @@ class ParallelPlateDrivesystem(
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
+        FLMotor.set((squaredY - squaredX + squaredTheta ) / denominator)
+        FRMotor.set((-squaredY + squaredX - squaredTheta ) / denominator)
 
-        FLMotor.set((squaredY + squaredX - squaredTheta) / denominator)
-        BLMotor.set((squaredY - squaredX - squaredTheta) / denominator)
-        FRMotor.set((squaredY - squaredX + squaredTheta) / denominator)
-        BRMotor.set((squaredY + squaredX + squaredTheta) / denominator)
+        BLMotor.set((-squaredY + squaredX + squaredTheta) / denominator)
+        BRMotor.set((-squaredY - squaredX - squaredTheta) / denominator)
     }
 
-    override fun halt() {
+    fun halt() {
         drive(0.0, 0.0, 0.0)
     }
 
     override fun stop() {
         super.stop()
         halt()
-    }
-
-    override fun lowclimb(): InstantCommand {
-        TODO("Not yet implemented")
-    }
-
-    override fun highclimb(): InstantCommand {
-        TODO("Not yet implemented")
-    }
-
-    override fun unclimb(): InstantCommand {
-        TODO("Not yet implemented")
     }
 
 
