@@ -10,7 +10,7 @@
             <Servo name="joint2" port="2" />
             <Servo name="swivelServo" port="3" />
             <Servo name="joint1" port="4" />
-            <RevTouchSensor name="hardStop" port="3" />
+            <RevTouchSensor name="hardStop" port="0" />
         </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="LeftClimb" port="0" />

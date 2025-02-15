@@ -10,9 +10,7 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.max
+import kotlin.math.*
 
 class ParallelPlateDrivesystem(
     override val hw: HardwareMap,
@@ -88,6 +86,9 @@ class ParallelPlateDrivesystem(
     override fun drive(x: Double, y: Double, theta: Double) {
         // Calculate the denominator so that it scales from [-1, 1]
         val denominator: Double = max(abs(y) + abs(x) + abs(theta), 1.0)
+        val squaredX = x.pow(2) * x.sign
+        val squaredY = y.pow(2) * y.sign
+        val squaredTheta = theta.pow(3) * theta.sign * 0.5  // 0.5 for FLL
 
         // Drive the robot
         FRMotor.setRunMode(Motor.RunMode.RawPower)
@@ -96,11 +97,10 @@ class ParallelPlateDrivesystem(
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
 
-        FLMotor.set((y + x - theta) / denominator)
-        BLMotor.set((y - x - theta) / denominator)
-
-        FRMotor.set((y - x + theta) / denominator)
-        BRMotor.set((y + x + theta) / denominator)
+        FLMotor.set((squaredY + squaredX - squaredTheta) / denominator)
+        BLMotor.set((squaredY - squaredX - squaredTheta) / denominator)
+        FRMotor.set((squaredY - squaredX + squaredTheta) / denominator)
+        BRMotor.set((squaredY + squaredX + squaredTheta) / denominator)
     }
 
     override fun halt() {
