@@ -5,15 +5,18 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.command.RunCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
+import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
 import com.pedropathing.follower.Follower
 import com.pedropathing.util.Constants
 import com.pedropathing.localization.Pose
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import org.firstinspires.ftc.team772.auto.SpecimenAutoPaths
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 import org.firstinspires.ftc.team772.implementation.commands.FollowPathCommand
+import org.firstinspires.ftc.team772.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.team772.implementation.commands.TransferSpecimenCommand
 import org.firstinspires.ftc.team772.pedroPathing.constants.FConstants
 import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants
@@ -28,9 +31,10 @@ class SpecimenAuto : CommandOpMode() {
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
-        val transferSpecimenCommand = TransferSpecimenCommand(intakeSystem, outtakeSystem)
-        follower.setStartingPose(Pose(7.852, 55.945, Math.PI))
+        val specimenCommand = SpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
+        follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
 
+        //The actual auto code
         schedule(
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
@@ -41,9 +45,15 @@ class SpecimenAuto : CommandOpMode() {
             ,
             SequentialCommandGroup(
                 outtakeSystem.clawClose(),
-                climbSystem.setTargetPosition(ClimbSystem.ClimbState.SPEC_HANG),
-                outtakeSystem.moveArmToScoreSpec(),
-                //FollowPathCommand(follower, )
+                specimenCommand,
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone)
+
+
             )
         )
     }

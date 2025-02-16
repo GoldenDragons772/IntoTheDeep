@@ -76,9 +76,10 @@ public class IntakeSystem {
         leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
         rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
         clawServo.setPosition(CLAW_HOME);
-        leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
-        rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
-        pivotServo.setPosition(PIVOT_TRANSFER);
+        leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
+        rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
+        pivotServo.setPosition(PIVOT_HOME);
+        wristServo.setPosition(WRIST_HOME);
 
     }
 
