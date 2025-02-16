@@ -34,13 +34,14 @@ class SpecimenAuto : CommandOpMode() {
         val climbSystem = ClimbSystem(hardwareMap)
         val specimenCommand = SpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
+//        follower.setMaxPower(0.8)
 
         //The actual auto code
         schedule(
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
-                follower.setMaxPower(0.8)
+                //follower.setMaxPower(0.8)
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
             })
             ,
@@ -49,32 +50,36 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.clawClose(),
                 specimenCommand,
                 specimenCommand, // to get it to the right postion
-                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath),
+                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.8),
+                WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
                 //Knock the Specimens
-                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone),
+
+                //InstantCommand({ follower.setMaxPower(0.8) }),
+
+                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000, 0.9).setMaxPower(0.9),
                 //Spec 2
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 5000, 0.2).setMaxPower(0.55),
                 outtakeSystem.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone),
-                outtakeSystem.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber),
-                //Spec 3
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
-                outtakeSystem.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone),
-                WaitCommand(1000),
-                outtakeSystem.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 1000, 0.8),
+//                outtakeSystem.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 1000, 0.8),
+//                //Spec 3
+//                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
+//                outtakeSystem.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 1000, 0.8),
+//                WaitCommand(1000),
+//                outtakeSystem.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
                 //FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber)
             )
         )

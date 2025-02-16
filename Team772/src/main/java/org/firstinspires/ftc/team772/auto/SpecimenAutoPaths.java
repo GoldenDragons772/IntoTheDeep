@@ -47,7 +47,7 @@ public class SpecimenAutoPaths {
                     new BezierCurve(
                             new Point(19.630, 23.135, Point.CARTESIAN),
                             new Point(48.093, 35.334, Point.CARTESIAN),
-                            new Point(62.115, 13.040, Point.CARTESIAN)
+                            new Point(57.488, 12.619, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -55,14 +55,14 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierLine(
                             new Point(57.488, 12.619, Point.CARTESIAN),
-                            new Point(19.069, 13.461, Point.CARTESIAN)
+                            new Point(24.142, 13.633, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             // line 5
             .addPath(
                     new BezierCurve(
-                            new Point(19.069, 13.461, Point.CARTESIAN),
+                            new Point(24.142, 13.633, Point.CARTESIAN),
                             new Point(45.850, 23.416, Point.CARTESIAN),
                             new Point(58.329, 5.188, Point.CARTESIAN)
                     )
@@ -72,16 +72,15 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierLine(
                             new Point(58.329, 5.188, Point.CARTESIAN),
-                            new Point(19.209, 5.468, Point.CARTESIAN)
+                            new Point(23.574, 5.112, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             // line 7
             .addPath(
-                    new BezierCurve(
-                            new Point(19.209, 5.468, Point.CARTESIAN),
-                            new Point(20.331, 24.117, Point.CARTESIAN),
-                            new Point(21.593, 25.379, Point.CARTESIAN)
+                    new BezierLine(
+                            new Point(23.574, 5.112, Point.CARTESIAN),
+                            new Point(23.858, 26.414, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -91,8 +90,8 @@ public class SpecimenAutoPaths {
             .addPath(
                     // Line 1
                     new BezierLine(
-                            new Point(21.593, 25.379, Point.CARTESIAN),
-                            new Point(7.992, 25.379, Point.CARTESIAN)
+                            new Point(21.593, 20.000, Point.CARTESIAN),
+                            new Point(7.500, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -101,7 +100,7 @@ public class SpecimenAutoPaths {
     public static PathChain goToChamberFromZone = new PathBuilder()
             .addPath(
                     new BezierCurve(
-                            new Point(8.000, 25.000, Point.CARTESIAN),
+                            new Point(7.000, 20.000, Point.CARTESIAN),
                             new Point(15.621, 69.302, Point.CARTESIAN),
                             new Point(40.000, 68.000, Point.CARTESIAN)
                     )
@@ -114,7 +113,7 @@ public class SpecimenAutoPaths {
                     new BezierCurve(
                             new Point(40.000, 68.000, Point.CARTESIAN),
                             new Point(15.621, 69.302, Point.CARTESIAN),
-                            new Point(21.593, 25.379, Point.CARTESIAN)
+                            new Point(21.593, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))

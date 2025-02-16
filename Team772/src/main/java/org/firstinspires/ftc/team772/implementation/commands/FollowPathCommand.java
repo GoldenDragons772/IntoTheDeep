@@ -10,7 +10,7 @@ public class FollowPathCommand extends CommandBase {
     private final Follower follower;
     private final PathChain path;
     private boolean holdEnd = true;
-    private double maxPower = 1;
+    private double maxPower = 0.1;
     private double completionThreshold = 0.99;
     private int timeout = 0;
     private long startTime;
@@ -113,6 +113,6 @@ public class FollowPathCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        follower.setMaxPower(1);
+        //follower.setMaxPower(1);
     }
 }
