@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team772.opmodes
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.RunCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
@@ -46,14 +47,14 @@ class SpecimenAuto : CommandOpMode() {
             SequentialCommandGroup(
                 outtakeSystem.clawClose(),
                 specimenCommand,
-                specimenCommand,
+                specimenCommand, // to get it to the right postion
                 FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone)
-
-
+                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone),
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.4),
+                outtakeSystem.toggleClaw()
             )
         )
     }

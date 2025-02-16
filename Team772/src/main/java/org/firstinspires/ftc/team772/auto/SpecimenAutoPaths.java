@@ -28,41 +28,74 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierCurve(
                             new Point(40.000, 72.000, Point.CARTESIAN),
-                            new Point(1.136, 34.083, Point.CARTESIAN),
-                            new Point(61.349, 23.006, Point.CARTESIAN)
+                            new Point(2.384, 31.548, Point.CARTESIAN),
+                            new Point(57.768, 38.559, Point.CARTESIAN),
+                            new Point(61.133, 22.855, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             // line 2
             .addPath(
                     new BezierLine(
-                            new Point(61.349, 23.006, Point.CARTESIAN),
-                            new Point(15.337, 23.006, Point.CARTESIAN)
+                            new Point(61.133, 22.855, Point.CARTESIAN),
+                            new Point(19.630, 23.135, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
+            // line 3
             .addPath(
                     new BezierCurve(
-                            new Point(15.337, 23.006, Point.CARTESIAN),
-                            new Point(40.047, 31.811, Point.CARTESIAN),
-                            new Point(60.497, 13.065, Point.CARTESIAN)
+                            new Point(19.630, 23.135, Point.CARTESIAN),
+                            new Point(48.093, 35.334, Point.CARTESIAN),
+                            new Point(62.115, 13.040, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
+            // line 4
             .addPath(
                     new BezierLine(
-                            new Point(60.497, 13.065, Point.CARTESIAN),
-                            new Point(15.053, 12.781, Point.CARTESIAN)
+                            new Point(57.488, 12.619, Point.CARTESIAN),
+                            new Point(19.069, 13.461, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
+            // line 5
             .addPath(
                     new BezierCurve(
-                            new Point(15.053, 12.781, Point.CARTESIAN),
-                            new Point(41.467, 20.450, Point.CARTESIAN),
-                            new Point(60.497, 5.112, Point.CARTESIAN)
+                            new Point(19.069, 13.461, Point.CARTESIAN),
+                            new Point(45.850, 23.416, Point.CARTESIAN),
+                            new Point(58.329, 5.188, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
+            //line 6
+            .addPath(
+                    new BezierLine(
+                            new Point(58.329, 5.188, Point.CARTESIAN),
+                            new Point(19.209, 5.468, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+            // line 7
+            .addPath(
+                    new BezierCurve(
+                            new Point(19.209, 5.468, Point.CARTESIAN),
+                            new Point(20.331, 24.117, Point.CARTESIAN),
+                            new Point(21.593, 25.379, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+            .build();
+
+    public static PathChain pickSpecimenPreloadPath = new PathBuilder()
+            .addPath(
+                    // Line 1
+                    new BezierLine(
+                            new Point(21.593, 25.379, Point.CARTESIAN),
+                            new Point(7.992, 25.379, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+            .setZeroPowerAccelerationMultiplier(16)
             .build();
 }

@@ -20,7 +20,7 @@ public class ClimbSystem extends SubsystemBase {
         LOW_BASKET(1100),
         HIGH_CHAMBER(450),
         HIGH_BASKET(2200),
-        SPEC_HANG(750);
+        SPEC_HANG(400);
 
         public final double position;
 
