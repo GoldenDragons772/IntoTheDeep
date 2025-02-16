@@ -45,6 +45,7 @@ class SpecimenAuto : CommandOpMode() {
             })
             ,
             SequentialCommandGroup(
+                //Preload
                 outtakeSystem.clawClose(),
                 specimenCommand,
                 specimenCommand, // to get it to the right postion
@@ -52,9 +53,29 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
+                //Knock the Specimens
                 FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone),
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.4),
-                outtakeSystem.toggleClaw()
+                //Spec 2
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber),
+                //Spec 3
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone),
+                WaitCommand(1000),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                //FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber)
             )
         )
     }

@@ -93,8 +93,8 @@ public class FollowPathCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        follower.followPath(path, holdEnd);
         follower.setMaxPower(this.maxPower);
+        follower.followPath(path, holdEnd);
         startTime = System.currentTimeMillis();
     }
 

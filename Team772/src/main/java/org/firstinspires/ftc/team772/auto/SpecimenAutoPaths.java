@@ -96,6 +96,28 @@ public class SpecimenAutoPaths {
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(16)
             .build();
+
+    public static PathChain goToChamberFromZone = new PathBuilder()
+            .addPath(
+                    new BezierCurve(
+                            new Point(8.000, 25.000, Point.CARTESIAN),
+                            new Point(15.621, 69.302, Point.CARTESIAN),
+                            new Point(40.000, 68.000, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+            .build();
+
+    public static PathChain goToZoneFromChamber = new PathBuilder()
+            .addPath(
+                    new BezierCurve(
+                            new Point(40.000, 68.000, Point.CARTESIAN),
+                            new Point(15.621, 69.302, Point.CARTESIAN),
+                            new Point(21.593, 25.379, Point.CARTESIAN)
+                    )
+            )
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+            .build();
+
 }
