@@ -54,37 +54,53 @@ class SpecimenAuto : CommandOpMode() {
                 FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.9),
                 WaitCommand(500),
                 outtakeSystem.toggleClaw(),
-                WaitCommand(500),
                 specWallCommand, // wall position
                 //Knock the Specimens
-
-                //InstantCommand({ follower.setMaxPower(0.8) }),
-
                 FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000).setMaxPower(.95),
                 //Spec 2
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.55),
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
 
                 FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 5000).setMaxPower(0.9),
-                //FollowPathCommand(follower, SpecimenAutoPaths.spaceSpecsPath, 3000).setMaxPower(.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specWallCommand,
                 FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 5000).setMaxPower(0.9),
                 //Spec 3
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.55),
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath2, 2000).setMaxPower(0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone2).setMaxPower(0.9),
-                //FollowPathCommand(follower, SpecimenAutoPaths.spaceSpecsPath, 3000).setMaxPower(.9),
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone2, 5000).setMaxPower(0.9),
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specWallCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 5000).setMaxPower(0.9),
+                //Spec 4
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath3, 2000).setMaxPower(0.9),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone3, 5000).setMaxPower(0.9),
+//                //WaitCommand(500),
+//                outtakeSystem.toggleClaw(),
 //                WaitCommand(500),
 //                specWallCommand,
-                //FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber)
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber).setMaxPower(0.9),
+//                //Spec 5
+//                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath4, 2000).setMaxPower(0.9),
+//                outtakeSystem.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone4).setMaxPower(0.9),
+//                //WaitCommand(500),
+//                outtakeSystem.toggleClaw(),
+//                WaitCommand(500),
+//                specWallCommand,
+//                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber).setMaxPower(0.9)
             )
         )
     }
