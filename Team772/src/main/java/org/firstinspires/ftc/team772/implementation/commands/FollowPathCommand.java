@@ -11,7 +11,7 @@ public class FollowPathCommand extends CommandBase {
     private final PathChain path;
     private boolean holdEnd = true;
     private double maxPower = 0.1;
-    private double completionThreshold = 0.99;
+    private double completionThreshold = 0.95;
     private int timeout = 0;
     private long startTime;
 
@@ -100,10 +100,10 @@ public class FollowPathCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= timeout && timeout > 0) {
-            return true;
-        }
+//        long elapsedTime = System.currentTimeMillis() - startTime;
+//        if (elapsedTime >= timeout && timeout > 0) {
+//            return true;
+//        }
 
         if ( follower.getCurrentPathNumber() == this.path.size() - 1 && Math.abs(follower.headingError) < 0.1 ) {
             return follower.getCurrentTValue() >= this.completionThreshold;

@@ -45,15 +45,14 @@ class SpecimenAuto : CommandOpMode() {
             RunCommand({
                 follower.update()
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
-            })
-            ,
+            }),
             SequentialCommandGroup(
                 //Preload
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
                 FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.9),
-                WaitCommand(500),
-                outtakeSystem.toggleClaw(),
+                WaitCommand(500).andThen(outtakeSystem.toggleClaw()),
+
                 specWallCommand, // wall position
                 //Knock the Specimens
                 FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000).setMaxPower(.95),
