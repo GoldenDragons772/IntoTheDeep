@@ -7,13 +7,13 @@ import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 
-class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
+class AutoSpecWallCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
     init{
         super.addCommands(
             SequentialCommandGroup(
-                climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER),
-                outtakeSystem.moveArmToScoreSpec(),
+                climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                outtakeSystem.moveArmToHome(),
                 intakeSystem.moveToHome()
             )
         )

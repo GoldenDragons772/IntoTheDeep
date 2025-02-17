@@ -16,6 +16,8 @@ import org.firstinspires.ftc.team772.auto.SpecimenAutoPaths
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
+import org.firstinspires.ftc.team772.implementation.commands.AutoSpecWallCommand
+import org.firstinspires.ftc.team772.implementation.commands.AutoSpecimenCommand
 import org.firstinspires.ftc.team772.implementation.commands.FollowPathCommand
 import org.firstinspires.ftc.team772.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.team772.implementation.commands.TransferSpecimenCommand
@@ -32,7 +34,8 @@ class SpecimenAuto : CommandOpMode() {
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
-        val specimenCommand = SpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
+        val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
+        val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
         follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
 //        follower.setMaxPower(0.8)
 
@@ -41,45 +44,46 @@ class SpecimenAuto : CommandOpMode() {
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
-                //follower.setMaxPower(0.8)
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
             })
             ,
             SequentialCommandGroup(
                 //Preload
                 outtakeSystem.clawClose(),
-                specimenCommand,
-                specimenCommand, // to get it to the right postion
-                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.8),
+                specimenCommand, // score position
+                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.9),
                 WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
-                specimenCommand,
+                specWallCommand, // wall position
                 //Knock the Specimens
 
                 //InstantCommand({ follower.setMaxPower(0.8) }),
 
-                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000, 0.9).setMaxPower(0.9),
+                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000).setMaxPower(.95),
                 //Spec 2
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 5000, 0.2).setMaxPower(0.55),
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.55),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 5000).setMaxPower(0.9),
+                //FollowPathCommand(follower, SpecimenAutoPaths.spaceSpecsPath, 3000).setMaxPower(.9),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specWallCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 5000).setMaxPower(0.9),
+                //Spec 3
+                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.55),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone2).setMaxPower(0.9),
+                //FollowPathCommand(follower, SpecimenAutoPaths.spaceSpecsPath, 3000).setMaxPower(.9),
+                //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
 //                WaitCommand(500),
-//                specimenCommand,
-//                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 1000, 0.8),
-//                outtakeSystem.toggleClaw(),
-//                WaitCommand(500),
-//                specimenCommand,
-//                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 1000, 0.8),
-//                //Spec 3
-//                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 1000, 0.1),
-//                outtakeSystem.toggleClaw(),
-//                WaitCommand(500),
-//                specimenCommand,
-//                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 1000, 0.8),
-//                WaitCommand(1000),
-//                outtakeSystem.toggleClaw(),
-//                WaitCommand(500),
-//                specimenCommand,
+//                specWallCommand,
                 //FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber)
             )
         )

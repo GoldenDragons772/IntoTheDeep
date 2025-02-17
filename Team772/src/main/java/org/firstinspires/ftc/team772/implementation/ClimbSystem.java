@@ -29,7 +29,7 @@ public class ClimbSystem extends SubsystemBase {
         }
     }
 
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.03, 0, 0.00003, 0.05);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.04, 0, 0.0005, 0.05);
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
@@ -40,6 +40,9 @@ public class ClimbSystem extends SubsystemBase {
     public ClimbSystem(HardwareMap hw) {
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
         this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
+
+        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
