@@ -15,7 +15,7 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
                 outtakeSystem.clawOpen(),
                 intakeSystem.moveToTransfer(),
-                WaitCommand(1000),
+                WaitCommand(600),
                 outtakeSystem.moveArmToTransfer(),
                 WaitCommand(500),
                 outtakeSystem.clawClose(),

@@ -103,7 +103,7 @@ public class SpecimenAutoPaths {
                     // Line 1
                     new BezierLine(
                             new Point(21.593, 20.000, Point.CARTESIAN),
-                            new Point(8, 20.000, Point.CARTESIAN)
+                            new Point(7, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -115,7 +115,7 @@ public class SpecimenAutoPaths {
                     // Line 1
                     new BezierLine(
                             new Point(21.593, 20.000, Point.CARTESIAN),
-                            new Point(8, 20.000, Point.CARTESIAN)
+                            new Point(7, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -138,7 +138,7 @@ public class SpecimenAutoPaths {
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
                             new Point(15.621, 69.302, Point.CARTESIAN),
-                            new Point(40.000, 68.000, Point.CARTESIAN)
+                            new Point(40.000, 66.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -161,7 +161,7 @@ public class SpecimenAutoPaths {
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
                             new Point(15.621, 69.302, Point.CARTESIAN),
-                            new Point(40.000, 66.000, Point.CARTESIAN)
+                            new Point(40.000, 64.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -172,7 +172,7 @@ public class SpecimenAutoPaths {
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
                             new Point(15.621, 69.302, Point.CARTESIAN),
-                            new Point(40.000, 66.000, Point.CARTESIAN)
+                            new Point(40.000, 74.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
