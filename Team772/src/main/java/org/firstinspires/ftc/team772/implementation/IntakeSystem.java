@@ -20,13 +20,13 @@ public class IntakeSystem {
     public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.08, RIGHT_PIVOT_TRANSFER = 0.205;
 
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.25, PIVOT_TARGET = 0.0, PIVOT_TRANSFER = 0.7;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.05, PIVOT_TRANSFER = 0.9;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 0.2, CLAW_TARGET = 0.445, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 0.15, CLAW_TARGET = 0.445, CLAW_STROKE = 0.5;
 
     //State stuff
     static boolean pivotState = false;

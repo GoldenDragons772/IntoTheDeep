@@ -7,15 +7,13 @@ import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 
 class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem): SequentialCommandGroup() {
 
-
-
     init {
         super.addCommands(
             SequentialCommandGroup(
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
                 outtakeSystem.clawOpen(),
                 intakeSystem.moveToTransfer(),
-                WaitCommand(600),
+                //WaitCommand(600),
                 outtakeSystem.moveArmToTransfer(),
                 WaitCommand(500),
                 outtakeSystem.clawClose(),

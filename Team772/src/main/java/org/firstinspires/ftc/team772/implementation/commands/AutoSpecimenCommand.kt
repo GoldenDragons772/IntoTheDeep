@@ -12,11 +12,9 @@ class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val ou
 
     init{
         addCommands(
-            ParallelCommandGroup(
-                climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER),
-                outtakeSystem.moveArmToScoreSpec(),
-                intakeSystem.moveToHome()
-            )
+            climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER),
+            outtakeSystem.moveArmToScoreSpec(),
+            intakeSystem.moveToHome()
         )
     }
 }

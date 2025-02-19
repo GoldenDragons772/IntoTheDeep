@@ -4,19 +4,17 @@ import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.ParallelCommandGroup
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
+import com.arcrobotics.ftclib.command.WaitCommand
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 
 class AutoSpecWallCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): ParallelCommandGroup() {
-
-    init{
-        super.addCommands(
-            ParallelCommandGroup(
+        init {
+            addCommands(
                 climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
                 outtakeSystem.moveArmToHome(),
-                intakeSystem.moveToHome()
+                intakeSystem.moveToHome(),
             )
-        )
-    }
+        }
 }
