@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.team772.helpers
 
-import com.arcrobotics.ftclib.command.Command
-import com.arcrobotics.ftclib.command.CommandScheduler
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.RepeatCommand
+import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
+import org.firstinspires.ftc.team772.implementation.OuttakeSystem
 import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.team772.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.team772.implementation.commands.TransferSampleCommand
@@ -112,7 +110,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * @param map This is the controller binding you want to pass in.
      * @param function This is what will happen when the trigger is pressed.
      */
-    private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command){
+    private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command) {
         var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
         var lastIsDown = isDown
         CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ // Repeatedly run an instant command
@@ -122,21 +120,46 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         })))
     }
 
-    /*Weather*
+    /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(mapping.lowclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))// :: for the pointer to the function.
-        setPressedBinding(mapping.highclimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
+        setPressedBinding(
+            mapping.lowclimbMapping,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET)
+        )// :: for the pointer to the function.
+
+        setPressedBinding(
+            mapping.highclimbMapping,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET)
+        )
+
         setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME))
-        setPressedBinding(mapping.hangSpecMapping, SpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem))
+
+        setPressedBinding(
+            mapping.hangSpecMapping,
+            SpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
+        )
 //        // Toggle extending the arm out and prime for picking up pixels.
+
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.toggleIntake())
 //        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
         //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
         setPressedBinding(mapping.transferMapping, TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
-        setPressedBinding(mapping.gripMapping, robot!!.outtakeSystem.toggleClaw())
-        setPressedBinding(mapping.climbToHangSpec, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
+
+        setPressedBinding(
+            mapping.gripMapping,
+            ConditionalCommand(
+                robot!!.outtakeSystem.toggleClaw()
+                    .andThen(robot!!.outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.TRANSFER)),
+                robot!!.outtakeSystem.toggleClaw()
+            )
+            { !robot!!.outtakeSystem.homeState && robot!!.climbSystem.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
+
+        setPressedBinding(
+            mapping.climbToHangSpec,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER)
+        )
 //
 //        // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())

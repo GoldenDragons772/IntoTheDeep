@@ -238,7 +238,7 @@ public class IntakeSystem {
                 moveToTarget(),
                 () -> {
                     pivotState = !pivotState;
-                    return pivotState;
+                    return !pivotState; // Return original val
                 }
         );
     }
@@ -249,7 +249,7 @@ public class IntakeSystem {
                 setClaw(IntakePosition.TARGET),
                 () -> {
                     clawState = !clawState;
-                    return clawState;
+                    return !clawState; // Return original val
                 }
         );
     }

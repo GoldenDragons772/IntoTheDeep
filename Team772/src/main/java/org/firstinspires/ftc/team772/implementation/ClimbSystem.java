@@ -29,12 +29,13 @@ public class ClimbSystem extends SubsystemBase {
         }
     }
 
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.04, 0, 0.0005, 0.05);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.002, 0.05);
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
 
     public static double targetPosition = ClimbState.HOME.position, lastError;
+    public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
 
     public ClimbSystem(HardwareMap hw) {
@@ -73,7 +74,14 @@ public class ClimbSystem extends SubsystemBase {
 
     public Command setTargetPosition(ClimbState climbState) {
 
-        return new InstantCommand(() -> {this.targetPosition = climbState.position;});
+        return new InstantCommand(() -> {
+            this.position = climbState;
+            this.targetPosition = climbState.position;
+        });
+    }
+
+    public Command setTargetPosition(double pos) {
+        return new InstantCommand(() -> this.targetPosition = pos);
     }
 
 }

@@ -15,7 +15,7 @@ public class SpecimenAutoPaths {
     public static PathChain scoreFirstSpecimenPath = new PathBuilder()
             .addPath(
                 new BezierCurve(
-                        new Point(7.100, 53.500, Point.CARTESIAN),
+                        new Point(7.700, 53.500, Point.CARTESIAN),
                         new Point(16.189, 73.278, Point.CARTESIAN),
                         new Point(40.000, 72.000, Point.CARTESIAN)
                 )

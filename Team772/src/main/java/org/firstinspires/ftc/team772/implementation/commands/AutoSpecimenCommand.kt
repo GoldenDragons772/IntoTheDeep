@@ -17,4 +17,7 @@ class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val ou
             intakeSystem.moveToHome()
         )
     }
+    fun clone(): AutoSpecimenCommand {
+        return AutoSpecimenCommand(this.intakeSystem, this.outtakeSystem, this.climbSystem)
+    }
 }
