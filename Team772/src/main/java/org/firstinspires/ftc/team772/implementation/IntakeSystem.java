@@ -1,15 +1,18 @@
 package org.firstinspires.ftc.team772.implementation;
 
+import android.text.style.SubscriptSpan;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-public class IntakeSystem {
+public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team772.implementation
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
+import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo
  * Controls the outtake system and its related servos.
  * It does not control the climb system, which must be changed separately in order to actually climb.
  */
-class OuttakeSystem(hw: HardwareMap) {
+class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
 
     // Defines servos
     private val rstrikeServo: Servo = hw.get(Servo::class.java, "rStrikeServo")
