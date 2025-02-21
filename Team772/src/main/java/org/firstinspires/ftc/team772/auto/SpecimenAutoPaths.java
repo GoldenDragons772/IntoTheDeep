@@ -91,11 +91,12 @@ public class SpecimenAutoPaths {
                     // Line 1
                     new BezierLine(
                             new Point(21.593, 20.000, Point.CARTESIAN),
-                            new Point(6.850, 20.000, Point.CARTESIAN)
+                            new Point(6.950, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             .setZeroPowerAccelerationMultiplier(2)
+            .setPathEndTimeoutConstraint(50)
             .build();
 
     public static PathChain pickSpecimenPreloadPath2 = new PathBuilder()
@@ -103,11 +104,12 @@ public class SpecimenAutoPaths {
                     // Line 1
                     new BezierLine(
                             new Point(21.593, 20.000, Point.CARTESIAN),
-                            new Point(6.850, 20.000, Point.CARTESIAN)
+                            new Point(6.950, 20.000, Point.CARTESIAN)
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             .setZeroPowerAccelerationMultiplier(2)
+            .setPathEndTimeoutConstraint(50)
             .build();
 
     public static PathChain pickSpecimenPreloadPath3 = new PathBuilder()
@@ -115,12 +117,13 @@ public class SpecimenAutoPaths {
                     // Line 1
                     new BezierLine(
                             new Point(21.593, 20.000, Point.CARTESIAN),
-                            new Point(6.850, 20.000, Point.CARTESIAN)
+                            new Point(6.950, 20.000, Point.CARTESIAN)
                     )
 
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
             .setZeroPowerAccelerationMultiplier(2)
+            .setPathEndTimeoutConstraint(50)
             .build();
 
     public static PathChain pickSpecimenPreloadPath4 = new PathBuilder()

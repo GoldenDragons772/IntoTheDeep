@@ -53,11 +53,17 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
                 FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9),
-                WaitCommand(500).andThen(outtakeSystem.toggleClaw()),
-
-                specWallCommand, // wall position
-                //Knock the Specimens
-                FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.95),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                ParallelCommandGroup(
+                    //Knock the Specimens
+                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.95),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
                 //Spec 2
                 FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, true, 0.9),
                 outtakeSystem.toggleClaw(),
@@ -69,7 +75,7 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(500),
                 ParallelCommandGroup(
                     FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
-                    WaitCommand(500).andThen(
+                    WaitCommand(800).andThen(
                         climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         outtakeSystem.moveArmToHome(),
                         intakeSystem.moveToHome(),
@@ -84,8 +90,14 @@ class SpecimenAuto : CommandOpMode() {
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
-                specWallCommand,
-                FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
                 //Spec 4
                 FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath3, true, 0.9),
                 outtakeSystem.toggleClaw(),
@@ -95,8 +107,14 @@ class SpecimenAuto : CommandOpMode() {
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
-                specWallCommand,
-//                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber).setMaxPower(0.9),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                )
 //                //Spec 5
 //                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath4, 2000).setMaxPower(0.9),
 //                outtakeSystem.toggleClaw(),

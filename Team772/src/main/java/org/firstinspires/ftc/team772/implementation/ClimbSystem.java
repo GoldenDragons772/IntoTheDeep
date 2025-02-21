@@ -18,7 +18,7 @@ public class ClimbSystem extends SubsystemBase {
         HOME(0),
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
-        HIGH_CHAMBER(450),
+        HIGH_CHAMBER(480),
         HIGH_BASKET(2200),
         SPEC_HANG(400);
 
@@ -29,7 +29,7 @@ public class ClimbSystem extends SubsystemBase {
         }
     }
 
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.002, 0.05);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.0003, 0.05);
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
