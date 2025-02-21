@@ -4,10 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.command.InstantCommand
+import com.arcrobotics.ftclib.command.ParallelCommandGroup
 import com.arcrobotics.ftclib.command.RunCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
+import com.pedropathing.commands.FollowPath
 import com.pedropathing.follower.Follower
 import com.pedropathing.util.Constants
 import com.pedropathing.localization.Pose
@@ -50,40 +52,46 @@ class SpecimenAuto : CommandOpMode() {
                 //Preload
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
-                FollowPathCommand(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, 1000, 0.9),
+                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9),
                 WaitCommand(500).andThen(outtakeSystem.toggleClaw()),
 
                 specWallCommand, // wall position
                 //Knock the Specimens
-                FollowPathCommand(follower, SpecimenAutoPaths.knockSpecsIntoZone, 15000).setMaxPower(.95),
+                FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.95),
                 //Spec 2
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, 2000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, true, 0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
 
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone, 5000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.goToChamberFromZone, true, 0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
-                specWallCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 5000).setMaxPower(0.9),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
+                    WaitCommand(500).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
                 //Spec 3
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath2, 2000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath2, true, 0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone2, 5000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.goToChamberFromZone2, true, 0.9),
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specWallCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToZoneFromChamber, 5000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
                 //Spec 4
-                FollowPathCommand(follower, SpecimenAutoPaths.pickSpecimenPreloadPath3, 2000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath3, true, 0.9),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
                 specimenCommand,
-                FollowPathCommand(follower, SpecimenAutoPaths.goToChamberFromZone3, 5000).setMaxPower(0.9),
+                FollowPath(follower, SpecimenAutoPaths.goToChamberFromZone3, true, 0.9),
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),

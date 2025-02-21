@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.team772.implementation.commands
 
-import com.arcrobotics.ftclib.command.CommandGroupBase
-import com.arcrobotics.ftclib.command.ConditionalCommand
-import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.ParallelCommandGroup
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
@@ -16,5 +13,7 @@ class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val ou
             outtakeSystem.moveArmToScoreSpec(),
             intakeSystem.moveToHome()
         )
+
+        addRequirements(climbSystem, outtakeSystem, intakeSystem)
     }
 }
