@@ -39,10 +39,14 @@ class SpecimenAuto : CommandOpMode() {
         val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
         follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
+
+//        outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)
+//        outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.SAFE)
 //        follower.setMaxPower(0.8)
 
         //The actual auto code
         schedule(
+
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
@@ -50,6 +54,7 @@ class SpecimenAuto : CommandOpMode() {
             }),
             SequentialCommandGroup(
                 //Preload
+
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
                 FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9),
@@ -106,6 +111,24 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(500),
                 specimenCommand,
                 FollowPath(follower, SpecimenAutoPaths.goToChamberFromZone3, true, 0.9)
+                    .andThen(outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)),
+                //WaitCommand(500),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(250),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
+                //Spec 5
+                FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath4, true, 0.8),
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPath(follower, SpecimenAutoPaths.goToChamberFromZone4, true, 0.9)
                     .andThen(outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)),
                 //WaitCommand(500),
                 outtakeSystem.toggleClaw(),

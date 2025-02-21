@@ -153,7 +153,7 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
-                            new Point(15.621, 69.302, Point.CARTESIAN),
+                            new Point(30.000, 70.000, Point.CARTESIAN),
                             new Point(40.000, 70.000, Point.CARTESIAN)
                     )
             )
@@ -164,7 +164,7 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
-                            new Point(15.621, 69.302, Point.CARTESIAN),
+                            new Point(30.000, 64.000, Point.CARTESIAN),
                             new Point(40.000, 64.000, Point.CARTESIAN)
                     )
             )
@@ -175,7 +175,7 @@ public class SpecimenAutoPaths {
             .addPath(
                     new BezierCurve(
                             new Point(8.000, 20.000, Point.CARTESIAN),
-                            new Point(15.621, 69.302, Point.CARTESIAN),
+                            new Point(30.000, 74.000, Point.CARTESIAN),
                             new Point(40.000, 74.000, Point.CARTESIAN)
                     )
             )

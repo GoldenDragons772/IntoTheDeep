@@ -38,8 +38,10 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
 
     init {
         lstrikeServo.direction = Servo.Direction.REVERSE
+
         rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
         lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+
         pivotServo.position = Constants.PIVOT_SERVO_SCORE
         wristServo.position = Constants.WRIST_SERVO_TARGET
         clawServo.position = Constants.CLAW_SERVO_TARGET
@@ -105,7 +107,8 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
             }
             OuttakePosition.SAFE -> {
                 return InstantCommand({
-                    // do nothing.
+                    rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
+                    lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
                 })
             }
         }
