@@ -64,6 +64,8 @@ object Constants {
     @JvmField var PIVOT_SERVO_SCORE = 0.9
     @JvmField var PIVOT_SERVO_SPEC = 0.2
     @JvmField var PIVOT_SERVO_TRANSFER = 0.0
+    @JvmField var PIVOT_SERVO_SAFE = 0.4
+
 
     @JvmField var SLIDE_MOTOR_SPEED = 0.7
 

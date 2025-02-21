@@ -95,7 +95,7 @@ public class SpecimenAutoPaths {
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(2)
+            .setZeroPowerAccelerationMultiplier(2.5)
             .setPathEndTimeoutConstraint(50)
             .build();
 
@@ -108,7 +108,7 @@ public class SpecimenAutoPaths {
                     )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(2)
+            .setZeroPowerAccelerationMultiplier(2.5)
             .setPathEndTimeoutConstraint(50)
             .build();
 
@@ -122,7 +122,7 @@ public class SpecimenAutoPaths {
 
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(2)
+            .setZeroPowerAccelerationMultiplier(2.5)
             .setPathEndTimeoutConstraint(50)
             .build();
 

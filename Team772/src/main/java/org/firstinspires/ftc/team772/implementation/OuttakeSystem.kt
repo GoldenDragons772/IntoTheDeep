@@ -32,7 +32,8 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         HOME,
         TARGET,
         SPEC_TARGET,
-        TRANSFER
+        TRANSFER,
+        SAFE
     }
 
     init {
@@ -67,6 +68,10 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
             OuttakePosition.SPEC_TARGET -> {
                 InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
             }
+
+            OuttakePosition.SAFE -> {
+                InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SAFE })
+            }
         }
 
     }
@@ -96,6 +101,11 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
                 return InstantCommand({
                     rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER
                     lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER
+                })
+            }
+            OuttakePosition.SAFE -> {
+                return InstantCommand({
+                    // do nothing.
                 })
             }
         }
