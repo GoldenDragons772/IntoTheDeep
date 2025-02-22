@@ -46,7 +46,7 @@ public class FConstants {
         FollowerConstants.drivePIDFFeedForward = 0.01;
         FollowerConstants.secondaryDrivePIDFFeedForward = 0.0005;
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 2.5;
+        FollowerConstants.zeroPowerAccelerationMultiplier = 2.2;
         FollowerConstants.centripetalScaling = 0.0006;
 
         FollowerConstants.pathEndTimeoutConstraint = 50;
