@@ -55,7 +55,7 @@ object Constants {
     @JvmField var INTAKE_WRIST_AUTO_PREP = 0.8
 
     // Claw Positions
-    @JvmField var CLAW_SERVO_HOME = 0.4
+    @JvmField var CLAW_SERVO_HOME = 0.5
     @JvmField var CLAW_SERVO_TARGET = 0.0
     @JvmField var CLAW_SERVO_CLENCH = 1.0
 

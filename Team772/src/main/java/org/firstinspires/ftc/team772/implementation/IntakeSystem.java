@@ -289,9 +289,9 @@ public class IntakeSystem extends SubsystemBase {
     public Command toggleWrist(){
         return new SelectCommand(
                 new HashMap<>() {{
-                    put(WristPosition.HOME, setWrist(WristPosition.ANGLE));
-                    put(WristPosition.ANGLE, setWrist(WristPosition.TARGET)); //Each state must trigger the next one
-                    put(WristPosition.TARGET, setWrist(WristPosition.HOME));
+                    put(WristPosition.HOME, setWrist(WristPosition.TARGET));
+                    put(WristPosition.ANGLE, setWrist(WristPosition.HOME)); //Each state must trigger the next one
+                    put(WristPosition.TARGET, setWrist(WristPosition.ANGLE));
                 }},
                 this::getWristPos
         );//.andThen(new InstantCommand({{Log.i("IntakeSystem", wristState.toString())}}));
