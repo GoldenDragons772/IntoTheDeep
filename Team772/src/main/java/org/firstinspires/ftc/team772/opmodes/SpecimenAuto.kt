@@ -36,12 +36,16 @@ class SpecimenAuto : CommandOpMode() {
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
+
+        // reset the encoder only in auto
+        climbSystem.resetEncoders()
+
         val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
         follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
 
-//        outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)
-//        outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.SAFE)
+       // outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.HOME)
+        //outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME)
 //        follower.setMaxPower(0.8)
 
         //The actual auto code
@@ -51,25 +55,37 @@ class SpecimenAuto : CommandOpMode() {
             RunCommand({
                 follower.update()
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
+
+                if(follower.isRobotStuck) {
+                    outtakeSystem.moveArmToScore()
+                }
             }),
             SequentialCommandGroup(
                 //Preload
-
+                outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME),
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
-                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9),
-                outtakeSystem.toggleClaw(),
+                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9)
+                .andThen(
+                    outtakeSystem.toggleClaw(),
+                    WaitCommand(250),
+                    outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)
+                ),
+
                 WaitCommand(250),
                 ParallelCommandGroup(
                     //Knock the Specimens
                     FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.95),
                     WaitCommand(800).andThen(
                         climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        outtakeSystem.moveArmToHome(),
+                        //outtakeSystem.moveArmToHome(),
                         intakeSystem.moveToHome(),
                     )
                 ),
                 //Spec 2
+                outtakeSystem.moveArmToHome(),
+                WaitCommand(500),
+
                 FollowPath(follower, SpecimenAutoPaths.pickSpecimenPreloadPath, true, 0.8).setMaxPower(0.8),
                 outtakeSystem.toggleClaw(),
                 WaitCommand(500),
@@ -119,7 +135,7 @@ class SpecimenAuto : CommandOpMode() {
                     FollowPath(follower, SpecimenAutoPaths.goToZoneFromChamber, true, 0.9),
                     WaitCommand(800).andThen(
                         climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        outtakeSystem.moveArmToHome(),
+                        //outtakeSystem.moveArmToHome(),
                         intakeSystem.moveToHome(),
                     )
                 ),

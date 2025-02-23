@@ -19,7 +19,7 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
                 outtakeSystem.moveArmToTransfer(),
                 WaitCommand(500),
                 outtakeSystem.clawClose(),
-                WaitCommand(250),
+                WaitCommand(500),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
                 outtakeSystem.moveArmToScore()
             )

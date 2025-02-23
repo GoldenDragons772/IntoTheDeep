@@ -42,11 +42,18 @@ public class ClimbSystem extends SubsystemBase {
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
         this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
 
+//        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//
+        climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public void resetEncoders() {
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
-        //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     // Get the current position from the slide

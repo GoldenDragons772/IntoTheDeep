@@ -40,8 +40,12 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         lstrikeServo.direction = Servo.Direction.REVERSE
         clawServo.direction = Servo.Direction.FORWARD
 
-        rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
-        lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+//        rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
+//        lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+
+        rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
+        lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
+
 
         pivotServo.position = Constants.PIVOT_SERVO_SCORE
         wristServo.position = Constants.WRIST_SERVO_TARGET
