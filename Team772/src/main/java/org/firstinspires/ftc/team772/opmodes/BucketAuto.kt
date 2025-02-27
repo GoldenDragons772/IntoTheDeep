@@ -16,6 +16,7 @@ import org.firstinspires.ftc.team772.auto.BucketAutoPaths
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
+import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.team772.pedroPathing.constants.FConstants
 import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants
 
@@ -29,6 +30,7 @@ class BucketAuto(): CommandOpMode() {
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
+        val drivesystem = ParallelPlateDrivesystem(hardwareMap)
         follower.setStartingPose(Pose(5.9, 103.8, Math.toRadians(270.0)))
 //        follower.setMaxPower(0.8)
 
@@ -37,6 +39,7 @@ class BucketAuto(): CommandOpMode() {
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
+                drivesystem.update()
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
             }),
             SequentialCommandGroup(

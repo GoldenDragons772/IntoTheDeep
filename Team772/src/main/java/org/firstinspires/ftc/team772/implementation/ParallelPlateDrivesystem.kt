@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.team772.abstractions.ControlSystem
 import org.firstinspires.ftc.team772.helpers.PIDController
 import kotlin.math.*
@@ -20,10 +21,10 @@ class ParallelPlateDrivesystem(
     override var hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java),
     val outtakeSystem: OuttakeSystem = OuttakeSystem(hw),
     val climbSystem: ClimbSystem = ClimbSystem(hw),
-    val intakeSystem: IntakeSystem = IntakeSystem(
-        hw
-    )
+    val intakeSystem: IntakeSystem = IntakeSystem(hw),
+    val voltageSensor: VoltageSensor = hw.voltageSensor.first()
 ) : MecanumDrive(FRMotor, FLMotor, BRMotor, BLMotor), ControlSystem {
+
 
     companion object {
         // Constants. Change these to tune, et cetera.
@@ -72,8 +73,6 @@ class ParallelPlateDrivesystem(
 
         FRMotor.inverted = true
         BRMotor.inverted = true
-
-
     }
 
     override fun update() {
@@ -83,7 +82,10 @@ class ParallelPlateDrivesystem(
 
     override fun drive(x: Double, y: Double, theta: Double) {
         // Calculate the denominator so that it scales from [-1, 1]
-        val denominator: Double = max(abs(y) + abs(x) + abs(theta), 1.0)
+        // TODO: Low pass filter
+        // voltageScalar has no effect if (abs(y) + abs(x) + abs(theta)) > 1
+        val voltageScalar = voltageSensor.voltage / Constants.NOMINAL_BATTERY_VOLTAGE // maintains the speed for low powers -- High powers still suffer
+        val denominator: Double = max((abs(y) + abs(x) + abs(theta)) * voltageScalar, 1.0)
         val xSquared = x.pow(2) * x.sign
         val ySquared = y.pow(2) * y.sign
         val thSquared = theta.pow(2) * theta.sign
@@ -94,10 +96,10 @@ class ParallelPlateDrivesystem(
         FLMotor.setRunMode(Motor.RunMode.RawPower)
         BLMotor.setRunMode(Motor.RunMode.RawPower)
 
-        FLMotor.set((ySquared + xSquared + thSquared) / denominator)
-        BLMotor.set((ySquared - xSquared + thSquared) / denominator)
-        FRMotor.set((ySquared - xSquared - thSquared) / denominator)
-        BRMotor.set((ySquared + xSquared - thSquared) / denominator)
+        FLMotor.set((ySquared + xSquared + thSquared) / denominator * voltageScalar)
+        BLMotor.set((ySquared - xSquared + thSquared) / denominator * voltageScalar)
+        FRMotor.set((ySquared - xSquared - thSquared) / denominator * voltageScalar)
+        BRMotor.set((ySquared + xSquared - thSquared) / denominator * voltageScalar)
 
 //        FLMotor.set((y + x + theta) / denominator)
 //        BLMotor.set((y - x + theta) / denominator)

@@ -31,6 +31,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         gamepad2 = GamepadEx(gp2)
         robot = ParallelPlateDrivesystem(hardwareMap)
         initializeBindings(mapping)
+
     }
 
     /**
@@ -38,6 +39,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      */
     // TODO: Fix the arguments.
     fun update() {
+        robot!!.update() // Updates bulk reads and odometry.
         robot!!.drive(
             -gamepad1!!.rightX,
             gamepad1!!.rightY,
@@ -145,7 +147,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.toggleIntake())
 //        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
         //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
-        setPressedBinding(mapping.transferMapping, TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem))
+        setPressedBinding(
+            mapping.transferMapping,
+            TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
+        )
 
         setPressedBinding(
             mapping.gripMapping,

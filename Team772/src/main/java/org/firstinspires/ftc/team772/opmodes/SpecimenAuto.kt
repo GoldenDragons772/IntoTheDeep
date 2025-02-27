@@ -15,9 +15,11 @@ import com.pedropathing.util.Constants
 import com.pedropathing.localization.Pose
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.team772.auto.SpecimenAutoPaths
+import org.firstinspires.ftc.team772.helpers.DriveManager
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
 import org.firstinspires.ftc.team772.implementation.IntakeSystem
 import org.firstinspires.ftc.team772.implementation.OuttakeSystem
+import org.firstinspires.ftc.team772.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.team772.implementation.commands.AutoSpecWallCommand
 import org.firstinspires.ftc.team772.implementation.commands.AutoSpecimenCommand
 import org.firstinspires.ftc.team772.implementation.commands.FollowPathCommand
@@ -36,6 +38,7 @@ class SpecimenAuto : CommandOpMode() {
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
+        val drivesystem = ParallelPlateDrivesystem(hardwareMap) // The bulk read code could be pulled out of here
 
         // reset the encoder only in auto
         climbSystem.resetEncoders()
@@ -50,12 +53,11 @@ class SpecimenAuto : CommandOpMode() {
 
         //The actual auto code
         schedule(
-
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
+                drivesystem.update()
                 if (follower.isBusy) follower.telemetryDebug(telemetry)
-
                 if(follower.isRobotStuck) {
                     outtakeSystem.moveArmToScore()
                 }
