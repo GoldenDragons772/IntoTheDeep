@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team772.implementation
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.drivebase.MecanumDrive
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.hardware.motors.Motor
@@ -76,7 +78,12 @@ class ParallelPlateDrivesystem(
     }
 
     override fun update() {
+        super.update()
         odometry.updatePose()
+        val packet = TelemetryPacket()
+        packet.put("Slide", climbSystem.slidesPosition)
+        packet.put("Voltage", voltageSensor.voltage)
+        FtcDashboard.getInstance().sendTelemetryPacket(packet)
     }
 
 

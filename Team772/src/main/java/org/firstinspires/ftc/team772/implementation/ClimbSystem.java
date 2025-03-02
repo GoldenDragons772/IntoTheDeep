@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.team772.implementation;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,7 +32,7 @@ public class ClimbSystem extends SubsystemBase {
         }
     }
 
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.0003, 0.05);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.0003, 0.033);
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
@@ -37,6 +40,7 @@ public class ClimbSystem extends SubsystemBase {
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
+    private int initialPosition;
 
     public ClimbSystem(HardwareMap hw) {
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
@@ -47,6 +51,7 @@ public class ClimbSystem extends SubsystemBase {
 //
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        initialPosition = climbMotor2.getCurrentPosition();
     }
 
     public void resetEncoders() {
@@ -58,17 +63,16 @@ public class ClimbSystem extends SubsystemBase {
 
     // Get the current position from the slide
     public double getSlidesPosition() {
-        return Math.max(climbMotor2.getCurrentPosition(), 0) / 8192.0 * 360;
+        return Math.max(climbMotor2.getCurrentPosition() - initialPosition, 0) / 8192.0 * 360;
     }
 
     @Override
     public void periodic() {
-
         double error = targetPosition - this.getSlidesPosition();
         double derivative = (error - lastError) / timer.seconds();
 
         // sum everything up
-        double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative);
+        double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative) + PID_SLIDES.f;
 
 //        Log.i("Climb", String.valueOf(PID_output));
 
