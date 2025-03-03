@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team772.Vision;
+package org.firstinspires.ftc.team772.vision;
 
 import org.opencv.core.*;
 import java.util.*;

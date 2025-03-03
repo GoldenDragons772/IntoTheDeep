@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team772.implementation;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -32,7 +34,7 @@ public class ClimbSystem extends SubsystemBase {
         }
     }
 
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.035, 0, 0.0003, 0.033);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.02, 0.001, 0.0003, 0.033);
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
@@ -46,9 +48,9 @@ public class ClimbSystem extends SubsystemBase {
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
         this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
 
-//        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
+        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
         initialPosition = climbMotor2.getCurrentPosition();
@@ -74,13 +76,27 @@ public class ClimbSystem extends SubsystemBase {
         // sum everything up
         double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative) + PID_SLIDES.f;
 
-//        Log.i("Climb", String.valueOf(PID_output));
+        Log.i("Climb", String.valueOf(this.getSlidesPosition()));
+        Log.i("Climb", String.valueOf(position));
 
-        climbMotor1.setPower(PID_output);
-        climbMotor2.setPower(PID_output);
+        //Make sure to stop PIDing when we're home
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
+//            climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//            climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            climbMotor1.setPower(0);
+            climbMotor2.setPower(0);
+        }else{
+            //climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            climbMotor1.setPower(PID_output);
+            climbMotor2.setPower(PID_output);
+        }
 
         lastError = error;
         timer.reset();
+
+
+
     }
 
     public Command setTargetPosition(ClimbState climbState) {
