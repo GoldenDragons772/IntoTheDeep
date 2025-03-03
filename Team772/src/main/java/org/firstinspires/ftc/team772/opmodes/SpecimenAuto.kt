@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.opmodes
 
+import androidx.core.math.MathUtils.clamp
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.arcrobotics.ftclib.command.CommandOpMode
@@ -14,6 +15,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.util.Constants
 import com.pedropathing.localization.Pose
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.team772.auto.SpecimenAutoPaths
 import org.firstinspires.ftc.team772.helpers.DriveManager
 import org.firstinspires.ftc.team772.implementation.ClimbSystem
@@ -31,6 +33,7 @@ import org.firstinspires.ftc.team772.pedroPathing.constants.LConstants
 @Autonomous(name = "Specimen Auto")
 class SpecimenAuto : CommandOpMode() {
     override fun initialize() {
+
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry);
         Constants.setConstants(FConstants::class.java, LConstants::class.java)
 
@@ -39,6 +42,9 @@ class SpecimenAuto : CommandOpMode() {
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
         val drivesystem = ParallelPlateDrivesystem(hardwareMap) // The bulk read code could be pulled out of here
+
+        var batteryVoltage = drivesystem.voltageSensor.voltage
+        val nominalVoltage = 13.8
 
         // reset the encoder only in auto
         climbSystem.resetEncoders()
@@ -50,6 +56,22 @@ class SpecimenAuto : CommandOpMode() {
        // outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.HOME)
         //outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME)
 //        follower.setMaxPower(0.8)
+
+
+        //Voltage Compensation!!!
+        fun scaleFollowerPower(): Double {
+            // scale the follower maxPower based on the battery voltage
+            val maxPowerAdjusted = clamp(nominalVoltage / batteryVoltage, 0.0, 1.0)
+            val scaledPower = maxPowerAdjusted * 1.0
+            return scaledPower
+        }
+
+        fun getFilteredBatteryVoltage(): Double {
+            val alpha = 0.8  // for a low pass filter on battvoltage
+            val newBatteryVoltage = drivesystem.voltageSensor.voltage
+            batteryVoltage = alpha * newBatteryVoltage + (1 - alpha) * batteryVoltage
+            return batteryVoltage
+        }
 
         //The actual auto code
         schedule(
@@ -67,7 +89,7 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME),
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
-                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9)
+                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, scaleFollowerPower())
                 .andThen(
                     outtakeSystem.toggleClaw(),
                     WaitCommand(250),
@@ -77,7 +99,7 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(250),
                 ParallelCommandGroup(
                     //Knock the Specimens
-                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.95),
+                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, scaleFollowerPower()),
                     WaitCommand(800).andThen(
                         climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         //outtakeSystem.moveArmToHome(),
