@@ -23,7 +23,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
     //Define Sensors
-    private val clawButton: Button = hw.get(Button::class.java, "")
+    private val clawButton: Button = hw.get(Button::class.java, "InsertButtonNameHere")
 
 
     // State Machine
