@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.gamepad.GamepadKeys.Button
+import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
@@ -23,7 +24,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
     //Define Sensors
-    private val clawButton: Button = hw.get(Button::class.java, "InsertButtonNameHere")
+    private val clawButton: DigitalChannel = hw.get(DigitalChannel::class.java, "InsertButtonNameHere")
 
 
     // State Machine
@@ -55,6 +56,8 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         pivotServo.position = Constants.PIVOT_SERVO_SCORE
         wristServo.position = Constants.WRIST_SERVO_TARGET
         clawServo.position = Constants.CLAW_SERVO_TARGET
+
+        clawButton.mode = DigitalChannel.Mode.INPUT
     }
 
     @JvmName("getSpecStateJaavaaa")
@@ -123,6 +126,10 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
             }
         }
 
+    }
+
+    fun getClawButtonState(): Boolean {
+        return clawButton.state
     }
 
     /**
