@@ -38,6 +38,7 @@ public class ClimbSystem extends SubsystemBase {
 
     private final DcMotorEx climbMotor1;
     private final DcMotorEx climbMotor2;
+    private final DcMotorEx climbMotor3;
 
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
@@ -47,11 +48,14 @@ public class ClimbSystem extends SubsystemBase {
     public ClimbSystem(HardwareMap hw) {
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
         this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
+        this.climbMotor3 = hw.get(DcMotorEx.class, "climbMotor3");
 
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        climbMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
+        climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
         //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
         initialPosition = climbMotor2.getCurrentPosition();
     }
@@ -60,7 +64,8 @@ public class ClimbSystem extends SubsystemBase {
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        climbMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
+        climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     // Get the current position from the slide
@@ -85,11 +90,13 @@ public class ClimbSystem extends SubsystemBase {
 //            climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
+            climbMotor3.setPower(0);
         }else{
             //climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             //climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             climbMotor1.setPower(PID_output);
             climbMotor2.setPower(PID_output);
+            climbMotor3.setPower(PID_output);
         }
 
         lastError = error;

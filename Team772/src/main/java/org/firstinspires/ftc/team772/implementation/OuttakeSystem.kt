@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
+import com.arcrobotics.ftclib.gamepad.GamepadKeys.Button
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
@@ -20,6 +21,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     private val pivotServo: Servo = hw.get(Servo::class.java, "outPivotServo")
     private val wristServo: Servo = hw.get(Servo::class.java, "outWristServo")
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
+
+    //Define Sensors
+    private val clawButton: Button = hw.get(Button::class.java, "")
 
 
     // State Machine

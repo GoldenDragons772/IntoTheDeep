@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team772.helpers
 
+import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
@@ -123,6 +124,27 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     }
 
     /**
+     * This function reads the value of the trigger and sends it into the function
+     * @param map The controller binding being passed in
+     * @param function The function that will run when activated
+     */
+    private fun triggerReader(map: Pair<GamepadKeys.Trigger, Int>, function: (Double) -> Command){
+
+       // Log.i("ROBO", "triggerReader is being read")
+
+        CommandScheduler.getInstance().schedule(
+
+            RepeatCommand(InstantCommand({
+                var triggerPos = getGamepad(map.second)!!.getTrigger(map.first) //Get the position of the trigger.
+                Log.i("Trigger", triggerPos.toString()) //Debugging!
+                function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
+            }))
+
+        )
+
+    }
+
+    /**
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
@@ -165,8 +187,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
             mapping.climbToHangSpec,
             robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER)
         )
-//
-//        // Claw Commands
+
+        triggerReader(mapping.linkageMapping, robot!!.intakeSystem::setLinkage)
+
+
+        // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())
         setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.toggleWrist())
 
@@ -184,13 +209,13 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
 
         val aimMapping: Pair<GamepadKeys.Button, Int>,
-//        val swingMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
-        val hangSpecMapping: Pair<GamepadKeys.Button, Int>
+        val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
+        val linkageMapping: Pair<GamepadKeys.Trigger, Int>
 
     )
 }

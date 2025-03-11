@@ -27,7 +27,8 @@ class Solo: CommandOpMode() {
             parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 1),
-            transferMapping = Pair(GamepadKeys.Button.A, 1)
+            transferMapping = Pair(GamepadKeys.Button.A, 1),
+            linkageMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
 

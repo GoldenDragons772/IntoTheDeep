@@ -125,6 +125,20 @@ public class IntakeSystem extends SubsystemBase {
         return null; // return null if nothing works out
     }
 
+    public Command setLinkage(Double pos){
+
+        if(pos >= 0.2){
+            pos = 0.2;
+        }
+
+        var scaledPos = Math.sqrt(pos);
+
+        return new InstantCommand(() -> {
+                    leftLinkageServo.setPosition(scaledPos);
+                    rightLinkageServo.setPosition(scaledPos);
+                });
+    }
+
     public Command setStrike(IntakePosition pos)  {
 
         switch (pos) {
@@ -227,7 +241,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {extendState = IntakePosition.HOME;}),
             setWrist(WristPosition.HOME),
-            setLinkage(IntakePosition.HOME),
+            //setLinkage(IntakePosition.HOME),
             setStrike(IntakePosition.HOME),
             setPivot(IntakePosition.HOME)
         );
@@ -237,7 +251,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {extendState = IntakePosition.TRANSFER;}),
                 setWrist(WristPosition.HOME),
-                setLinkage(IntakePosition.HOME),
+                //setLinkage(IntakePosition.HOME),
                 setStrike(IntakePosition.TRANSFER),
                 setPivot(IntakePosition.TRANSFER)
         );
@@ -246,7 +260,7 @@ public class IntakeSystem extends SubsystemBase {
     public Command moveToTarget(){
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {extendState = IntakePosition.TARGET;}),
-                setLinkage(IntakePosition.TARGET),
+                //setLinkage(IntakePosition.TARGET),
                 setClaw(IntakePosition.HOME),
                 setStrike(IntakePosition.TARGET),
                 setPivot(IntakePosition.TARGET)
