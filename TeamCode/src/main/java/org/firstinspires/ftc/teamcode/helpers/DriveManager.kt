@@ -1,0 +1,221 @@
+package org.firstinspires.ftc.teamcode.helpers
+
+import android.util.Log
+import com.arcrobotics.ftclib.command.*
+import com.arcrobotics.ftclib.gamepad.GamepadEx
+import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
+import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
+import org.firstinspires.ftc.teamcode.implementation.ParallelPlateDrivesystem
+import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
+import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
+
+/**
+ * Manages driving and button mappings for TeleOps.
+ */
+class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
+    /**
+     * Subsystems
+     */
+    var robot: ParallelPlateDrivesystem? = null
+
+    /**
+     * Controllers
+     */
+    private var gamepad1: GamepadEx? = null
+    private var gamepad2: GamepadEx? = null
+
+    init {
+        gamepad1 = GamepadEx(gp1)
+        gamepad2 = GamepadEx(gp2)
+        robot = ParallelPlateDrivesystem(hardwareMap)
+        initializeBindings(mapping)
+
+    }
+
+    /**
+     * Start driving and processing input: Main drive loop.
+     */
+    // TODO: Fix the arguments.
+    fun update() {
+        robot!!.update() // Updates bulk reads and odometry.
+        robot!!.drive(
+            -gamepad1!!.rightX,
+            gamepad1!!.rightY,
+            -gamepad1!!.leftX
+        );
+    }
+
+    /**
+     * Gets a gamepad from its int id.
+     */
+    private fun getGamepad(x: Int): GamepadEx? = if (x == 1) gamepad1 else gamepad2
+
+    /**
+     * Binds a function to a button on the controller.
+     */
+    private fun setPressedBinding(
+        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
+    ) {
+        setPressedBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
+    }
+
+    private fun setPressedBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: Command,
+        whenReleased: Command = InstantCommand()
+    ) {
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(
+            function
+        ).whenReleased(whenReleased)
+    }
+
+
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
+    ) {
+        setHeldBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
+    }
+
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command
+    ) {
+        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(function)
+            .whenReleased(whenReleased)
+    }
+
+
+    /**
+     * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
+     * Note that this is more akin to setHeldBinding than the other setPressedBinding
+     */
+    private fun setHeldTriggerBinding(
+        map: Pair<GamepadKeys.Trigger, Int>, function: InstantCommand, onRelease: InstantCommand
+    ) {
+        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        val geepad = getGamepad(map.second)!!
+        var lastIsDown = isDown
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
+            isDown = geepad.getTrigger(map.first) > 0.5
+            if (isDown) {
+                function.schedule()
+            } else if (lastIsDown) {
+                onRelease.schedule()
+            }
+            lastIsDown = isDown
+        })))
+    }
+
+    /**
+     * Honestly I'm not really sure what I did but it should do an action when the function is pressed.
+     * @param map This is the controller binding you want to pass in.
+     * @param function This is what will happen when the trigger is pressed.
+     */
+    private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command) {
+        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        var lastIsDown = isDown
+        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ // Repeatedly run an instant command
+            isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5 // Every loop, update isDown
+            if (!lastIsDown && isDown) function.schedule()// If was just down and is now up, schedule function.
+            lastIsDown = isDown
+        })))
+    }
+
+    /**
+     * This function reads the value of the trigger and sends it into the function
+     * @param map The controller binding being passed in
+     * @param function The function that will run when activated
+     */
+    private fun triggerReader(map: Pair<GamepadKeys.Trigger, Int>, function: (Double) -> Command){
+
+       // Log.i("ROBO", "triggerReader is being read")
+
+        CommandScheduler.getInstance().schedule(
+
+            RepeatCommand(InstantCommand({
+                var triggerPos = getGamepad(map.second)!!.getTrigger(map.first) //Get the position of the trigger.
+                Log.i("Trigger", triggerPos.toString()) //Debugging!
+                function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
+            }))
+
+        )
+
+    }
+
+    /**
+     * Take the bindings created in an OpMode and bind them to functions.
+     */
+    private fun initializeBindings(mapping: Mapping) {
+        setPressedBinding(
+            mapping.lowclimbMapping,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET)
+        )// :: for the pointer to the function.
+
+        setPressedBinding(
+            mapping.highclimbMapping,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET)
+        )
+
+        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME))
+
+        setPressedBinding(
+            mapping.hangSpecMapping,
+            SpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
+        )
+//        // Toggle extending the arm out and prime for picking up pixels.
+
+        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.toggleIntake())
+//        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
+        //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
+        setPressedBinding(
+            mapping.transferMapping,
+            TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
+        )
+
+        setPressedBinding(
+            mapping.gripMapping,
+            ConditionalCommand(
+                robot!!.outtakeSystem.toggleClaw()
+                    .andThen(robot!!.outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.TRANSFER)),
+                robot!!.outtakeSystem.toggleClaw()
+            )
+            { !robot!!.outtakeSystem.homeState && robot!!.climbSystem.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
+
+        setPressedBinding(
+            mapping.climbToHangSpec,
+            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER)
+        )
+
+        triggerReader(mapping.linkageMapping, robot!!.intakeSystem::setLinkage)
+
+
+        // Claw Commands
+        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())
+        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.toggleWrist())
+
+    }
+
+    /**
+     * Definition of possible mappings. Using this instead of a dictionary/hashmap allows for code completion.
+     */
+    class Mapping(
+        /**
+         * Added mapping for climbing
+         */
+        val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val highclimbMapping: Pair<GamepadKeys.Button, Int>,
+        val unClimbMapping: Pair<GamepadKeys.Button, Int>,
+
+        val aimMapping: Pair<GamepadKeys.Button, Int>,
+        val gripMapping: Pair<GamepadKeys.Button, Int>,
+        val transferMapping: Pair<GamepadKeys.Button, Int>,
+        val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
+        val clawMapping: Pair<GamepadKeys.Trigger, Int>,
+        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
+        val linkageMapping: Pair<GamepadKeys.Trigger, Int>
+
+    )
+}

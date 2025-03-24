@@ -1,0 +1,118 @@
+package org.firstinspires.ftc.teamcode.implementation;
+
+import android.util.Log;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Config
+public class ClimbSystem extends SubsystemBase {
+
+    public enum ClimbState {
+        HOME(0),
+        LOW_CHAMBER(100),
+        LOW_BASKET(1100),
+        HIGH_CHAMBER(480),
+        HIGH_BASKET(2200),
+        SPEC_HANG(400);
+
+        public final double position;
+
+        ClimbState(double position) {
+            this.position = position;
+        }
+    }
+
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.05);
+
+    private final DcMotorEx climbMotor1;
+    private final DcMotorEx climbMotor2;
+    private final DcMotorEx climbMotor3;
+
+    public static double targetPosition = ClimbState.HOME.position, lastError;
+    public ClimbState position = ClimbState.HOME;
+    private final ElapsedTime timer = new ElapsedTime();
+    private int initialPosition;
+
+    public ClimbSystem(HardwareMap hw) {
+        this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
+        this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
+        this.climbMotor3 = hw.get(DcMotorEx.class, "climbMotor3");
+
+        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        climbMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
+        climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
+        //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        initialPosition = climbMotor2.getCurrentPosition();
+    }
+
+    public void resetEncoders() {
+        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        climbMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
+        climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    // Get the current position from the slide
+    public double getSlidesPosition() {
+        return Math.max(climbMotor2.getCurrentPosition() - initialPosition, 0) / 8192.0 * 360;
+    }
+
+    @Override
+    public void periodic() {
+        double error = targetPosition - this.getSlidesPosition();
+        double derivative = (error - lastError) / timer.seconds();
+
+        // sum everything up
+        double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative) + PID_SLIDES.f;
+
+        Log.i("Climb", String.valueOf(this.getSlidesPosition()));
+        Log.i("Climb", String.valueOf(position));
+
+        //Make sure to stop PIDing when we're home
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
+//            climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//            climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            climbMotor1.setPower(0);
+            climbMotor2.setPower(0);
+            climbMotor3.setPower(0);
+        }else{
+            //climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            climbMotor1.setPower(PID_output);
+            climbMotor2.setPower(PID_output);
+            climbMotor3.setPower(PID_output);
+        }
+
+        lastError = error;
+        timer.reset();
+
+
+
+    }
+
+    public Command setTargetPosition(ClimbState climbState) {
+
+        return new InstantCommand(() -> {
+            this.position = climbState;
+            this.targetPosition = climbState.position;
+        });
+    }
+
+    public Command setTargetPosition(double pos) {
+        return new InstantCommand(() -> this.targetPosition = pos);
+    }
+
+}
