@@ -194,8 +194,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
             robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER)
         )
 
-        triggerReader(mapping.linkageMapping, robot!!.intakeSystem::setLinkage)
-
 
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())
@@ -221,7 +219,6 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
-        val linkageMapping: Pair<GamepadKeys.Trigger, Int>
 
     )
 }

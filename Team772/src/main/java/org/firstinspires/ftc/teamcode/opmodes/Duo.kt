@@ -28,7 +28,6 @@ class Duo: CommandOpMode() {
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 2),
             transferMapping = Pair(GamepadKeys.Button.A, 2),
-            linkageMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
         driveManager = DriveManager(hardwareMap, gamepad1, gamepad2, mapping)
 

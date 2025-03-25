@@ -20,12 +20,12 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 1.0, LEFT_PIVOT_TARGET = 0.08, LEFT_PIVOT_TRANSFER = 0.24;
-    public static double RIGHT_PIVOT_HOME = 1.0, RIGHT_PIVOT_TARGET = 0.08, RIGHT_PIVOT_TRANSFER = 0.205;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.67, LEFT_PIVOT_TRANSFER = 0.45;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.67, RIGHT_PIVOT_TRANSFER = 0.45;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.05, PIVOT_TRANSFER = 0.9;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.3, PIVOT_TRANSFER = 0.9;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32, WRIST_ANGLE = 0.495;
@@ -245,7 +245,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {extendState = IntakePosition.HOME;}),
             setWrist(WristPosition.HOME),
-            //setLinkage(IntakePosition.HOME),
+            setLinkage(IntakePosition.HOME),
             setStrike(IntakePosition.HOME),
             setPivot(IntakePosition.HOME)
         );
@@ -255,7 +255,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {extendState = IntakePosition.TRANSFER;}),
             setWrist(WristPosition.HOME),
-            //setLinkage(IntakePosition.HOME),
+            setLinkage(IntakePosition.HOME),
             setStrike(IntakePosition.TRANSFER),
             setPivot(IntakePosition.TRANSFER)
         );
@@ -264,7 +264,7 @@ public class IntakeSystem extends SubsystemBase {
     public Command moveToTarget(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> {extendState = IntakePosition.TARGET;}),
-            //setLinkage(IntakePosition.TARGET),
+            setLinkage(IntakePosition.TARGET),
             setClaw(IntakePosition.HOME),
             setStrike(IntakePosition.TARGET),
             setPivot(IntakePosition.TARGET)
