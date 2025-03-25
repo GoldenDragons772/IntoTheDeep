@@ -6,25 +6,35 @@
             <goBILDA5202SeriesMotor name="climbMotorDown" port="2" />
             <goBILDA5202SeriesMotor name="climbMotor3" port="1" />
             <Servo name="hPivot" port="0" />
-            <Servo name="lStrikeServo" port="1" />
-            <Servo name="hLeftStrike" port="2" />
+<!--            <Servo name="lStrikeServo" port="1" />-->
+<!--            <Servo name="hLeftStrike" port="2" />-->
             <Servo name="hSwivelServo" port="3" />
-            <Servo name="lLinkageServo" port="4" />
-            <Servo name="intakeClawServo" port="5" />
+<!--            <Servo name="lLinkageServo" port="4" />-->
+            <Servo name="intakeClawServo" port="2" />
         </LynxModule>
+        <ServoHub name="Servo Hub" port="3">
+            <Servo name="hRightStrike" port="0" />
+            <Servo name="hLeftStrike" port="3" />
+            <Servo name="lLinkageServo" port="1" />
+            <Servo name="rLinkageServo" port="4" />
+            <Servo name="vLeftStrikeServo" port="2" />
+            <Servo name="vRightStrikeServo" port="5" />
+        </ServoHub>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="FLMotor" port="0" />
             <goBILDA5202SeriesMotor name="FRMotor" port="2" />
             <goBILDA5202SeriesMotor name="BLMotor" port="1" />
             <goBILDA5202SeriesMotor name="BRMotor" port="3" />
+
             <Servo name="outPivotServo" port="1" />
             <Servo name="outClawServo" port="0" />
             <Servo name="outWristServo" port="3" />
             <Servo name="rStrikeServo" port="2" />
-            <Servo name="hRightStrike" port="4" />
-            <Servo name="rLinkageServo" port="5" />
+<!--            <Servo name="hRightStrike" port="4" />-->
+<!--            <Servo name="rLinkageServo" port="5" />-->
             <goBILDAPinpoint name="pinpoint" port="1" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
+    <Webcam name="GDVision" serialNumber="VendorProduct:vendor=0x32e4|product=0x9230|connection=" />
 </Robot>

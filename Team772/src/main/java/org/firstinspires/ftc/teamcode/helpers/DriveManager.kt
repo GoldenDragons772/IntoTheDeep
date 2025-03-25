@@ -132,16 +132,22 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
 
        // Log.i("ROBO", "triggerReader is being read")
 
-        CommandScheduler.getInstance().schedule(
 
-            RepeatCommand(InstantCommand({
-                var triggerPos = getGamepad(map.second)!!.getTrigger(map.first) //Get the position of the trigger.
-                Log.i("Trigger", triggerPos.toString()) //Debugging!
-                function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
-            }))
 
-        )
-
+        //if(triggerPos > 0.2) {
+            CommandScheduler.getInstance().schedule(
+                RepeatCommand(
+                    InstantCommand({
+                        //Get the position of the trigger.
+                        var triggerPos = getGamepad(map.second)!!.getTrigger(map.first)
+                        Log.i("Trigger", triggerPos.toString()) //Debugging!
+                        //if(triggerPos > 0.2) {
+                        function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
+                        //}
+                    })
+                )
+            )
+        //}
     }
 
     /**

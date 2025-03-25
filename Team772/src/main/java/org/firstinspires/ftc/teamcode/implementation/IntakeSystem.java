@@ -85,9 +85,12 @@ public class IntakeSystem extends SubsystemBase {
         // Set Default positions:
         leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
         rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+
         clawServo.setPosition(CLAW_HOME);
+
         leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
         rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
+
         pivotServo.setPosition(PIVOT_HOME);
         wristServo.setPosition(WRIST_HOME);
 
@@ -125,18 +128,19 @@ public class IntakeSystem extends SubsystemBase {
         return null; // return null if nothing works out
     }
 
-    public Command setLinkage(Double pos){
+    public Command setLinkage(Double pos) {
 
-        if(pos >= 0.2){
+        if(pos >= 0.2) {
             pos = 0.2;
         }
 
         var scaledPos = Math.sqrt(pos);
 
         return new InstantCommand(() -> {
-                    leftLinkageServo.setPosition(scaledPos);
-                    rightLinkageServo.setPosition(scaledPos);
-                });
+                leftLinkageServo.setPosition(scaledPos);
+                rightLinkageServo.setPosition(scaledPos);
+            }
+        );
     }
 
     public Command setStrike(IntakePosition pos)  {
@@ -249,21 +253,21 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command moveToTransfer() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> {extendState = IntakePosition.TRANSFER;}),
-                setWrist(WristPosition.HOME),
-                //setLinkage(IntakePosition.HOME),
-                setStrike(IntakePosition.TRANSFER),
-                setPivot(IntakePosition.TRANSFER)
+            new InstantCommand(() -> {extendState = IntakePosition.TRANSFER;}),
+            setWrist(WristPosition.HOME),
+            //setLinkage(IntakePosition.HOME),
+            setStrike(IntakePosition.TRANSFER),
+            setPivot(IntakePosition.TRANSFER)
         );
     }
 
     public Command moveToTarget(){
         return new SequentialCommandGroup(
-                new InstantCommand(() -> {extendState = IntakePosition.TARGET;}),
-                //setLinkage(IntakePosition.TARGET),
-                setClaw(IntakePosition.HOME),
-                setStrike(IntakePosition.TARGET),
-                setPivot(IntakePosition.TARGET)
+            new InstantCommand(() -> {extendState = IntakePosition.TARGET;}),
+            //setLinkage(IntakePosition.TARGET),
+            setClaw(IntakePosition.HOME),
+            setStrike(IntakePosition.TARGET),
+            setPivot(IntakePosition.TARGET)
         );
     }
 
