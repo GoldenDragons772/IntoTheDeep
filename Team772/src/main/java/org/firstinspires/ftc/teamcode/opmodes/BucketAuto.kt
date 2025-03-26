@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants
 
-@Autonomous(name = "BucketAuto")
+@Autonomous(name = "Bucket Auto")
 class BucketAuto(): CommandOpMode() {
     override fun initialize() {
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry);

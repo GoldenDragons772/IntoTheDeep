@@ -93,4 +93,11 @@ object Constants {
      */
     @JvmField var UNGRIPPY = 0.3
     @JvmField var GRIPPY = 0.8
+
+    /**
+     * Vision
+     */
+    @JvmField var VISION_MIN_AREA = 30000;
+    @JvmField var MIN_RED_SAMPLE_HUE = 170;
+    @JvmField var MAX_RED_SAMPLE_HUE = 180;
 }

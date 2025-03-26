@@ -33,7 +33,7 @@ kotlin {
     jvmToolchain(18)
 }
 android {
-    namespace = 'org.firstinspires.ftc.team772'
+    namespace = 'org.firstinspires.ftc.teamcode'
     kotlinOptions {
         jvmTarget = '18'
     }
