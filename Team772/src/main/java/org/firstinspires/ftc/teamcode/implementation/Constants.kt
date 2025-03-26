@@ -49,10 +49,10 @@ object Constants {
     @JvmField var CLAW_SERVO_CLENCH = 1.0
 
     // Pivot Positions (Joint 2)
-    @JvmField var PIVOT_SERVO_HOME = 0.95
+    @JvmField var PIVOT_SERVO_HOME = 0.6
     @JvmField var PIVOT_SERVO_SCORE = 0.5
-    @JvmField var PIVOT_SERVO_SPEC = 0.2
-    @JvmField var PIVOT_SERVO_TRANSFER = 0.0
+    @JvmField var PIVOT_SERVO_SPEC = 0.95
+    @JvmField var PIVOT_SERVO_TRANSFER = 1.0
     @JvmField var PIVOT_SERVO_SAFE = 0.6
 
 
@@ -61,14 +61,14 @@ object Constants {
     /**
      * Values for stage 1 of the outtake
      */
-    @JvmField var OUT_STRIKE_R_HOME = 0.05
-    @JvmField var OUT_STRIKE_L_HOME = 0.05
+    @JvmField var OUT_STRIKE_R_HOME = 0.8
+    @JvmField var OUT_STRIKE_L_HOME = 0.8
     @JvmField var OUT_STRIKE_R_SCORE = 0.3
     @JvmField var OUT_STRIKE_L_SCORE = 0.3
     @JvmField var OUT_STRIKE_R_TRANSFER = 0.6
     @JvmField var OUT_STRIKE_L_TRANSFER = 0.6
-    @JvmField var OUT_STRIKE_R_SPEC = 0.85
-    @JvmField var OUT_STRIKE_L_SPEC = 0.85
+    @JvmField var OUT_STRIKE_R_SPEC = 0.1
+    @JvmField var OUT_STRIKE_L_SPEC = 0.1
 
     @JvmField var OUT_STRIKE_R_SAFE = 0.8
     @JvmField var OUT_STRIKE_L_SAFE = 0.8

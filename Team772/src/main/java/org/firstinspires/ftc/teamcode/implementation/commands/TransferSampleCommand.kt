@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.implementation.commands
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
+import com.arcrobotics.ftclib.command.WaitUntilCommand
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
@@ -17,8 +18,8 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
                 intakeSystem.moveToTransfer(),
                 //WaitCommand(600),
                 outtakeSystem.moveArmToTransfer(),
-                WaitCommand(500),
-                //WaitUntilCommand { outtakeSystem.getClawButtonState() },
+                //WaitCommand(500),
+                WaitUntilCommand { outtakeSystem.getClawButtonState() },
                 outtakeSystem.clawClose(),
                 WaitCommand(500),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),

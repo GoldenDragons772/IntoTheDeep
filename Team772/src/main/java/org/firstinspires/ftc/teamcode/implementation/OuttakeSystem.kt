@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
+import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
@@ -24,7 +25,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     private val clawServo: Servo = hw.get(Servo::class.java, "outClawServo")
 
     //Define Sensors
-   // private val clawButton: DigitalChannel = hw.get(DigitalChannel::class.java, "InsertButtonNameHere")
+    private val clawButton: DigitalChannel = hw.get(DigitalChannel::class.java, "outLimitSwitch")
 
 
     // State Machine
@@ -42,7 +43,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     }
 
     init {
-        lstrikeServo.direction = Servo.Direction.FORWARD
+        rstrikeServo.direction = Servo.Direction.REVERSE
         clawServo.direction = Servo.Direction.FORWARD
         pivotServo.direction = Servo.Direction.REVERSE
 
@@ -128,9 +129,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
 
     }
 
-//    fun getClawButtonState(): Boolean {
-//        return clawButton.state
-//    }
+    fun getClawButtonState(): Boolean {
+        return clawButton.state
+    }
 
     /**
      * Moves the wrist servo to the home position.
@@ -203,9 +204,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     fun moveArmToTransfer(): Command =
         wristHome()
             .andThen(WaitCommand(200))
-            .andThen(setStrike(OuttakePosition.TRANSFER))
-            .andThen(WaitCommand(200))
             .andThen(setPivot(OuttakePosition.TRANSFER))
+            .andThen(WaitCommand(200))
+            .andThen(setStrike(OuttakePosition.TRANSFER))
             .andThen(InstantCommand({specState = false}))
 
     /**
