@@ -203,9 +203,9 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     fun moveArmToTransfer(): Command =
         wristHome()
             .andThen(WaitCommand(200))
-            .andThen(setPivot(OuttakePosition.TRANSFER))
-            .andThen(WaitCommand(200))
             .andThen(setStrike(OuttakePosition.TRANSFER))
+            .andThen(WaitCommand(200))
+            .andThen(setPivot(OuttakePosition.TRANSFER))
             .andThen(InstantCommand({specState = false}))
 
     /**

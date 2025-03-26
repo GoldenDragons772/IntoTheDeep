@@ -25,13 +25,13 @@ public class IntakeSystem extends SubsystemBase {
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.3, PIVOT_TRANSFER = 0.9;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.3, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.67, WRIST_TARGET = 0.32, WRIST_ANGLE = 0.495;
+    public static double WRIST_HOME = 0.32, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 0.15, CLAW_TARGET = 0.445, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.15 , CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
