@@ -23,7 +23,7 @@ public class LConstants {
 //        ThreeWheelConstants.strafeEncoderDirection = Encoder.FORWARD;
 
         PinpointConstants.forwardY = -4.54;
-        PinpointConstants.strafeX = 7;
+        PinpointConstants.strafeX = 7+.666;
         PinpointConstants.distanceUnit = DistanceUnit.INCH;
         PinpointConstants.hardwareMapName = "pinpoint";
         PinpointConstants.useYawScalar = false;
@@ -31,7 +31,7 @@ public class LConstants {
         PinpointConstants.useCustomEncoderResolution = true;
         //PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
         PinpointConstants.customEncoderResolution = 37.2513512517;
-        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
         PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     }
 }
