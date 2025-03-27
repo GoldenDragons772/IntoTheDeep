@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.ParallelPlateDrivesystem
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
+import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -172,7 +173,7 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         )
 //        // Toggle extending the arm out and prime for picking up pixels.
 
-        setPressedBinding(mapping.aimMapping, robot!!.intakeSystem.toggleIntake())
+        setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
 //        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
         //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
         setPressedBinding(

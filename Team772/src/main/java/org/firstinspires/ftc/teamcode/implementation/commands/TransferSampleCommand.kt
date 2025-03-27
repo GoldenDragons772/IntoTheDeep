@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.implementation.commands
 
+import com.arcrobotics.ftclib.command.ParallelRaceGroup
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
+import kotlin.concurrent.timer
 
 class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
@@ -15,11 +17,9 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
                 climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
                 outtakeSystem.clawOpen(),
-                intakeSystem.moveToTransfer(),
-                //WaitCommand(600),
                 outtakeSystem.moveArmToTransfer(),
-                //WaitCommand(500),
-                WaitUntilCommand { outtakeSystem.getClawButtonState() },
+                intakeSystem.moveToTransfer(),
+                ParallelRaceGroup(WaitUntilCommand { outtakeSystem.getClawButtonState() }, WaitCommand(3000)),
                 outtakeSystem.clawClose(),
                 WaitCommand(500),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
