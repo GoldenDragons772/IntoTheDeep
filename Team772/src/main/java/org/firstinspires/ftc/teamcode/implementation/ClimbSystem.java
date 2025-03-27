@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.implementation;
 
 import android.util.Log;
 
+import com.acmerobotics.dashboard.DashboardCore;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -12,6 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class ClimbSystem extends SubsystemBase {
@@ -37,12 +41,17 @@ public class ClimbSystem extends SubsystemBase {
     private final DcMotorEx climbMotor2;
     private final DcMotorEx climbMotor3;
 
+    Telemetry dashboard;
+
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
     private int initialPosition;
 
     public ClimbSystem(HardwareMap hw) {
+
+        dashboard = FtcDashboard.getInstance().getTelemetry();
+
         this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
         this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
         this.climbMotor3 = hw.get(DcMotorEx.class, "climbMotor3");
@@ -58,7 +67,6 @@ public class ClimbSystem extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         climbMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -67,7 +75,7 @@ public class ClimbSystem extends SubsystemBase {
 
     // Get the current position from the slide
     public double getSlidesPosition() {
-        return Math.max(climbMotor2.getCurrentPosition() - initialPosition, 0) / 8192.0 * 360;
+        return Math.max((climbMotor2.getCurrentPosition() * -1) - initialPosition, 0) / 8192.0 * 360;
     }
 
     @Override
@@ -78,8 +86,11 @@ public class ClimbSystem extends SubsystemBase {
         // sum everything up
         double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative) + PID_SLIDES.f;
 
-        Log.i("Climb", String.valueOf(this.getSlidesPosition()));
-        Log.i("Climb", String.valueOf(position));
+//        Log.i("Climb", String.valueOf(this.getSlidesPosition()));
+//        Log.i("Climb", String.valueOf(position));
+
+        dashboard.addData("Slide Position", this.getSlidesPosition());
+        dashboard.update();
 
         //Make sure to stop PIDing when we're home
         if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
@@ -98,9 +109,6 @@ public class ClimbSystem extends SubsystemBase {
 
         lastError = error;
         timer.reset();
-
-
-
     }
 
     public Command setTargetPosition(ClimbState climbState) {
