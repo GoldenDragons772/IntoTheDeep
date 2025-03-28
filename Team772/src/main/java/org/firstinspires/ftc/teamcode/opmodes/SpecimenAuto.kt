@@ -30,16 +30,17 @@ class SpecimenAuto : CommandOpMode() {
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry);
 
         val follower = Follower(hardwareMap, FConstants::class.java, LConstants::class.java)
+        follower.setupConstants(FConstants::class.java, LConstants::class.java)
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
-        val drivesystem = ParallelPlateDrivesystem(hardwareMap) // The bulk read code could be pulled out of here
+       // val drivesystem = ParallelPlateDrivesystem(hardwareMap) // The bulk read code could be pulled out of here
 
-        var batteryVoltage = drivesystem.voltageSensor.voltage
+       // var batteryVoltage = drivesystem.voltageSensor.voltage
         val nominalVoltage = 13.8
 
         // reset the encoder only in auto
-        climbSystem.resetEncoders()
+       // climbSystem.resetEncoders()
 
         val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
@@ -51,30 +52,30 @@ class SpecimenAuto : CommandOpMode() {
 
 
         //Voltage Compensation!!!
-        fun scaleFollowerPower(): Double {
-            // scale the follower maxPower based on the battery voltage
-            val maxPowerAdjusted = clamp(nominalVoltage / batteryVoltage, 0.0, 1.0)
-            val scaledPower = maxPowerAdjusted * 1.0
-            return scaledPower
-        }
-
-        fun getFilteredBatteryVoltage(): Double {
-            val alpha = 0.8  // for a low pass filter on battvoltage
-            val newBatteryVoltage = drivesystem.voltageSensor.voltage
-            batteryVoltage = alpha * newBatteryVoltage + (1 - alpha) * batteryVoltage
-            return batteryVoltage
-        }
+//        fun scaleFollowerPower(): Double {
+//            // scale the follower maxPower based on the battery voltage
+//            val maxPowerAdjusted = clamp(nominalVoltage / batteryVoltage, 0.0, 1.0)
+//            val scaledPower = maxPowerAdjusted * 1.0
+//            return scaledPower
+//        }
+//
+//        fun getFilteredBatteryVoltage(): Double {
+//            val alpha = 0.8  // for a low pass filter on battvoltage
+//            val newBatteryVoltage = drivesystem.voltageSensor.voltage
+//            batteryVoltage = alpha * newBatteryVoltage + (1 - alpha) * batteryVoltage
+//            return batteryVoltage
+//        }
 
         //The actual auto code
         schedule(
             WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 follower.update()
-                drivesystem.update()
-                if (follower.isBusy) follower.telemetryDebug(telemetry)
-                if(follower.isRobotStuck) {
-                    outtakeSystem.moveArmToScore()
-                }
+                //drivesystem.update()
+//                if (follower.isBusy) follower.telemetryDebug(telemetry)
+//                if(follower.isRobotStuck) {
+//                    outtakeSystem.moveArmToScore()
+//                }
             }),
             SequentialCommandGroup(
                 //Preload

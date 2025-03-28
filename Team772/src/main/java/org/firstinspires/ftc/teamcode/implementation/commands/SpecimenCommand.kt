@@ -11,10 +11,10 @@ class SpecimenCommand(private val intakeSystem: IntakeSystem, private val outtak
     init{
         super.addCommands(
             SequentialCommandGroup(
-                /*ConditionalCommand(
+                ConditionalCommand(
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER),
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME)
-                ) { outtakeSystem.getSpecState() },*/
+                ) { outtakeSystem.getSpecState() },
                 outtakeSystem.toggleArmSpec(),
                 intakeSystem.moveToHome()
             )
