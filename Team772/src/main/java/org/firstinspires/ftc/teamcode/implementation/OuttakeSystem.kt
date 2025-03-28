@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.implementation
 import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
+import com.arcrobotics.ftclib.command.PerpetualCommand
 import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.teamcode.implementation.IntakeSystem.IntakePosition
 
 /**
  * Controls the outtake system and its related servos.
@@ -59,6 +61,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         clawServo.position = Constants.CLAW_SERVO_TARGET
 
        // clawButton.mode = DigitalChannel.Mode.INPUT
+
     }
 
     @JvmName("getSpecStateJaavaaa")
@@ -184,6 +187,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
             .andThen(setPivot(OuttakePosition.HOME))
             .andThen(wristHome())
             .andThen(InstantCommand({homeState = true}))
+            //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
 
     /**
      * Moves the entire arm to the scoring position.
@@ -192,7 +196,7 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
     fun moveArmToScore(): Command =
         setStrike(OuttakePosition.TARGET)
             .andThen(setPivot(OuttakePosition.TARGET))
-            .andThen(wristScore())
+            .andThen(wristHome())
             .andThen(InstantCommand({specState = false}))
 
     fun moveArmToScoreSpec(): Command =

@@ -85,8 +85,8 @@ object Constants {
     /**
      * Wrist Positions
      */
-    @JvmField var WRIST_SERVO_HOME = 0.365
-    @JvmField var WRIST_SERVO_TARGET = 0.365
+    @JvmField var WRIST_SERVO_HOME = 0.265
+    @JvmField var WRIST_SERVO_TARGET = 0.935
 
     /**
      * Claw Positions.
