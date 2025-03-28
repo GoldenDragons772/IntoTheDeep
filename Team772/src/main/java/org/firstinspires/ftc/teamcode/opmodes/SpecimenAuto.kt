@@ -43,7 +43,7 @@ class SpecimenAuto : CommandOpMode() {
 
         val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
-        follower.setStartingPose(Pose(7.1, 53.5, Math.PI))
+        follower.setStartingPose(Pose(8.500, 53.500, Math.toRadians(180.0)))
 
        // outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.HOME)
         //outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME)
@@ -81,7 +81,7 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME),
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
-                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, scaleFollowerPower())
+                FollowPath(follower, SpecimenAutoPaths.scoreFirstSpecimenPath, true, 0.9)
                 .andThen(
                     outtakeSystem.toggleClaw(),
                     WaitCommand(250),
@@ -91,7 +91,7 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(250),
                 ParallelCommandGroup(
                     //Knock the Specimens
-                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, scaleFollowerPower()),
+                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone, true, 0.9),
                     WaitCommand(800).andThen(
                         climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         //outtakeSystem.moveArmToHome(),
