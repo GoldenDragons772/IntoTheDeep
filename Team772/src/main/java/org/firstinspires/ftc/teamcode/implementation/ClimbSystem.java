@@ -24,7 +24,7 @@ public class ClimbSystem extends SubsystemBase {
         HOME(0),
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
-        HIGH_CHAMBER(480),
+        HIGH_CHAMBER(420),
         HIGH_BASKET(2200),
         SPEC_HANG(400);
 

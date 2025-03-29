@@ -56,8 +56,8 @@ class OuttakeSystem(hw: HardwareMap): SubsystemBase() {
         lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
 
 
-        pivotServo.position = Constants.PIVOT_SERVO_SCORE
-        wristServo.position = Constants.WRIST_SERVO_TARGET
+        pivotServo.position = Constants.PIVOT_SERVO_HOME
+        wristServo.position = Constants.WRIST_SERVO_HOME
         clawServo.position = Constants.CLAW_SERVO_TARGET
 
        // clawButton.mode = DigitalChannel.Mode.INPUT
