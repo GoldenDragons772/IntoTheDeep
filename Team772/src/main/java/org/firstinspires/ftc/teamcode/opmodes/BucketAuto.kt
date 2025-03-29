@@ -25,6 +25,8 @@ class BucketAuto(): CommandOpMode() {
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry);
 
         val follower = Follower(hardwareMap, FConstants::class.java, LConstants::class.java)
+
+
         val intakeSystem = IntakeSystem(hardwareMap)
         val outtakeSystem = OuttakeSystem(hardwareMap)
         val climbSystem = ClimbSystem(hardwareMap)
