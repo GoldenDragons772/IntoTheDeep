@@ -19,7 +19,7 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
                 outtakeSystem.clawOpen(),
                 outtakeSystem.moveArmToTransfer(),
                 intakeSystem.moveToTransfer(),
-                ParallelRaceGroup(WaitUntilCommand { outtakeSystem.getClawButtonState() }, WaitCommand(3000)),
+                ParallelRaceGroup(WaitUntilCommand { outtakeSystem.getClawButtonState() }, WaitCommand(1500)),
                 outtakeSystem.clawClose(),
                 WaitCommand(500),
                 intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),

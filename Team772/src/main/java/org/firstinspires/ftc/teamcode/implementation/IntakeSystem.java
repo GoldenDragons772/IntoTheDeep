@@ -10,6 +10,9 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
+import org.openftc.easyopencv.OpenCvCamera;
+
 import java.util.HashMap;
 
 @Config
@@ -60,6 +63,7 @@ public class IntakeSystem extends SubsystemBase {
     Servo wristServo;
     // Claw Servo
     Servo clawServo;
+
 
     public IntakeSystem(HardwareMap hw) {
         // Linkage Servo
