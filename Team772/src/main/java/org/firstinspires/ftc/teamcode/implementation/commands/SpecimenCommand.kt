@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 
 class SpecimenCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
-    init{
+    init {
         super.addCommands(
             SequentialCommandGroup(
                 ConditionalCommand(

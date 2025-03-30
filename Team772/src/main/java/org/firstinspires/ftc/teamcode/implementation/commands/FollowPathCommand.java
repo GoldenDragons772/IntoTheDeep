@@ -5,6 +5,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 
+@Deprecated
 public class FollowPathCommand extends CommandBase {
 
     private final Follower follower;

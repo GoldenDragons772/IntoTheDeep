@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.vision;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.implementation.Constants;
+import org.firstinspires.ftc.teamcode.implementation.RootSystem;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.calib3d.Calib3d;
@@ -12,26 +12,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// must be java because easy opencv sim only compiles java
 public class RedSampleDetection extends OpenCvPipeline {
-    Telemetry telemetry;
-    public RedSampleDetection(Telemetry telemetry){
-        this.telemetry = telemetry;
-        camera_matrix.put(0,0, 1280, 0, 1280.0/2.0, 0, 720, 720.0/2.0, 0,0,1);
-        distortion_coefficients.put(0,0,-1.382,2.25, 0,0,-1.5);
+    private RootSystem root;
+
+    public RedSampleDetection(RootSystem root) {
+        this.root = root;
+        camera_matrix.put(0, 0, 1280, 0, 1280.0 / 2.0, 0, 720, 720.0 / 2.0, 0, 0, 1);
+        distortion_coefficients.put(0, 0, -1.382, 2.25, 0, 0, -1.5);
     }
 
     Mat dst = new Mat();
     Mat cvt = new Mat();
-    Mat camera_matrix = new Mat(3,3, CvType.CV_64FC1);
-    Mat distortion_coefficients = new Mat(1,5, CvType.CV_64FC1);
+    Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
+    Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
     public double sampleRotation = 0.0;
-//    public double rotation;
+
+    //    public double rotation;
     @Override
     public Mat processFrame(Mat mat) {
         Scalar RED_SAMPLE_LOW = new Scalar(Constants.MIN_RED_SAMPLE_HUE, 50, 50);
         Scalar RED_SAMPLE_HIGH = new Scalar(Constants.MAX_RED_SAMPLE_HUE, 255, 255);
-        // Rotation code for testing -- Hit CTRL + minus to fold it.
 /*
+        // Rotation code for testing -- Hit CTRL + minus to fold it.
         Mat rotMat = Imgproc.getRotationMatrix2D(new Point(mat.width()/2, mat.height()/2), rotation, 1.0);
         Imgproc.warpAffine(mat, mat, rotMat, mat.size());
 */
@@ -80,25 +83,29 @@ public class RedSampleDetection extends OpenCvPipeline {
 
         Point[] points = new Point[4];
         closest.points(points);
-        List<Point> lpoints = Arrays.stream(points).sorted((i2, i1) -> (int) (i2.y - i1.y)).collect(Collectors.toList());
+        List<Point> lpoints = Arrays.stream(points)
+                                    .sorted((i2, i1) -> (int) (i2.y - i1.y))
+                                    .collect(Collectors.toList());
         Point highestPoint = lpoints.get(0);
 
-        lpoints = Arrays.stream(points).sorted((i1, i2) -> (int) (distance(i2, highestPoint) - distance(i1, highestPoint))).collect(Collectors.toList());
+        lpoints = Arrays.stream(points)
+                        .sorted((i1, i2) -> (int) (distance(i2, highestPoint) - distance(i1, highestPoint)))
+                        .collect(Collectors.toList());
         double theta = Math.atan2(highestPoint.y - lpoints.get(1).y, highestPoint.x - lpoints.get(1).x);
-        telemetry.addData("Theta", theta);
-        telemetry.update();
+        root.getTelemetry().addData("Theta", theta);
 
         // Plot on mat.
-        Imgproc.polylines(newMat, List.of(new MatOfPoint(points)), true, new Scalar(0,255,0), 3);
-        Imgproc.line(newMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250*Math.cos(theta), closest.center.y + 250*Math.sin(theta)), new Scalar(255,0,0));
-        Imgproc.putText(newMat, ((double) Math.round(theta*1000))/1000 + "rad", closest.center, 1, 1, new Scalar(0,0,255));
+        Imgproc.polylines(newMat, List.of(new MatOfPoint(points)), true, new Scalar(0, 255, 0), 3);
+        Imgproc.line(newMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 0));
+        Imgproc.putText(newMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
         sampleRotation = theta;
 
 
         return newMat;
 
     }
-    double distance(Point p1, Point p2){
-        return Math.sqrt(Math.pow(p2.x - p1.x,2) + Math.pow(p1.y - p2.y,2));
+
+    double distance(Point p1, Point p2) {
+        return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
 }

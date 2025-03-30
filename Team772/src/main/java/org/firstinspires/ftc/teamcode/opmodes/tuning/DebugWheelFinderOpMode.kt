@@ -4,8 +4,8 @@ import com.arcrobotics.ftclib.hardware.motors.Motor
 import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-
-@TeleOp(name = "DebugWheelFinder") // Disable for comps
+// ~ should always sort last alphabetically
+@TeleOp(name = "~DebugWheelFinder") // Disable for comps
 class DebugWheelFinderOpMode : LinearOpMode() {
     override fun runOpMode() {
         val FLMotor = MotorEx(hardwareMap, "FLMotor")

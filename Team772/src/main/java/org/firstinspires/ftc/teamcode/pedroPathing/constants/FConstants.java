@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.constants;
 import com.pedropathing.localization.Localizers;
 import com.pedropathing.follower.FollowerConstants;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.teamcode.implementation.Constants;
 
 public class FConstants {
     static {
@@ -54,6 +55,7 @@ public class FConstants {
         FollowerConstants.pathEndHeadingConstraint = 0.007;
 
         FollowerConstants.useVoltageCompensationInAuto = true;
-        FollowerConstants.nominalVoltage = 13.5;
+        FollowerConstants.useVoltageCompensationInTeleOp = true;
+        FollowerConstants.nominalVoltage = Constants.NOMINAL_BATTERY_VOLTAGE;
     }
 }
