@@ -69,7 +69,7 @@ public class RedSampleDetection extends OpenCvPipeline {
         // Sort the box centers by the distance to the center of the image.
         boxCenters.sort((t0, t1) -> {
             Point center = new Point((double) dst.width() / 2, (double) dst.height() / 2);
-            return (int) (distance(t1.center, center) - distance(t1.center, center));
+            return (int) (distance(t0.center, center) - distance(t1.center, center));
         });
         // Do nothing if there's nothing on the screen
         if (boxCenters.isEmpty()) {
