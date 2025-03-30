@@ -32,7 +32,7 @@ class OuttakeSystem(root: RootSystem) : SubsystemBase() {
     var clawState = false
     var wristState = false
     var homeState = false
-    var specState = false
+    private var specState = false
 
     enum class OuttakePosition {
         HOME,

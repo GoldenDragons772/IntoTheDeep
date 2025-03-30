@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.helpers
 
-import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
@@ -136,10 +135,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
                 root.outtake.toggleClaw()
             )
             { !root.outtake.homeState && root.climb.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
-
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
-
-
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setPressedBinding(mapping.parallelMapping, root.intake.toggleWrist())
@@ -160,5 +156,5 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
-        )
+    )
 }

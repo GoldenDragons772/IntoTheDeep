@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.implementation;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.vision.SampleDetection;
 
 import java.util.HashMap;
 
@@ -48,6 +49,7 @@ public class IntakeSystem extends SubsystemBase {
     Servo pivotServo;
     Servo wristServo;
     Servo clawServo;
+    SampleDetection sampleDetector;
 
 
     public IntakeSystem(RootSystem root) {
@@ -82,7 +84,6 @@ public class IntakeSystem extends SubsystemBase {
 
         pivotServo.setPosition(PIVOT_HOME);
         wristServo.setPosition(WRIST_HOME);
-
     }
 
     public WristPosition getWristPos() {
@@ -108,8 +109,9 @@ public class IntakeSystem extends SubsystemBase {
 
             case TRANSFER ->  //Never gets called
 
-                new InstantCommand(() -> {});
-                // This shouldn't ever be called
+                    new InstantCommand(() -> {
+                    });
+            // This shouldn't ever be called
 
         };
 

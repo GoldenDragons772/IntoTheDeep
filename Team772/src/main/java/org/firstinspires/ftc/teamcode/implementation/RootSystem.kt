@@ -25,6 +25,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
     val intake = IntakeSystem(this)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
+    val isAllianceRed = false;
 
     val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
     private var lastVoltage: Double = 0.0
