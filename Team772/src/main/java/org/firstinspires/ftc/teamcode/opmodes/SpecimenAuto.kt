@@ -4,6 +4,7 @@ import androidx.core.math.MathUtils.clamp
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.ParallelCommandGroup
 import com.arcrobotics.ftclib.command.RunCommand
@@ -32,6 +33,8 @@ class SpecimenAuto : CommandOpMode() {
 
         //val pinpoint: GoBildaPinpointDriver = hardwareMap.get(GoBildaPinpointDriver::class.java, "pinpoint");
 
+        CommandScheduler.getInstance().reset()
+
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry);
 
         val follower = Follower(hardwareMap, FConstants::class.java, LConstants::class.java)
@@ -53,6 +56,7 @@ class SpecimenAuto : CommandOpMode() {
         val specimenCommand = AutoSpecimenCommand(intakeSystem, outtakeSystem, climbSystem)
         val specWallCommand = AutoSpecWallCommand(intakeSystem, outtakeSystem, climbSystem)
 
+        climbSystem.resetEncoders()
 
        // outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.HOME)
         //outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME)
@@ -79,6 +83,7 @@ class SpecimenAuto : CommandOpMode() {
             InstantCommand({
 //                pinpoint.resetPosAndIMU()
 //                follower.setStartingPose(Pose(8.50, 53.500, Math.toRadians(180.0)))
+                climbSystem.resetEncoders()
             }),
             outtakeSystem.clawClose(),
             outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE),
@@ -97,11 +102,11 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.clawClose(),
                 specimenCommand, // score position
                 FollowPath(follower, SpecimenAutoPaths.preload(), true, 0.9)
-                .andThen(
-                    outtakeSystem.toggleClaw(),
-                    WaitCommand(150),
-                    outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)
-                ),
+                    .andThen(
+                        outtakeSystem.toggleClaw(),
+                        WaitCommand(150),
+                        outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE)
+                    ),
 
                 ParallelCommandGroup(
                     //Knock the Specimens
@@ -110,7 +115,7 @@ class SpecimenAuto : CommandOpMode() {
                         outtakeSystem.moveArmToHome(),
                         intakeSystem.moveToHome(),
                     ),
-                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 0.9),
+                    FollowPath(follower, SpecimenAutoPaths.knockSpecsIntoZone(), false, 0.9),
                 ),
                 //Spec 2
                 outtakeSystem.toggleClaw(),
@@ -121,12 +126,50 @@ class SpecimenAuto : CommandOpMode() {
                 outtakeSystem.toggleClaw(),
                 outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE),
                 ParallelCommandGroup(
-                FollowPath(follower, SpecimenAutoPaths.grab2(), true, 0.9),
-                WaitCommand(800).andThen(
-                    climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                    outtakeSystem.moveArmToHome(),
-                    intakeSystem.moveToHome(),
-                ))
+                    FollowPath(follower, SpecimenAutoPaths.grab2(), true, 0.8),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
+                // spec3
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPath(follower, SpecimenAutoPaths.spec2(), true, 0.9),
+                WaitCommand(150),
+                outtakeSystem.toggleClaw(),
+                outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.grab3(), true, 0.8),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
+                // spec4
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPath(follower, SpecimenAutoPaths.spec3(), true, 0.9),
+                WaitCommand(150),
+                outtakeSystem.toggleClaw(),
+                outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                ParallelCommandGroup(
+                    FollowPath(follower, SpecimenAutoPaths.grab4(), true, 0.8),
+                    WaitCommand(800).andThen(
+                        climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        outtakeSystem.moveArmToHome(),
+                        intakeSystem.moveToHome(),
+                    )
+                ),
+                // spec5
+                outtakeSystem.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPath(follower, SpecimenAutoPaths.spec4(), true, 0.9),
             )
         )
     }
