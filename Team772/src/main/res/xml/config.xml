@@ -7,7 +7,7 @@
             <goBILDA5202SeriesMotor name="climbMotor3" port="1" />
             <Servo name="hPivot" port="0" />
             <Servo name="intakeClawServo" port="2" />
-            <DigitalDevice name="outLimitSwitch" port="7"/>
+            <DigitalDevice name="outLimitSwitch" port="5"/>
         </LynxModule>
         <ServoHub name="Servo Hub" port="3">
             <Servo name="hRightStrike" port="0" />

@@ -34,12 +34,12 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
 
     init {
         CommandScheduler.getInstance().reset()
-        hubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
+//        hubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
         follower.setupConstants(FConstants::class.java, LConstants::class.java)
     }
 
     fun update() {
-        hubs.forEach(LynxModule::clearBulkCache) // Bulk read
+        //hubs.forEach(LynxModule::clearBulkCache) // Bulk read
 
         lastVoltage = voltage
         voltage = voltageSensor.voltage
@@ -53,7 +53,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
         val xSquared = x.pow(2) * (x).sign
         val ySquared = y.pow(2) * y.sign
         val thSquared = theta.pow(2) * theta.sign
-        this.follower.setTeleOpMovementVectors(xSquared, ySquared, thSquared)
+        this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
     fun getVoltageMultiplier(): Double {

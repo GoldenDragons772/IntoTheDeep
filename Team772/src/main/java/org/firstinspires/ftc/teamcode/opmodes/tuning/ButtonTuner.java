@@ -15,7 +15,7 @@ public class ButtonTuner extends LinearOpMode {
         RootSystem root = new RootSystem(hardwareMap, telemetry);
 
         // get a reference to our touchSensor object.
-        digitalTouch = hardwareMap.get(DigitalChannel.class, "back"); // we called it "back" since it was called that in config.
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "outLimitSwitch"); // we called it "back" since it was called that in config.
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
 
@@ -30,9 +30,8 @@ public class ButtonTuner extends LinearOpMode {
 
             // button is pressed if value returned is LOW or false.
             // send the info back to driver station using telemetry function.
-            root.getTelemetry().addData("Button", (digitalTouch.getState()) ? "PRESSED" : "NOT PRESSED");
-
-            root.getTelemetry().update();
+            telemetry.addData("Button", (digitalTouch.getState()) ? "PRESSED" : "NOT PRESSED");
+            telemetry.update();
         }
     }
 }
