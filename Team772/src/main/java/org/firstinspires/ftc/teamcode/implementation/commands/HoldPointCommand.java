@@ -6,6 +6,7 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.pathgen.Point;
 
+@Deprecated
 public class HoldPointCommand extends CommandBase {
 
     private final BezierPoint holdPoint;

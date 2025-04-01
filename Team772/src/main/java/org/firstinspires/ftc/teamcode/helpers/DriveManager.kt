@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.helpers
 
-import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
-import org.firstinspires.ftc.teamcode.implementation.ParallelPlateDrivesystem
+import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
@@ -16,75 +16,50 @@ import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeComman
 /**
  * Manages driving and button mappings for TeleOps.
  */
-class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
+class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
     /**
      * Subsystems
      */
-    var robot: ParallelPlateDrivesystem? = null
+    var root: RootSystem = RootSystem(hw, telemetry)
 
     /**
      * Controllers
      */
-    private var gamepad1: GamepadEx? = null
-    private var gamepad2: GamepadEx? = null
+    val gamepad1: GamepadEx = GamepadEx(gp1)
+    val gamepad2: GamepadEx = GamepadEx(gp2)
 
     init {
-        gamepad1 = GamepadEx(gp1)
-        gamepad2 = GamepadEx(gp2)
-        robot = ParallelPlateDrivesystem(hardwareMap)
+        root = RootSystem(hw, telemetry)
         initializeBindings(mapping)
-
+        root.follower.startTeleopDrive()
     }
 
     /**
      * Start driving and processing input: Main drive loop.
      */
-    // TODO: Fix the arguments.
     fun update() {
-        robot!!.update() // Updates bulk reads and odometry.
-        robot!!.drive(
-            -gamepad1!!.rightX,
-            gamepad1!!.rightY,
-            -gamepad1!!.leftX
-        );
+        root.update() // Updates bulk reads and odometry.
+        root.teleOpDrive(
+            -gamepad1.rightX,
+            gamepad1.rightY,
+            -gamepad1.leftX
+        )
     }
 
     /**
      * Gets a gamepad from its int id.
      */
-    private fun getGamepad(x: Int): GamepadEx? = if (x == 1) gamepad1 else gamepad2
+    private fun getGamepad(x: Int): GamepadEx = if (x == 1) gamepad1 else gamepad2
 
-    /**
-     * Binds a function to a button on the controller.
-     */
-    private fun setPressedBinding(
-        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
-    ) {
-        setPressedBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
-    }
 
     private fun setPressedBinding(
         map: Pair<GamepadKeys.Button, Int>,
         function: Command,
         whenReleased: Command = InstantCommand()
     ) {
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whenPressed(
+        getGamepad(map.second).getGamepadButton(map.first)!!.whenPressed(
             function
         ).whenReleased(whenReleased)
-    }
-
-
-    private fun setHeldBinding(
-        map: Pair<GamepadKeys.Button, Int>, function: () -> Unit, whenReleased: () -> Unit = {}
-    ) {
-        setHeldBinding(map, InstantCommand({ function() }), InstantCommand({ whenReleased() }))
-    }
-
-    private fun setHeldBinding(
-        map: Pair<GamepadKeys.Button, Int>, function: Command, whenReleased: Command
-    ) {
-        getGamepad(map.second)!!.getGamepadButton(map.first)!!.whileHeld(function)
-            .whenReleased(whenReleased)
     }
 
 
@@ -95,16 +70,11 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
     private fun setHeldTriggerBinding(
         map: Pair<GamepadKeys.Trigger, Int>, function: InstantCommand, onRelease: InstantCommand
     ) {
-        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
-        val geepad = getGamepad(map.second)!!
+        var isDown = getGamepad(map.second).getTrigger(map.first) > 0.5
         var lastIsDown = isDown
         CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
-            isDown = geepad.getTrigger(map.first) > 0.5
-            if (isDown) {
-                function.schedule()
-            } else if (lastIsDown) {
-                onRelease.schedule()
-            }
+            isDown = getGamepad(map.second).getTrigger(map.first) > 0.5
+            if (isDown) function.schedule() else if (lastIsDown) onRelease.schedule()
             lastIsDown = isDown
         })))
     }
@@ -115,10 +85,10 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * @param function This is what will happen when the trigger is pressed.
      */
     private fun setPressedTriggerBinding(map: Pair<GamepadKeys.Trigger, Int>, function: Command) {
-        var isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5
+        var isDown = getGamepad(map.second).getTrigger(map.first) > 0.5
         var lastIsDown = isDown
         CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({ // Repeatedly run an instant command
-            isDown = getGamepad(map.second)!!.getTrigger(map.first) > 0.5 // Every loop, update isDown
+            isDown = getGamepad(map.second).getTrigger(map.first) > 0.5 // Every loop, update isDown
             if (!lastIsDown && isDown) function.schedule()// If was just down and is now up, schedule function.
             lastIsDown = isDown
         })))
@@ -129,25 +99,19 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * @param map The controller binding being passed in
      * @param function The function that will run when activated
      */
-    private fun triggerReader(map: Pair<GamepadKeys.Trigger, Int>, function: (Double) -> Command){
-
-       // Log.i("ROBO", "triggerReader is being read")
-
-
-
+    private fun triggerReader(map: Pair<GamepadKeys.Trigger, Int>, function: (Double) -> Command) {
         //if(triggerPos > 0.2) {
-            CommandScheduler.getInstance().schedule(
-                RepeatCommand(
-                    InstantCommand({
-                        //Get the position of the trigger.
-                        var triggerPos = getGamepad(map.second)!!.getTrigger(map.first)
-                        Log.i("Trigger", triggerPos.toString()) //Debugging!
-                        //if(triggerPos > 0.2) {
-                        function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
-                        //}
-                    })
-                )
+        CommandScheduler.getInstance().schedule(
+            RepeatCommand(
+                InstantCommand({
+                    //Get the position of the trigger.
+                    var triggerPos = getGamepad(map.second).getTrigger(map.first)
+                    //if(triggerPos > 0.2) {
+                    function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
+                    //}
+                })
             )
+        )
         //}
     }
 
@@ -155,50 +119,26 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
-        setPressedBinding(
-            mapping.lowclimbMapping,
-            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET)
-        )// :: for the pointer to the function.
-
-        setPressedBinding(
-            mapping.highclimbMapping,
-            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET)
-        )
-
-        setPressedBinding(mapping.unClimbMapping, robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME))
-
-        setPressedBinding(
-            mapping.hangSpecMapping,
-            SpecimenCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
-        )
-//        // Toggle extending the arm out and prime for picking up pixels.
-
-        setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(robot!!.intakeSystem, robot!!.outtakeSystem))
-//        setPressedBinding(mapping.swingMapping, TransferSampleCommand(intakeSystem = robot!!.intakeSubsystem, outtakeSystem = robot!!.outtakeSystem))
-        //setPressedBinding(mapping.swingMapping, robot!!.outtakeSystem.toggleArm())
-        setPressedBinding(
-            mapping.transferMapping,
-            TransferSampleCommand(robot!!.intakeSystem, robot!!.outtakeSystem, robot!!.climbSystem)
-        )
-
+        setPressedBinding(mapping.lowclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))
+        setPressedBinding(mapping.highclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
+        setPressedBinding(mapping.unClimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME))
+        setPressedBinding(mapping.hangSpecMapping, SpecimenCommand(root.intake, root.outtake, root.climb))
+        setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(root.intake, root.outtake))
+        setPressedBinding(mapping.transferMapping, TransferSampleCommand(root.intake, root.outtake, root.climb))
+        // Try to move to transfer position if some conditions are met
+        // I'm pretty sure this can be safely removed, but I won't remove it because I'm not quite sure what it does.
         setPressedBinding(
             mapping.gripMapping,
             ConditionalCommand(
-                robot!!.outtakeSystem.toggleClaw()
-                    .andThen(robot!!.outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.TRANSFER)),
-                robot!!.outtakeSystem.toggleClaw()
+                root.outtake.toggleClaw()
+                    .andThen(root.outtake.setPivot(OuttakeSystem.OuttakePosition.TRANSFER)),
+                root.outtake.toggleClaw()
             )
-            { !robot!!.outtakeSystem.homeState && robot!!.climbSystem.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
-
-        setPressedBinding(
-            mapping.climbToHangSpec,
-            robot!!.climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER)
-        )
-
-
+            { !root.outtake.homeState && root.climb.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
+        setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
-        setPressedTriggerBinding(mapping.clawMapping, robot!!.intakeSystem.toggleClaw())
-        setPressedBinding(mapping.parallelMapping, robot!!.intakeSystem.toggleWrist())
+        setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
+        setPressedBinding(mapping.parallelMapping, root.intake.toggleWrist())
 
     }
 
@@ -206,13 +146,9 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
      * Definition of possible mappings. Using this instead of a dictionary/hashmap allows for code completion.
      */
     class Mapping(
-        /**
-         * Added mapping for climbing
-         */
         val lowclimbMapping: Pair<GamepadKeys.Button, Int>,
         val highclimbMapping: Pair<GamepadKeys.Button, Int>,
         val unClimbMapping: Pair<GamepadKeys.Button, Int>,
-
         val aimMapping: Pair<GamepadKeys.Button, Int>,
         val gripMapping: Pair<GamepadKeys.Button, Int>,
         val transferMapping: Pair<GamepadKeys.Button, Int>,
@@ -220,6 +156,5 @@ class DriveManager(private val hardwareMap: HardwareMap, gp1: Gamepad, gp2: Game
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
-
     )
 }

@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
-import android.util.Log;
-
-import com.acmerobotics.dashboard.DashboardCore;
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -11,14 +7,13 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class ClimbSystem extends SubsystemBase {
+    private final RootSystem root;
 
     public enum ClimbState {
         HOME(0),
@@ -37,24 +32,21 @@ public class ClimbSystem extends SubsystemBase {
 
     public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.05);
 
-    private final DcMotorEx climbMotor1;
-    private final DcMotorEx climbMotor2;
-    private final DcMotorEx climbMotor3;
+    private final DcMotorEx climbMotor1, climbMotor2, climbMotor3;
 
-    Telemetry dashboard;
 
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
     private int initialPosition;
 
-    public ClimbSystem(HardwareMap hw) {
+    public ClimbSystem(RootSystem root) {
+        this.root = root;
 
-        dashboard = FtcDashboard.getInstance().getTelemetry();
 
-        this.climbMotor1 = hw.get(DcMotorEx.class, "climbMotorUp");
-        this.climbMotor2 = hw.get(DcMotorEx.class, "climbMotorDown");
-        this.climbMotor3 = hw.get(DcMotorEx.class, "climbMotor3");
+        this.climbMotor1 = root.getHw().get(DcMotorEx.class, "climbMotorUp");
+        this.climbMotor2 = root.getHw().get(DcMotorEx.class, "climbMotorDown");
+        this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -62,7 +54,7 @@ public class ClimbSystem extends SubsystemBase {
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         climbMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
         climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
-        //climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+
         initialPosition = climbMotor2.getCurrentPosition();
     }
 
@@ -89,19 +81,15 @@ public class ClimbSystem extends SubsystemBase {
 //        Log.i("Climb", String.valueOf(this.getSlidesPosition()));
 //        Log.i("Climb", String.valueOf(position));
 
-        dashboard.addData("Slide Position", this.getSlidesPosition());
-        dashboard.update();
+        root.getTelemetry().addData("Slide Position", this.getSlidesPosition());
+        root.getTelemetry().update();
 
         //Make sure to stop PIDing when we're home
         if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
-//            climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-//            climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);
         }else{
-            //climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            //climbMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             climbMotor1.setPower(PID_output);
             climbMotor2.setPower(PID_output);
             climbMotor3.setPower(PID_output);
@@ -115,12 +103,7 @@ public class ClimbSystem extends SubsystemBase {
 
         return new InstantCommand(() -> {
             this.position = climbState;
-            this.targetPosition = climbState.position;
+            targetPosition = climbState.position;
         });
     }
-
-    public Command setTargetPosition(double pos) {
-        return new InstantCommand(() -> this.targetPosition = pos);
-    }
-
 }

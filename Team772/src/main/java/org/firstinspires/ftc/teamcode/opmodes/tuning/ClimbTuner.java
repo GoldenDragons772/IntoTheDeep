@@ -5,14 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Climb Tuner")
+// ~ should always sort last alphabetically
+@TeleOp(name = "~Climb Tuner")
 public class ClimbTuner extends LinearOpMode {
 
-
-    private DcMotorEx climb2;
-
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
 
         DcMotorEx climb1 = hardwareMap.get(DcMotorEx.class, "climbMotorUp");
         DcMotorEx climb2 = hardwareMap.get(DcMotorEx.class, "climbMotorDown");
@@ -23,7 +21,7 @@ public class ClimbTuner extends LinearOpMode {
 
         waitForStart();
 
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             climb1.setPower(gamepad1.left_stick_y);
             climb2.setPower(gamepad1.left_stick_y);
             climb3.setPower(gamepad1.left_stick_y);
