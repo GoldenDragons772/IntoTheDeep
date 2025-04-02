@@ -38,6 +38,7 @@ class OuttakeSystem(root: RootSystem) : SubsystemBase() {
         HOME,
         TARGET,
         SPEC_TARGET,
+        TRANSFER_PREP,
         TRANSFER,
         SAFE
     }
@@ -67,6 +68,7 @@ class OuttakeSystem(root: RootSystem) : SubsystemBase() {
     fun setPivot(pos: OuttakePosition): InstantCommand {
         return when (pos) {
             OuttakePosition.HOME -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
+            OuttakePosition.TRANSFER_PREP -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER})
             OuttakePosition.TRANSFER -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER })
             OuttakePosition.TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
             OuttakePosition.SPEC_TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
@@ -91,6 +93,11 @@ class OuttakeSystem(root: RootSystem) : SubsystemBase() {
             OuttakePosition.SPEC_TARGET -> InstantCommand({
                 rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC
                 lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC
+            })
+
+            OuttakePosition.TRANSFER_PREP -> InstantCommand({
+                rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER_PREP
+                lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER_PREP
             })
 
             OuttakePosition.TRANSFER -> InstantCommand({
@@ -172,6 +179,12 @@ class OuttakeSystem(root: RootSystem) : SubsystemBase() {
             .andThen(setPivot(OuttakePosition.SPEC_TARGET))
             .andThen(wristScore())
             .andThen(InstantCommand({ homeState = false }))
+
+    fun moveArmToTransferPrep(): Command =
+        wristHome()
+            .andThen(setPivot(OuttakePosition.TRANSFER))
+            .andThen(setStrike(OuttakePosition.TRANSFER_PREP))
+            .andThen(InstantCommand({ specState = false}))
 
     fun moveArmToTransfer(): Command =
         wristHome()

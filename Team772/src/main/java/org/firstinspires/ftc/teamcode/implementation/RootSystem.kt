@@ -18,8 +18,11 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
-    init { CommandScheduler.getInstance().reset() }
+class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry) {
+    init {
+        CommandScheduler.getInstance().reset()
+    }
+
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
     val outtake = OuttakeSystem(this)

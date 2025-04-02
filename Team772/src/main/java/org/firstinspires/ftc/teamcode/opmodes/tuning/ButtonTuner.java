@@ -19,8 +19,8 @@ public class ButtonTuner extends LinearOpMode {
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
 
-        root.getTelemetry().addData("DigitalTouchSensorExample", "Press start to continue...");
-        root.getTelemetry().update();
+//        root.getTelemetry().addData("DigitalTouchSensorExample", "Press start to continue...");
+//        root.getTelemetry().update();
 
         waitForStart();
 

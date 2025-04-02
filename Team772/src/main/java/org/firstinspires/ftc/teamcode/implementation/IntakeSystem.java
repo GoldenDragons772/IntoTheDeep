@@ -31,7 +31,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double WRIST_HOME = 0.34, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.2, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.19, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
