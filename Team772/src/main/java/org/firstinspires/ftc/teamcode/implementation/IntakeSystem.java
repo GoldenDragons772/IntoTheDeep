@@ -11,8 +11,8 @@ import java.util.HashMap;
 public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;
-    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
+    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
     public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.6, LEFT_PIVOT_TRANSFER = 0.5;
@@ -23,19 +23,26 @@ public class IntakeSystem extends SubsystemBase {
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.25, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.34, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
+    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
 
     // Set Positions for claw
     public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.19, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
+    static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
 
     public enum IntakePosition {
         HOME,
         TARGET,
         TRANSFER
+    }
+
+    public enum LinkagePosition {
+        HOME,
+        FULL,
+        HALF
     }
 
     public enum WristPosition {
@@ -94,24 +101,28 @@ public class IntakeSystem extends SubsystemBase {
         return extendState;
     }
 
-    public Command setLinkage(IntakePosition pos) {
+    public LinkagePosition getLinkagePos() { return linkageState; }
+
+    public Command setLinkage(LinkagePosition pos) {
 
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
                 leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
                 rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+                linkageState  = LinkagePosition.HOME;
             });
 
-            case TARGET -> new InstantCommand(() -> {
+            case FULL -> new InstantCommand(() -> {
                 leftLinkageServo.setPosition(LEFT_LINKAGE_TARGET);
                 rightLinkageServo.setPosition(RIGHT_LINKAGE_TARGET);
+                linkageState  = LinkagePosition.FULL;
             });
 
-            case TRANSFER ->  //Never gets called
-
-                    new InstantCommand(() -> {
-                    });
-            // This shouldn't ever be called
+            case HALF -> new InstantCommand(() -> {
+                leftLinkageServo.setPosition(LEFT_LINKAGE_HALF);
+                rightLinkageServo.setPosition(RIGHT_LINKAGE_HALF);
+                linkageState  = LinkagePosition.HALF;
+            });
 
         };
 
@@ -208,7 +219,7 @@ public class IntakeSystem extends SubsystemBase {
                     extendState = IntakePosition.HOME;
                 }),
                 setWrist(WristPosition.HOME),
-                setLinkage(IntakePosition.HOME),
+                setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.HOME),
                 setPivot(IntakePosition.HOME)
         );
@@ -220,7 +231,7 @@ public class IntakeSystem extends SubsystemBase {
                     extendState = IntakePosition.TRANSFER;
                 }),
                 setWrist(WristPosition.HOME),
-                setLinkage(IntakePosition.HOME),
+                setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.TRANSFER),
                 setPivot(IntakePosition.TRANSFER)
         );
@@ -228,10 +239,14 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command moveToTarget() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    extendState = IntakePosition.TARGET;
-                }),
-                setLinkage(IntakePosition.TARGET),
+                new SelectCommand(
+                        new HashMap<>() {{
+                            put(LinkagePosition.HOME, setLinkage(LinkagePosition.FULL));
+                            put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF));
+                            put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME));
+                        }},
+                        this::getLinkagePos
+                ),
                 setClaw(IntakePosition.HOME),
                 setStrike(IntakePosition.TARGET),
                 setPivot(IntakePosition.TARGET)

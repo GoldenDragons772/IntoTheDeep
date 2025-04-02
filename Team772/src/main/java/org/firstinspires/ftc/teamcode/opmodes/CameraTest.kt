@@ -47,10 +47,10 @@ class CameraTest : CommandOpMode() {
                 val xval = sampleDetector.centroid.x;
                 val difference =
                     (SampleDetection.WIDTH / 2 - xval) / SampleDetection.WIDTH * Constants.GOOFY_AHH_VERTICAL_SEGMENT
-            leftLinkageServo.position = (leftLinkageServo.position + difference).clamp(0.0,1.0)
-            rightLinkageServo.position = (rightLinkageServo.position + difference).clamp(0.0,1.0)
-                telemetry.addLine("Moving slides ppv $difference")
-                telemetry.addLine("Moving slides ppv ${xval}")
+            //leftLinkageServo.position = (leftLinkageServo.position + difference).clamp(0.0,1.0)
+            //rightLinkageServo.position = (rightLinkageServo.position + difference).clamp(0.0,1.0)
+                //telemetry.addLine("Moving slides ppv $difference")
+                //telemetry.addLine("Moving slides ppv ${xval}")
 
             }
         } catch (e: NullPointerException){
