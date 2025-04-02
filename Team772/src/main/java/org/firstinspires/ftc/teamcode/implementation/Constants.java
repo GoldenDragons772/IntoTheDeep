@@ -37,8 +37,8 @@ public class Constants {
          public static double OUT_STRIKE_L_SCORE = 0.3;
          public static double OUT_STRIKE_L_TRANSFER_PREP = 0.42;
          public static double OUT_STRIKE_R_TRANSFER_PREP = 0.42;
-         public static double OUT_STRIKE_R_TRANSFER = 0.52;
-         public static double OUT_STRIKE_L_TRANSFER = 0.52;
+         public static double OUT_STRIKE_R_TRANSFER = 0.54;
+         public static double OUT_STRIKE_L_TRANSFER = 0.54;
          public static double OUT_STRIKE_R_SPEC = 0.05;
          public static double OUT_STRIKE_L_SPEC = 0.05;
          public static double OUT_STRIKE_R_SAFE = 0.8;
