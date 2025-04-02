@@ -19,6 +19,10 @@ public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
     public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
     public static Scalar RED_SAMPLE_HIGH = new Scalar(180, 255, 255);
+    public static Scalar YELLOW_SAMPLE_LOW = new Scalar(230, 90, 90);
+    public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(240, 255, 255);
+    public static Scalar BLUE_SAMPLE_LOW = new Scalar(30, 90, 90);
+    public static Scalar BLUE_SAMPLE_HIGH = new Scalar(40, 255, 255);
     public static double VISION_MIN_AREA = 30000;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
@@ -30,6 +34,10 @@ public class SampleDetection extends OpenCvPipeline {
         if (isRed) {
             SAMPLE_LOW = RED_SAMPLE_LOW;
             SAMPLE_HIGH = RED_SAMPLE_HIGH;
+        }
+        else {
+            SAMPLE_LOW = BLUE_SAMPLE_LOW;
+            SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
     }
 
@@ -56,6 +64,9 @@ public class SampleDetection extends OpenCvPipeline {
         // Convert image to HSV for thresholding.
         Imgproc.cvtColor(newMat, cvt, Imgproc.COLOR_RGB2HSV);
         Core.inRange(cvt, SAMPLE_LOW, SAMPLE_HIGH, dst);
+        Mat yellowMat = newMat.clone();
+        Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellowMat);
+        Core.add(dst, yellowMat, dst);
         Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(2 * 3 + 1, 2 * 3 + 1),
                 new Point(3, 3));
         // Dilation slightly increases the selected area.
@@ -118,7 +129,6 @@ public class SampleDetection extends OpenCvPipeline {
         Imgproc.putText(newMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
         sampleRotation = theta;
         centroid = closest.center;
-
 
         return newMat;
 

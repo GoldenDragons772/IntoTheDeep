@@ -1,9 +1,14 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.HashMap;
 
@@ -50,10 +55,14 @@ public class IntakeSystem extends SubsystemBase {
     Servo wristServo;
     Servo clawServo;
     SampleDetection sampleDetector;
+    OpenCvCamera camera;
+    RootSystem root;
+    private double lastRotation = 0.0;
 
 
     public IntakeSystem(RootSystem root) {
         // Linkage Servo
+        this.root = root;
         leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
         rightLinkageServo = root.getHw().get(Servo.class, "rLinkageServo");
 
@@ -84,6 +93,21 @@ public class IntakeSystem extends SubsystemBase {
 
         pivotServo.setPosition(PIVOT_HOME);
         wristServo.setPosition(WRIST_HOME);
+        WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
+        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
+        sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+    }
+
+    @Override
+    public void periodic() {
+        if (extendState == IntakePosition.TARGET) {
+            double rotationValue =  (sampleDetector.sampleRotation == -70.0)? lastRotation : sampleDetector.sampleRotation;
+            var inputValue = (rotationValue) / Math.PI;
+            if (inputValue < 0) inputValue += 1;
+            wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+            root.getTelemetry().addData("Theta --", rotationValue);
+            root.getTelemetry().addData("Rotation", inputValue);
+        }
     }
 
     public WristPosition getWristPos() {
@@ -218,6 +242,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
+                    camera.closeCameraDevice();
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(IntakePosition.HOME),
@@ -230,6 +255,18 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TARGET;
+                    camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                        @Override
+                        public void onOpened() {
+                            camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                            camera.setPipeline(sampleDetector);
+                            FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+                        }
+
+                        @Override
+                        public void onError(int i) {
+                        }
+                    });
                 }),
                 setLinkage(IntakePosition.TARGET),
                 setClaw(IntakePosition.HOME),

@@ -16,9 +16,8 @@ public class Constants {
         // Claw Positions
          public static double CLAW_SERVO_HOME = 0.3;
          public static double CLAW_SERVO_TARGET = 0.04;
-         public static double GOOFY_AHH_SERVO_OFFSET = 0.66;
-         // The conversion ratio from length in the camera length in the real world. Probably not the best.
-         public static double GOOFY_AHH_VERTICAL_SEGMENT = 0.001;
+         // Servo multiplier for the vision
+         public static double VISION_SERVO_MULTIPLIER = 0.66;
 
         // Pivot Positions (Joint 2)
          static double PIVOT_SERVO_HOME = 0.53;
