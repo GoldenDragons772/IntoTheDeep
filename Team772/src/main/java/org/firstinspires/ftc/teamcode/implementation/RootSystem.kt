@@ -18,7 +18,7 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
+class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry) {
     init {
         CommandScheduler.getInstance().reset()
     }

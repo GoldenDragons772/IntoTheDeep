@@ -11,7 +11,7 @@ class ToggleIntakeCommand(private val intakeSystem: IntakeSystem, private val ou
             SequentialCommandGroup(
                 intakeSystem.toggleIntake(),
                 outtakeSystem.clawOpen(),
-                outtakeSystem.moveArmToTransfer()
+                outtakeSystem.moveArmToTransferPrep()
             )
         )
     }

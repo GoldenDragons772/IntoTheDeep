@@ -14,10 +14,12 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
         super.addCommands(
             SequentialCommandGroup(
                 climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
+                //intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
                 outtakeSystem.clawOpen(),
-                outtakeSystem.moveArmToTransfer(),
+                //outtakeSystem.moveArmToTransferPrep(),
                 intakeSystem.moveToTransfer(),
+                WaitCommand(200),
+                outtakeSystem.moveArmToTransfer(),
                 ParallelRaceGroup(WaitUntilCommand { outtakeSystem.getClawButtonState() }, WaitCommand(1500)),
                 outtakeSystem.clawClose(),
                 WaitCommand(500),

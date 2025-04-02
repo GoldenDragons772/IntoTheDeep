@@ -15,18 +15,18 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.6, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.6, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.61, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.61, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.25, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.34, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.2, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.19, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
@@ -54,21 +54,21 @@ public class IntakeSystem extends SubsystemBase {
 
     public IntakeSystem(RootSystem root) {
         // Linkage Servo
-        leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
-        rightLinkageServo = root.getHw().get(Servo.class, "rLinkageServo");
+        leftLinkageServo = root.hw.get(Servo.class, "lLinkageServo");
+        rightLinkageServo = root.hw.get(Servo.class, "rLinkageServo");
 
         // strike servo
-        leftStrikeServo = root.getHw().get(Servo.class, "hLeftStrike");
-        rightStrikeServo = root.getHw().get(Servo.class, "hRightStrike");
+        leftStrikeServo = root.hw.get(Servo.class, "hLeftStrike");
+        rightStrikeServo = root.hw.get(Servo.class, "hRightStrike");
 
         // Pivot Servo
-        pivotServo = root.getHw().get(Servo.class, "hPivot");
+        pivotServo = root.hw.get(Servo.class, "hPivot");
 
         //Wrist Servo
-        wristServo = root.getHw().get(Servo.class, "hSwivelServo");
+        wristServo = root.hw.get(Servo.class, "hSwivelServo");
 
         //Claw Servo
-        clawServo = root.getHw().get(Servo.class, "intakeClawServo");
+        clawServo = root.hw.get(Servo.class, "intakeClawServo");
 
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
