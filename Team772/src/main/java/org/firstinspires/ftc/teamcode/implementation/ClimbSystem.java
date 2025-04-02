@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
+import android.util.Log;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -100,7 +101,6 @@ public class ClimbSystem extends SubsystemBase {
     }
 
     public Command setTargetPosition(ClimbState climbState) {
-
         return new InstantCommand(() -> {
             this.position = climbState;
             targetPosition = climbState.position;

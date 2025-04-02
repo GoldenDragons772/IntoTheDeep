@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.implementation
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.kotlin.extensions.util.clamp
 import com.pedropathing.follower.Follower
@@ -18,6 +19,9 @@ import kotlin.math.sign
  * Root subsystem -- he's the guy in charge.
  */
 class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
+    init {
+        CommandScheduler.getInstance().reset()
+    }
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
     val outtake = OuttakeSystem(this)
@@ -33,7 +37,6 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
         private set
 
     init {
-        CommandScheduler.getInstance().reset()
 //        hubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
         follower.setupConstants(FConstants::class.java, LConstants::class.java)
     }

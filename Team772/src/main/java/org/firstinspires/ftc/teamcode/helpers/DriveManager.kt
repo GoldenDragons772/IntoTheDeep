@@ -20,7 +20,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
     /**
      * Subsystems
      */
-    var root: RootSystem = RootSystem(hw, telemetry)
+    val root: RootSystem = RootSystem(hw, telemetry);
 
     /**
      * Controllers
@@ -29,7 +29,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
     val gamepad2: GamepadEx = GamepadEx(gp2)
 
     init {
-        root = RootSystem(hw, telemetry)
         initializeBindings(mapping)
         root.follower.startTeleopDrive()
     }
