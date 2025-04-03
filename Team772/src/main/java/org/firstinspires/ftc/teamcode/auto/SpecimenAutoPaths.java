@@ -16,7 +16,7 @@ public class SpecimenAutoPaths {
     private static final Pose startPose = new Pose(8.50, 53.500, Math.toRadians(180));
     private static final Pose preloadPose = new Pose(42.0, 72.000, Math.toRadians(180));
     private static final Pose grab1Pose = new Pose(8.50,20.000, Math.toRadians(180));
-    private static final Pose grab2Pose = new Pose(8.000,20.000, Math.toRadians(180));
+    private static final Pose grab2Pose = new Pose(0.000,20.000, Math.toRadians(180));
     private static final Pose grab3Pose = new Pose(8.000,20.000, Math.toRadians(180));
     private static final Pose grab4Pose = new Pose(8.000,20.000, Math.toRadians(180));
     private static final Pose spec1Pose = new Pose(45.000, 66.000, Math.toRadians(180));
