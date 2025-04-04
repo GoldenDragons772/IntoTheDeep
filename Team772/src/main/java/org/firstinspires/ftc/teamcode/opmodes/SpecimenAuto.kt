@@ -102,14 +102,15 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
+                ParallelRaceGroup(
+                    ParallelCommandGroup(
+                        FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
+                        WaitCommand(800).andThen(
+                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                            root.outtake.moveArmToHome(),
+                            root.intake.moveToHome(),
+                        )
+                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
                 // spec4
                 root.outtake.toggleClaw(),
                 WaitCommand(500),
@@ -118,14 +119,15 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
+                ParallelRaceGroup(
+                    ParallelCommandGroup(
+                        FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
+                        WaitCommand(800).andThen(
+                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                            root.outtake.moveArmToHome(),
+                            root.intake.moveToHome(),
+                        )
+                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
                 // spec5
                 root.outtake.toggleClaw(),
                 WaitCommand(500),

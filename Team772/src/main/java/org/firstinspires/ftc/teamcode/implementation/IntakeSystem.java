@@ -15,15 +15,15 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.6, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.6, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.25, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
+    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.67, WRIST_ANGLE = 0.85;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
@@ -241,15 +241,16 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new SelectCommand(
                         new HashMap<>() {{
-                            put(LinkagePosition.HOME, setLinkage(LinkagePosition.FULL));
-                            put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF));
-                            put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME));
+                            put(LinkagePosition.HOME, setLinkage(LinkagePosition.FULL).andThen(setClaw(IntakePosition.HOME),
+                                    setStrike(IntakePosition.TARGET),
+                                    setPivot(IntakePosition.TARGET)));
+                            put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF).andThen(setClaw(IntakePosition.HOME),
+                                    setStrike(IntakePosition.TARGET),
+                                    setPivot(IntakePosition.TARGET)));
+                            put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME).andThen(moveToTransfer()));
                         }},
                         this::getLinkagePos
-                ),
-                setClaw(IntakePosition.HOME),
-                setStrike(IntakePosition.TARGET),
-                setPivot(IntakePosition.TARGET)
+                )
         );
     }
 
