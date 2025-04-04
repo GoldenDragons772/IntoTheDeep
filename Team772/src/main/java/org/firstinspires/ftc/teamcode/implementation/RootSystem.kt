@@ -18,7 +18,7 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry) {
+class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
     init {
         CommandScheduler.getInstance().reset()
     }
@@ -30,7 +30,7 @@ class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry) {
     val intake = IntakeSystem(this)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
-    val isAllianceRed = false;
+    val isAllianceRed = true
 
     val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
     private var lastVoltage: Double = 0.0

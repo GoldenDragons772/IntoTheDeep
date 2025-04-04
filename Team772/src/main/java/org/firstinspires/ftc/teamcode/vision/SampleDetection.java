@@ -19,26 +19,23 @@ public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
     public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
     public static Scalar RED_SAMPLE_HIGH = new Scalar(180, 255, 255);
-    public static Scalar YELLOW_SAMPLE_LOW = new Scalar(230, 90, 90);
-    public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(240, 255, 255);
-    public static Scalar BLUE_SAMPLE_LOW = new Scalar(30, 90, 90);
-    public static Scalar BLUE_SAMPLE_HIGH = new Scalar(40, 255, 255);
+    public static Scalar YELLOW_SAMPLE_LOW = new Scalar(15, 90, 90);
+    public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(25, 255, 255);
+    public static Scalar BLUE_SAMPLE_LOW = new Scalar(110, 90, 15);
+    public static Scalar BLUE_SAMPLE_HIGH = new Scalar(120, 255, 175);
     public static double VISION_MIN_AREA = 30000;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
     public Point centroid;
+    private final boolean isRed;
 
+    public SampleDetection(Telemetry tel) {
+        this(tel, true);
+    }
     public SampleDetection(Telemetry tel, boolean isRed) {
         this.telemetry = tel;
-        if (isRed) {
-            SAMPLE_LOW = RED_SAMPLE_LOW;
-            SAMPLE_HIGH = RED_SAMPLE_HIGH;
-        }
-        else {
-            SAMPLE_LOW = BLUE_SAMPLE_LOW;
-            SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
-        }
+        this.isRed = isRed;
     }
 
     Mat dst = new Mat();
@@ -50,6 +47,14 @@ public class SampleDetection extends OpenCvPipeline {
     //    public double rotation;
     @Override
     public Mat processFrame(Mat mat) {
+        if (isRed) {
+            SAMPLE_LOW = RED_SAMPLE_LOW;
+            SAMPLE_HIGH = RED_SAMPLE_HIGH;
+        }
+        else {
+            SAMPLE_LOW = BLUE_SAMPLE_LOW;
+            SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
+        }
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
         Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0, 0, kvs.val[2]);
@@ -119,8 +124,8 @@ public class SampleDetection extends OpenCvPipeline {
         Point min = (lpoints.get(1).x < highestPoint.x) ? highestPoint : lpoints.get(1);
         Point max = (min == highestPoint) ? lpoints.get(1) : highestPoint;
         double theta = Math.atan2(max.y - min.y, max.x - min.x);
-        telemetry.addData("Theta", theta);
-        telemetry.update();
+//        telemetry.addData("Theta", theta);
+//        telemetry.update();
 
         // Plot on mat.
 //        Imgproc.cvtColor(dst, dst, Imgproc.COLOR_GRAY2RGB);

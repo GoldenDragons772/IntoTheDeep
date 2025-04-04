@@ -31,7 +31,7 @@ class CameraTest : CommandOpMode() {
 //        root.update()
         // Wrist Servo
         var rotationValue = if (sampleDetector.sampleRotation == -70.0) lastRotation else sampleDetector.sampleRotation
-        var inputValue = (rotationValue) / PI
+        var inputValue = ((rotationValue) / PI + 0.5) % 1
         if (inputValue < 0) inputValue += 1
         wristServo.position = inputValue * Constants.VISION_SERVO_MULTIPLIER
         telemetry.addData("Theta --", rotationValue)

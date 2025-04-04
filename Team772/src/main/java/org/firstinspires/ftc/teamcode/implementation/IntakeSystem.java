@@ -57,7 +57,6 @@ public class IntakeSystem extends SubsystemBase {
     SampleDetection sampleDetector;
     OpenCvCamera camera;
     RootSystem root;
-    private double lastRotation = 0.0;
 
 
     public IntakeSystem(RootSystem root) {
@@ -81,6 +80,7 @@ public class IntakeSystem extends SubsystemBase {
 
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
+        wristServo.setDirection(Servo.Direction.REVERSE);
 
         // Set Default positions:
         leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
@@ -95,14 +95,14 @@ public class IntakeSystem extends SubsystemBase {
         wristServo.setPosition(WRIST_HOME);
         WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
-        sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+        sampleDetector = new SampleDetection(root.getTelemetry(), true);
     }
 
     @Override
     public void periodic() {
-        if (extendState == IntakePosition.TARGET) {
-            double rotationValue =  (sampleDetector.sampleRotation == -70.0)? lastRotation : sampleDetector.sampleRotation;
-            var inputValue = (rotationValue) / Math.PI;
+        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0) {
+            double rotationValue = sampleDetector.sampleRotation;
+            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
             if (inputValue < 0) inputValue += 1;
             wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
             root.getTelemetry().addData("Theta --", rotationValue);

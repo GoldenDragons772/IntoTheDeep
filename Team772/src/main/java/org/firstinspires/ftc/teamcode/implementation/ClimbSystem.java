@@ -45,9 +45,9 @@ public class ClimbSystem extends SubsystemBase {
         this.root = root;
 
 
-        this.climbMotor1 = root.hw.get(DcMotorEx.class, "climbMotorUp");
-        this.climbMotor2 = root.hw.get(DcMotorEx.class, "climbMotorDown");
-        this.climbMotor3 = root.hw.get(DcMotorEx.class, "climbMotor3");
+        this.climbMotor1 = root.getHw().get(DcMotorEx.class, "climbMotorUp");
+        this.climbMotor2 = root.getHw().get(DcMotorEx.class, "climbMotorDown");
+        this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
