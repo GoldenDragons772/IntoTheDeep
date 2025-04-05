@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
 @TeleOp(name = "Duo TeleOp")
@@ -25,6 +26,7 @@ class Duo: CommandOpMode() {
             transferMapping = Pair(GamepadKeys.Button.A, 2),
         )
         driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping)
+        driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, telemetry)
 
     }
 
