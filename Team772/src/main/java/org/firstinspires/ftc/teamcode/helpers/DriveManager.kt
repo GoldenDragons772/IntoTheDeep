@@ -145,7 +145,8 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
-        setPressedBinding(mapping.parallelMapping, root.intake.toggleWrist())
+        setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
+        setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
 
     }
 
@@ -161,7 +162,8 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
-        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val wristMappingLeft: Pair<GamepadKeys.Button, Int>,
+        val wristMappingRight: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
     )
 }

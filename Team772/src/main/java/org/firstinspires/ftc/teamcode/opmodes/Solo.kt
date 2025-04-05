@@ -21,7 +21,8 @@ class Solo: CommandOpMode() {
             climbToHangSpec = Pair(GamepadKeys.Button.DPAD_RIGHT, 1),
 
             aimMapping = Pair(GamepadKeys.Button.Y, 1),
-            parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
+            wristMappingLeft = Pair(GamepadKeys.Button.LEFT_BUMPER, 1),
+            wristMappingRight = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 1),
             transferMapping = Pair(GamepadKeys.Button.A, 1),
