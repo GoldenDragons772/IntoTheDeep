@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
+import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
@@ -21,6 +22,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      * Subsystems
      */
     val root: RootSystem = RootSystem(hw, telemetry)
+
     /**
      * Controllers
      */
@@ -137,6 +139,12 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setPressedBinding(mapping.parallelMapping, root.intake.toggleWrist())
+        setPressedTriggerBinding(
+            mapping.intakePivotMapping,
+            ConditionalCommand(
+                root.intake.setPivot(IntakeSystem.IntakePosition.HOME),
+                root.intake.setPivot(IntakeSystem.IntakePosition.TARGET)
+            ) { root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET })
 
     }
 
@@ -154,5 +162,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
         val parallelMapping: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
+        val intakePivotMapping: Pair<GamepadKeys.Trigger, Int>
     )
 }

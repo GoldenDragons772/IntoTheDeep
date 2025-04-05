@@ -24,6 +24,7 @@ class Duo: CommandOpMode() {
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 2),
             transferMapping = Pair(GamepadKeys.Button.A, 2),
+            intakePivotMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 2)
         )
         driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping)
         driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, telemetry)

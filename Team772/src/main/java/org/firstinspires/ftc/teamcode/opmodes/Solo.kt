@@ -26,7 +26,7 @@ class Solo: CommandOpMode() {
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 1),
             transferMapping = Pair(GamepadKeys.Button.A, 1),
-
+            intakePivotMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
         driveManager = DriveManager(hardwareMap,telemetry, gamepad1, gamepad2, mapping)
         driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, telemetry)

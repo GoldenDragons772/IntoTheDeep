@@ -15,27 +15,29 @@ import java.util.HashMap;
 @Config
 public class IntakeSystem extends SubsystemBase {
 
+
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;
-    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
+    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.6, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.6, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.25, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.34, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
+    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.67, WRIST_ANGLE = 0.85;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 0.445, CLAW_TARGET = 0.19, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
     static boolean clawState = false;
+    public IntakePosition pivotPosition;
 
     public enum IntakePosition {
         HOME,
@@ -100,7 +102,7 @@ public class IntakeSystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0) {
+        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0 && pivotPosition != IntakePosition.TARGET) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
             if (inputValue < 0) inputValue += 1;
@@ -176,9 +178,18 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command setPivot(IntakePosition pos) {
         return switch (pos) {
-            case HOME -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_HOME));
-            case TARGET -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_TARGET));
-            case TRANSFER -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_TRANSFER));
+            case HOME -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_HOME);
+                pivotPosition = pos;
+            });
+            case TARGET -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_TARGET);
+                pivotPosition = pos;
+            });
+            case TRANSFER -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_TRANSFER);
+                pivotPosition = pos;
+            });
         };
     }
 

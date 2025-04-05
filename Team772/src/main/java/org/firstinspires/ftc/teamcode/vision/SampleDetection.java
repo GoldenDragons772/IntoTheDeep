@@ -40,6 +40,8 @@ public class SampleDetection extends OpenCvPipeline {
 
     Mat dst = new Mat();
     Mat cvt = new Mat();
+    Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
+    Mat undistortedMat = new Mat();
     Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
     public double sampleRotation = 0.0;
     public static int HEIGHT = 480, WIDTH = 640;
@@ -56,20 +58,19 @@ public class SampleDetection extends OpenCvPipeline {
             SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
-        Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0, 0, kvs.val[2]);
 /*
         // Rotation code for testing -- Hit CTRL + minus to fold it.
         Mat rotMat = Imgproc.getRotationMatrix2D(new Point(mat.width()/2, mat.height()/2), rotation, 1.0);
         Imgproc.warpAffine(mat, mat, rotMat, mat.size());
 */
-        Mat newMat = mat.clone();
-        Calib3d.undistort(mat, newMat, camera_matrix, distortion_coefficients);
+        undistortedMat = mat.clone();
+        Calib3d.undistort(mat, undistortedMat, camera_matrix, distortion_coefficients);
 
         // Convert image to HSV for thresholding.
-        Imgproc.cvtColor(newMat, cvt, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(undistortedMat, cvt, Imgproc.COLOR_RGB2HSV);
         Core.inRange(cvt, SAMPLE_LOW, SAMPLE_HIGH, dst);
-        Mat yellowMat = newMat.clone();
+        Mat yellowMat = undistortedMat.clone();
         Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellowMat);
         Core.add(dst, yellowMat, dst);
         Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(2 * 3 + 1, 2 * 3 + 1),
@@ -103,7 +104,7 @@ public class SampleDetection extends OpenCvPipeline {
         if (boxCenters.isEmpty()) {
             sampleRotation = -70.0;
             centroid = null;
-            return newMat;
+            return undistortedMat;
             // The usage of two returns is not DeGennaro approved.
         }
 
@@ -129,13 +130,13 @@ public class SampleDetection extends OpenCvPipeline {
 
         // Plot on mat.
 //        Imgproc.cvtColor(dst, dst, Imgproc.COLOR_GRAY2RGB);
-        Imgproc.polylines(newMat, List.of(new MatOfPoint(points)), true, new Scalar(0, 255, 0), 3);
-        Imgproc.line(newMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 0));
-        Imgproc.putText(newMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
+        Imgproc.polylines(undistortedMat, List.of(new MatOfPoint(points)), true, new Scalar(0, 255, 0), 3);
+        Imgproc.line(undistortedMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 0));
+        Imgproc.putText(undistortedMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
         sampleRotation = theta;
         centroid = closest.center;
 
-        return newMat;
+        return undistortedMat;
 
     }
 
