@@ -126,9 +126,15 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
+
+        //Climb controls
         setPressedBinding(mapping.lowclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))
         setPressedBinding(mapping.highclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
         setPressedBinding(mapping.unClimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME))
+        setPressedBinding(mapping.climbUpMapping, root.climb.sendRawMotors(1.0))
+        setPressedBinding(mapping.climbDownMapping, root.climb.sendRawMotors(-1.0))
+
+
         setPressedBinding(mapping.hangSpecMapping, SpecimenCommand(root.intake, root.outtake, root.climb))
         setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(root.intake, root.outtake))
         setPressedBinding(mapping.transferMapping, TransferSampleCommand(root.intake, root.outtake, root.climb))
@@ -165,5 +171,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val wristMappingLeft: Pair<GamepadKeys.Button, Int>,
         val wristMappingRight: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
+        val climbUpMapping: Pair<GamepadKeys.Button, Int>,
+        val climbDownMapping: Pair<GamepadKeys.Button, Int>
     )
 }
