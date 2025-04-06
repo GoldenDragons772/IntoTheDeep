@@ -61,7 +61,7 @@ public class IntakeSystem extends SubsystemBase {
     SampleDetection sampleDetector;
 
 
-    public IntakeSystem(RootSystem root) {
+    public IntakeSystem(RootSystem root, boolean isAuto) {
         // Linkage Servo
         leftLinkageServo = root.hw.get(Servo.class, "lLinkageServo");
         rightLinkageServo = root.hw.get(Servo.class, "rLinkageServo");
@@ -79,21 +79,29 @@ public class IntakeSystem extends SubsystemBase {
         //Claw Servo
         clawServo = root.hw.get(Servo.class, "intakeClawServo");
 
+
+
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
 
-        // Set Default positions:
-        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-        rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+        if(!isAuto) {
+            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
 
-        clawServo.setPosition(CLAW_HOME);
+            clawServo.setPosition(CLAW_HOME);
 
-        leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
-        rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
+            leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
+            rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
 
-        pivotServo.setPosition(PIVOT_HOME);
-        wristServo.setPosition(WRIST_HOME);
+            pivotServo.setPosition(PIVOT_HOME);
+            wristServo.setPosition(WRIST_HOME);
+        }
     }
+
+//    public void initSystem() {
+//        // Set Default positions:
+//
+//    }
 
     public WristPosition getWristPos() {
         return wristState;

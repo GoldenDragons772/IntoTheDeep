@@ -41,7 +41,7 @@ public class ClimbSystem extends SubsystemBase {
     private final ElapsedTime timer = new ElapsedTime();
     private int initialPosition;
 
-    public ClimbSystem(RootSystem root) {
+    public ClimbSystem(RootSystem root, boolean isAuto) {
         this.root = root;
 
 
@@ -86,7 +86,7 @@ public class ClimbSystem extends SubsystemBase {
         root.getTelemetry().update();
 
         //Make sure to stop PIDing when we're home
-        if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 50){
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);
