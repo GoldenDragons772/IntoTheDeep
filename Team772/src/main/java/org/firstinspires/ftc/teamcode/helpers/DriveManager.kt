@@ -37,11 +37,19 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      */
     fun update() {
         root.update() // Updates bulk reads and odometry.
-        root.teleOpDrive(
-            -gamepad1.rightX,
-            gamepad1.rightY,
-            -gamepad1.leftX
-        )
+        if(gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.0){
+            root.teleOpDriveScaled(
+                -gamepad1.rightX,
+                gamepad1.rightY,
+                -gamepad1.leftX
+            )
+        }else {
+            root.teleOpDrive(
+                -gamepad1.rightX,
+                gamepad1.rightY,
+                -gamepad1.leftX
+            )
+        }
     }
 
     /**

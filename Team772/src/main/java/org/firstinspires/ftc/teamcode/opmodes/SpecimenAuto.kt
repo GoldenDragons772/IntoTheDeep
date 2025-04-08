@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.ParallelCommandGroup
+import com.arcrobotics.ftclib.command.ParallelRaceGroup
 import com.arcrobotics.ftclib.command.RunCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
@@ -84,6 +85,7 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                ParallelRaceGroup(
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.8),
                     WaitCommand(800).andThen(
@@ -91,7 +93,7 @@ class SpecimenAuto : CommandOpMode() {
                         root.outtake.moveArmToHome(),
                         root.intake.moveToHome(),
                     )
-                ),
+                ), WaitUntilCommand { root.outtake.getClawButtonState() }),
                 // spec3
                 root.outtake.toggleClaw(),
                 WaitCommand(500),
@@ -100,14 +102,15 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
+                ParallelRaceGroup(
+                    ParallelCommandGroup(
+                        FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
+                        WaitCommand(800).andThen(
+                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                            root.outtake.moveArmToHome(),
+                            root.intake.moveToHome(),
+                        )
+                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
                 // spec4
                 root.outtake.toggleClaw(),
                 WaitCommand(500),
@@ -116,14 +119,15 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
+                ParallelRaceGroup(
+                    ParallelCommandGroup(
+                        FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
+                        WaitCommand(800).andThen(
+                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                            root.outtake.moveArmToHome(),
+                            root.intake.moveToHome(),
+                        )
+                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
                 // spec5
                 root.outtake.toggleClaw(),
                 WaitCommand(500),

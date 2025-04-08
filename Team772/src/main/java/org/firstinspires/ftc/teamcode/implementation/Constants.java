@@ -21,7 +21,7 @@ public class Constants {
 
         // Pivot Positions (Joint 2)
          static double PIVOT_SERVO_HOME = 0.53;
-         public static double PIVOT_SERVO_SCORE = 0.5;
+         public static double PIVOT_SERVO_SCORE = 0.6;
          public static double PIVOT_SERVO_SPEC = 0.95;
          public static double PIVOT_SERVO_TRANSFER = 1.0;
          public static double PIVOT_SERVO_SAFE = 0.0;
@@ -30,16 +30,16 @@ public class Constants {
         /**
          * Values for stage 1 of the outtake
          */
-         public static double OUT_STRIKE_R_HOME = 0.83;
-         public static double OUT_STRIKE_L_HOME = 0.83;
-         public static double OUT_STRIKE_R_SCORE = 0.3;
-         public static double OUT_STRIKE_L_SCORE = 0.3;
+         public static double OUT_STRIKE_R_HOME = 0.72;
+         public static double OUT_STRIKE_L_HOME = 0.72;
+         public static double OUT_STRIKE_R_SCORE = 0.2;
+         public static double OUT_STRIKE_L_SCORE = 0.2;
          public static double OUT_STRIKE_L_TRANSFER_PREP = 0.42;
          public static double OUT_STRIKE_R_TRANSFER_PREP = 0.42;
          public static double OUT_STRIKE_R_TRANSFER = 0.54;
          public static double OUT_STRIKE_L_TRANSFER = 0.54;
-         public static double OUT_STRIKE_R_SPEC = 0.05;
-         public static double OUT_STRIKE_L_SPEC = 0.05;
+         public static double OUT_STRIKE_R_SPEC = 0.03;
+         public static double OUT_STRIKE_L_SPEC = 0.03;
          public static double OUT_STRIKE_R_SAFE = 0.8;
          public static double OUT_STRIKE_L_SAFE = 0.8;
 
@@ -55,8 +55,8 @@ public class Constants {
         /**
          * Wrist Positions
          */
-         public static double WRIST_SERVO_HOME = 0.265;
-         public static double WRIST_SERVO_TARGET = 0.935;
+         public static double WRIST_SERVO_HOME = 0.65;
+         public static double WRIST_SERVO_TARGET = 0.0;
 
         /**
          * Claw Positions.

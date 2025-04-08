@@ -60,6 +60,13 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
+    fun teleOpDriveScaled(x: Double, y: Double, theta: Double) {
+        val xSquared = 0.3 * (x.pow(2) * (x).sign)
+        val ySquared = 0.3 * (y.pow(2) * y.sign)
+        val thSquared = 0.3 * (theta.pow(2) * theta.sign)
+        this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
+    }
+
     fun getVoltageMultiplier(): Double {
         val alpha = 0.8
         return (Constants.NOMINAL_BATTERY_VOLTAGE / (alpha * voltage + (1 - alpha) * lastVoltage)).clamp(0.0, 1.0)

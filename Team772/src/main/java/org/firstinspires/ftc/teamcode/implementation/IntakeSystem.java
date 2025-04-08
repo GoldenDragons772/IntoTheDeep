@@ -16,31 +16,38 @@ import java.util.HashMap;
 public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_TRANSFER = 0.5;
-    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_TRANSFER = 0.5;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
+    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.58, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.58, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.34, WRIST_TARGET = 0.495, WRIST_ANGLE = 0.67;
+    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.67, WRIST_ANGLE = 0.85;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
+    static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
 
     public enum IntakePosition {
         HOME,
         TARGET,
         TRANSFER
+    }
+
+    public enum LinkagePosition {
+        HOME,
+        FULL,
+        HALF
     }
 
     public enum WristPosition {
@@ -55,7 +62,6 @@ public class IntakeSystem extends SubsystemBase {
     Servo wristServo;
     Servo clawServo;
     SampleDetection sampleDetector;
-    OpenCvCamera camera;
     RootSystem root;
 
 
@@ -93,21 +99,23 @@ public class IntakeSystem extends SubsystemBase {
 
         pivotServo.setPosition(PIVOT_HOME);
         wristServo.setPosition(WRIST_HOME);
-        WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
-        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
-        sampleDetector = new SampleDetection(root.getTelemetry(), true);
+        // TODO: Make the camera work in teleop
+//        WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
+//        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
+//        sampleDetector = new SampleDetection(root.getTelemetry(), true);
     }
 
     @Override
     public void periodic() {
-        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0) {
-            double rotationValue = sampleDetector.sampleRotation;
-            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
-            if (inputValue < 0) inputValue += 1;
-            wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
-            root.getTelemetry().addData("Theta --", rotationValue);
-            root.getTelemetry().addData("Rotation", inputValue);
-        }
+        // TODO: Make the camera work in teleop
+//        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0) {
+//            double rotationValue = sampleDetector.sampleRotation;
+//            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
+//            if (inputValue < 0) inputValue += 1;
+//            wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+//            root.getTelemetry().addData("Theta --", rotationValue);
+//            root.getTelemetry().addData("Rotation", inputValue);
+//        }
     }
 
     public WristPosition getWristPos() {
@@ -118,24 +126,28 @@ public class IntakeSystem extends SubsystemBase {
         return extendState;
     }
 
-    public Command setLinkage(IntakePosition pos) {
+    public LinkagePosition getLinkagePos() { return linkageState; }
+
+    public Command setLinkage(LinkagePosition pos) {
 
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
                 leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
                 rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+                linkageState  = LinkagePosition.HOME;
             });
 
-            case TARGET -> new InstantCommand(() -> {
+            case FULL -> new InstantCommand(() -> {
                 leftLinkageServo.setPosition(LEFT_LINKAGE_TARGET);
                 rightLinkageServo.setPosition(RIGHT_LINKAGE_TARGET);
+                linkageState  = LinkagePosition.FULL;
             });
 
-            case TRANSFER ->  //Never gets called
-
-                    new InstantCommand(() -> {
-                    });
-            // This shouldn't ever be called
+            case HALF -> new InstantCommand(() -> {
+                leftLinkageServo.setPosition(LEFT_LINKAGE_HALF);
+                rightLinkageServo.setPosition(RIGHT_LINKAGE_HALF);
+                linkageState  = LinkagePosition.HALF;
+            });
 
         };
 
@@ -232,7 +244,7 @@ public class IntakeSystem extends SubsystemBase {
                     extendState = IntakePosition.HOME;
                 }),
                 setWrist(WristPosition.HOME),
-                setLinkage(IntakePosition.HOME),
+                setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.HOME),
                 setPivot(IntakePosition.HOME)
         );
@@ -242,10 +254,11 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
-                    camera.closeCameraDevice();
+                    // TODO: Make the camera work in teleop
+//                    camera.closeCameraDevice();
                 }),
                 setWrist(WristPosition.HOME),
-                setLinkage(IntakePosition.HOME),
+                setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.TRANSFER),
                 setPivot(IntakePosition.TRANSFER)
         );
@@ -253,21 +266,35 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command moveToTarget() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    extendState = IntakePosition.TARGET;
-                    camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                        @Override
-                        public void onOpened() {
-                            camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-                            camera.setPipeline(sampleDetector);
-                            FtcDashboard.getInstance().startCameraStream(camera, 100.0);
-                        }
+                new SelectCommand(
+                        new HashMap<>() {{
+                            put(LinkagePosition.HOME, setLinkage(LinkagePosition.FULL).andThen(setClaw(IntakePosition.HOME),
+                                    setStrike(IntakePosition.TARGET),
+                                    setPivot(IntakePosition.TARGET)));
+                            put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF).andThen(setClaw(IntakePosition.HOME),
+                                    setStrike(IntakePosition.TARGET),
+                                    setPivot(IntakePosition.TARGET)));
+                            put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME).andThen(moveToTransfer()));
+                        }},
+                        this::getLinkagePos
+                ),
+                // TODO: Make the camera work in teleop.
 
-                        @Override
-                        public void onError(int i) {
-                        }
-                    });
-                }),
+//                new InstantCommand(() -> {
+//                    extendState = IntakePosition.TARGET;
+//                    camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//                        @Override
+//                        public void onOpened() {
+//                            camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+//                            camera.setPipeline(sampleDetector);
+//                            FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+//                        }
+//
+//                        @Override
+//                        public void onError(int i) {
+//                        }
+//                    });
+//                }),
                 setLinkage(IntakePosition.TARGET),
                 setClaw(IntakePosition.HOME),
                 setStrike(IntakePosition.TARGET),
