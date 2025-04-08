@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 // must be java because easy opencv sim only compiles java
 public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
-    public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
-    public static Scalar RED_SAMPLE_HIGH = new Scalar(180, 255, 255);
+    public static Scalar RED_SAMPLE_LOW = new Scalar(0, 90, 90);
+    public static Scalar RED_SAMPLE_HIGH = new Scalar(5, 255, 255); // TODO: Change to 170/180 for robot camera
     public static Scalar YELLOW_SAMPLE_LOW = new Scalar(15, 90, 90);
     public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(25, 255, 255);
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(110, 90, 15);
-    public static Scalar BLUE_SAMPLE_HIGH = new Scalar(120, 255, 175);
-    public static double VISION_MIN_AREA = 30000;
+    public static Scalar BLUE_SAMPLE_HIGH = new Scalar(125, 255, 255);
+    public static double VISION_MIN_AREA = 3000;
+    public static boolean useDst = false;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
@@ -31,16 +32,25 @@ public class SampleDetection extends OpenCvPipeline {
     private final boolean isRed;
 
     public SampleDetection(Telemetry tel) {
-        this(tel, true);
+        this(tel, false);
     }
+
     public SampleDetection(Telemetry tel, boolean isRed) {
         this.telemetry = tel;
         this.isRed = isRed;
     }
 
+    Mat distance = new Mat();
     Mat dst = new Mat();
     Mat cvt = new Mat();
+    Mat yellow = new Mat();
+    Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(3 + 1, 3 + 1),
+            new Point(3, 3));
+    Mat undistortedMat = new Mat();
     Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
+    Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
+    Mat specimenMask = new Mat();
+    Mat markers = new Mat();
     public double sampleRotation = 0.0;
     public static int HEIGHT = 480, WIDTH = 640;
 
@@ -50,41 +60,98 @@ public class SampleDetection extends OpenCvPipeline {
         if (isRed) {
             SAMPLE_LOW = RED_SAMPLE_LOW;
             SAMPLE_HIGH = RED_SAMPLE_HIGH;
-        }
-        else {
+        } else {
             SAMPLE_LOW = BLUE_SAMPLE_LOW;
             SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
-        Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0, 0, kvs.val[2]);
 /*
         // Rotation code for testing -- Hit CTRL + minus to fold it.
         Mat rotMat = Imgproc.getRotationMatrix2D(new Point(mat.width()/2, mat.height()/2), rotation, 1.0);
         Imgproc.warpAffine(mat, mat, rotMat, mat.size());
 */
-        Mat newMat = mat.clone();
-        Calib3d.undistort(mat, newMat, camera_matrix, distortion_coefficients);
+        mat.copyTo(undistortedMat);
+//        Calib3d.undistort(mat, undistortedMat, camera_matrix, distortion_coefficients);
 
         // Convert image to HSV for thresholding.
-        Imgproc.cvtColor(newMat, cvt, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(undistortedMat, cvt, Imgproc.COLOR_RGB2HSV);
         Core.inRange(cvt, SAMPLE_LOW, SAMPLE_HIGH, dst);
-        Mat yellowMat = newMat.clone();
-        Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellowMat);
-        Core.add(dst, yellowMat, dst);
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(2 * 3 + 1, 2 * 3 + 1),
-                new Point(3, 3));
+        undistortedMat.copyTo(yellow);
+        Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellow);
+//        Core.add(dst, yellow, dst);
         // Dilation slightly increases the selected area.
-        Imgproc.dilate(dst, dst, kernel);
-        // Find contours
-        List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        List<MatOfPoint> filteredContours = new ArrayList<>();
-        for (MatOfPoint contour : contours) {
-            if (Imgproc.contourArea(contour) > VISION_MIN_AREA) {
-                filteredContours.add(contour);
+//        Imgproc.morphologyEx(dst,dst, Imgproc.MORPH_OPEN, kernel, new Point(-1,-1), 2);
+        Imgproc.dilate(dst, dst, kernel, new Point(-1, -1), 1);
+//        Imgproc.cvtColor(cvt, cvt, Imgproc.COLOR_HSV2RGB);
+//        Imgproc.cvtColor(cvt, cvt, Imgproc.COLOR_RGB2GRAY);
+
+
+//        Imgproc.cvtColor(undistortedMat, binary, Imgproc.COLOR_RGB2GRAY);
+//        Imgproc.threshold(binary, binary, 0, 255, Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU);
+
+        // Noise removal
+
+        // Sure background
+//        Imgproc.dilate(binary, sureBg, kernel, new Point(-1, -1), 3);
+
+        // Sure foreground
+        Imgproc.distanceTransform(dst, distance, Imgproc.DIST_L2, 5);
+        Core.normalize(distance, distance, 0, 255, Core.NORM_MINMAX);
+        Imgproc.threshold(this.distance, distance, 200, 255, Imgproc.THRESH_BINARY);
+        distance.convertTo(distance, CvType.CV_8U);
+
+        // Unknown region
+        Mat unknown = new Mat();
+        Core.subtract(dst, distance, unknown);
+// Create markers for watershed
+        int nLabels = Imgproc.connectedComponents(distance, markers);
+        telemetry.addData("labels", nLabels);
+        telemetry.update();
+        Core.add(markers, Scalar.all(1), markers);
+
+
+        for (int i = 0; i < markers.rows(); i++) {
+            for (int j = 0; j < markers.cols(); j++) {
+                if (unknown.get(i, j)[0] == 255) {
+                    markers.put(i, j, 0);
+                }
             }
         }
+        Imgproc.cvtColor(undistortedMat, undistortedMat, Imgproc.COLOR_RGB2BGR);
+        Imgproc.watershed(undistortedMat, markers);
+
+        // Visualization - draw boundaries on original image
+
+
+        // Find contours
+        List<MatOfPoint> filteredContours = new ArrayList<>();
+
+        for (int b = 2; b < nLabels + 1; b++) {
+            Mat wshed = Mat.ones(markers.size(), CvType.CV_8UC3);
+            specimenMask = Mat.zeros(dst.size(), CvType.CV_8UC1);
+            for (int i = 0; i < wshed.rows(); i++) {
+                for (int j = 0; j < wshed.cols(); j++) {
+                    if (markers.get(i, j)[0] == b) {
+                        specimenMask.put(i, j, 1);
+                    }
+                }
+            }
+
+            dst.copyTo(wshed, specimenMask);
+
+            List<MatOfPoint> contours = new ArrayList<>();
+            Imgproc.findContours(wshed, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+            for (MatOfPoint contour : contours) {
+                if (Imgproc.contourArea(contour) > VISION_MIN_AREA) {
+                    filteredContours.add(contour);
+                }
+            }
+
+        }
+        telemetry.addData("size", filteredContours.size());
+
+
         // Store the center coordinates and a reference to the rectangle.
         List<RotatedRect> boxCenters = new ArrayList<>();
 
@@ -93,17 +160,19 @@ public class SampleDetection extends OpenCvPipeline {
             RotatedRect rrect = Imgproc.minAreaRect(new MatOfPoint2f(i.toArray()));
             boxCenters.add(rrect);
         }
+        Point center = new Point((double) dst.width() / 2, (double) dst.height() / 2);
 
         // Sort the box centers by the distance to the center of the image.
-        boxCenters.sort((t0, t1) -> {
-            Point center = new Point((double) dst.width() / 2, (double) dst.height() / 2);
-            return (int) (distance(t0.center, center) - distance(t1.center, center));
-        });
+        boxCenters.sort((t0, t1) -> (int) (distance(t0.center, center) - distance(t1.center, center)));
+        for (RotatedRect box : boxCenters) {
+            Imgproc.putText(undistortedMat, String.format("%.2f", distance(box.center, center)), new Point(box.center.x, box.center.y + 10), 1, 1, new Scalar(0, 255, 0));
+        }
+        Imgproc.circle(undistortedMat, center, 5, new Scalar(0, 255, 255));
         // Do nothing if there's nothing on the screen
         if (boxCenters.isEmpty()) {
             sampleRotation = -70.0;
             centroid = null;
-            return newMat;
+            return undistortedMat;
             // The usage of two returns is not DeGennaro approved.
         }
 
@@ -129,13 +198,19 @@ public class SampleDetection extends OpenCvPipeline {
 
         // Plot on mat.
 //        Imgproc.cvtColor(dst, dst, Imgproc.COLOR_GRAY2RGB);
-        Imgproc.polylines(newMat, List.of(new MatOfPoint(points)), true, new Scalar(0, 255, 0), 3);
-        Imgproc.line(newMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 0));
-        Imgproc.putText(newMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
+        Imgproc.polylines(undistortedMat, List.of(new MatOfPoint(points)), true, new Scalar(0, 255, 0), 3);
+        Imgproc.line(undistortedMat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 255));
+        Imgproc.putText(undistortedMat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
         sampleRotation = theta;
         centroid = closest.center;
 
-        return newMat;
+        if (!useDst) {
+            Imgproc.cvtColor(undistortedMat, undistortedMat, Imgproc.COLOR_BGR2RGB);
+            return undistortedMat;
+        } else {
+            return dst;
+        }
+
 
     }
 
