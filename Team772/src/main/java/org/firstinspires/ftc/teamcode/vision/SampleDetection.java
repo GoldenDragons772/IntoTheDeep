@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 // must be java because easy opencv sim only compiles java
 public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
-    public static Scalar RED_SAMPLE_LOW = new Scalar(0, 90, 90);
-    public static Scalar RED_SAMPLE_HIGH = new Scalar(5, 255, 255); // TODO: Change to 170/180 for robot camera
+    public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
+    public static Scalar RED_SAMPLE_HIGH = new Scalar(180, 255, 255);
     public static Scalar YELLOW_SAMPLE_LOW = new Scalar(15, 90, 90);
     public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(25, 255, 255);
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(110, 90, 15);
