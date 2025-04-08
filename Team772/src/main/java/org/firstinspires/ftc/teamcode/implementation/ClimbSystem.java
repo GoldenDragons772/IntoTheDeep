@@ -21,8 +21,7 @@ public class ClimbSystem extends SubsystemBase {
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
         HIGH_CHAMBER(420),
-        HIGH_BASKET(2200),
-        SPEC_HANG(400);
+        HIGH_BASKET(2200);
 
         public final double position;
 
@@ -41,7 +40,7 @@ public class ClimbSystem extends SubsystemBase {
     private final ElapsedTime timer = new ElapsedTime();
     private int initialPosition;
 
-    public ClimbSystem(RootSystem root) {
+    public ClimbSystem(RootSystem root, boolean isAuto) {
         this.root = root;
 
 
@@ -86,11 +85,14 @@ public class ClimbSystem extends SubsystemBase {
         root.getTelemetry().update();
 
         //Make sure to stop PIDing when we're home
-        if(position == ClimbState.HOME && this.getSlidesPosition() < 100){
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 50){
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);
-        }else{
+        }else if(position == null){
+            //Don't pid
+        }
+        else{
             climbMotor1.setPower(PID_output);
             climbMotor2.setPower(PID_output);
             climbMotor3.setPower(PID_output);
@@ -104,6 +106,15 @@ public class ClimbSystem extends SubsystemBase {
         return new InstantCommand(() -> {
             this.position = climbState;
             targetPosition = climbState.position;
+        });
+    }
+
+    public Command sendRawMotors(double speed){
+        return new InstantCommand(() -> {
+            position = null;
+            climbMotor1.setPower(speed);
+            climbMotor2.setPower(speed);
+            climbMotor3.setPower(speed);
         });
     }
 }

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.implementation.RootSystem
 @Autonomous(name = "Bucket Auto")
 class BucketAuto(): CommandOpMode() {
     override fun initialize() {
-        val root = RootSystem(hardwareMap, telemetry)
+        val root = RootSystem(hardwareMap, telemetry, true)
         root.follower.setStartingPose(BucketAutoPaths.startPose)
 //        follower.setMaxPower(0.8)
 
@@ -23,7 +23,6 @@ class BucketAuto(): CommandOpMode() {
                 root.update()
             }),
             root.outtake.clawClose(),
-            root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
             root.intake.moveToHome(),
             WaitUntilCommand(this::opModeIsActive),
             SequentialCommandGroup(
@@ -31,7 +30,6 @@ class BucketAuto(): CommandOpMode() {
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.scorePreload(), true, 0.9),
                     root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
-                    
                     root.outtake.moveArmToScore(),
                 ),
                 WaitCommand(250),

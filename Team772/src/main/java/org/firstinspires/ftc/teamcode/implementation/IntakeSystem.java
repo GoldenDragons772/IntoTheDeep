@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,15 +22,15 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.58, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.58, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 1.0, WRIST_TARGET = 0.67, WRIST_ANGLE = 0.85;
+    public static double WRIST_HOME = 0.64, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
@@ -65,7 +67,7 @@ public class IntakeSystem extends SubsystemBase {
     RootSystem root;
 
 
-    public IntakeSystem(RootSystem root) {
+    public IntakeSystem(RootSystem root, boolean isAuto) {
         // Linkage Servo
         this.root = root;
         leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
@@ -84,21 +86,24 @@ public class IntakeSystem extends SubsystemBase {
         //Claw Servo
         clawServo = root.getHw().get(Servo.class, "intakeClawServo");
 
+
+
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        // Set Default positions:
-        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-        rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+        if(!isAuto) {
+            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
 
-        clawServo.setPosition(CLAW_HOME);
+            clawServo.setPosition(CLAW_HOME);
 
-        leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
-        rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
+            leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
+            rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
 
-        pivotServo.setPosition(PIVOT_HOME);
-        wristServo.setPosition(WRIST_HOME);
+            pivotServo.setPosition(PIVOT_HOME);
+            wristServo.setPosition(WRIST_HOME);
+        }
         // TODO: Make the camera work in teleop
 //        WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
 //        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
@@ -117,6 +122,11 @@ public class IntakeSystem extends SubsystemBase {
 //            root.getTelemetry().addData("Rotation", inputValue);
 //        }
     }
+
+//    public void initSystem() {
+//        // Set Default positions:
+//
+//    }
 
     public WristPosition getWristPos() {
         return wristState;
@@ -219,6 +229,26 @@ public class IntakeSystem extends SubsystemBase {
         return null;
     }
 
+    public Command setWrist(double pos){
+        return new InstantCommand(() -> {
+            wristPos += pos;
+            if(wristPos > 1.0){
+                wristPos = 0.3;
+            }else if(wristPos < 0.3){
+                wristPos = 1.0;
+            }
+            wristServo.setPosition(wristPos);
+            if(wristPos == WRIST_TARGET) {
+                wristState = WristPosition.TARGET;
+            } else if(wristPos == WRIST_ANGLE) {
+                wristState = WristPosition.ANGLE;
+            } else {
+                wristState = WristPosition.HOME;
+            }
+            Log.i("Intake", String.valueOf(wristPos));
+        });
+    }
+
     public Command setClaw(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
@@ -305,6 +335,7 @@ public class IntakeSystem extends SubsystemBase {
     public Command toggleIntake() {
         return new SelectCommand(
                 new HashMap<>() {{
+                    put(IntakePosition.HOME, moveToTarget());
                     put(IntakePosition.TRANSFER, moveToTarget());
                     put(IntakePosition.TARGET, moveToTransfer());
                 }},
@@ -332,6 +363,14 @@ public class IntakeSystem extends SubsystemBase {
                 }},
                 this::getWristPos
         );//.andThen(new InstantCommand({{Log.i("IntakeSystem", wristState.toString())}}));
+    }
+
+    public Command incrementWristLeft() {
+        return setWrist(WRIST_INC);
+    }
+
+    public Command incrementWristRight() {
+        return setWrist(-WRIST_INC);
     }
 
 }

@@ -20,10 +20,13 @@ class Duo: CommandOpMode() {
             highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 2),
             climbToHangSpec = Pair(GamepadKeys.Button.DPAD_RIGHT, 2),
             aimMapping = Pair(GamepadKeys.Button.Y, 2),
-            parallelMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2),
+            wristMappingLeft = Pair(GamepadKeys.Button.LEFT_BUMPER, 2),
+            wristMappingRight = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2),
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 2),
             transferMapping = Pair(GamepadKeys.Button.A, 2),
+            climbUpMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
+            climbDownMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 1)
         )
         driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping)
         driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, telemetry)

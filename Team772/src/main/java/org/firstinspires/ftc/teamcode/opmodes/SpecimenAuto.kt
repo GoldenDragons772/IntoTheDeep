@@ -22,39 +22,20 @@ import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenComman
 class SpecimenAuto : CommandOpMode() {
     override fun initialize() {
 
-        //val pinpoint: GoBildaPinpointDriver = hardwareMap.get(GoBildaPinpointDriver::class.java, "pinpoint");
-
-        val root = RootSystem(hardwareMap, telemetry)
-
+        val root = RootSystem(hardwareMap, telemetry, true)
         root.follower.setStartingPose(Pose(8.50, 53.500, Math.toRadians(180.0)))
-
-
         val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
-        val specWallCommand = AutoSpecWallCommand(root.intake, root.outtake, root.climb)
-
-        root.climb.resetEncoders()
-
-       // outtakeSystem.setPivot(OuttakeSystem.OuttakePosition.HOME)
-        //outtakeSystem.setStrike(OuttakeSystem.OuttakePosition.HOME)
-//        root.follower.setMaxPower(0.8)
 
         //The actual auto code
         schedule(
-            InstantCommand({
-//                pinpoint.resetPosAndIMU()
-//                root.follower.setStartingPose(Pose(8.50, 53.500, Math.toRadians(180.0)))
-                root.climb.resetEncoders()
-            }),
             root.outtake.clawClose(),
             root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+
             WaitUntilCommand(this::opModeIsActive),
+
             RunCommand({
-                root.follower.update()
-                //drivesystem.update()
+                root.update()
                 if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)
-                if(root.follower.isRobotStuck) {
-                    root.outtake.moveArmToScore()
-                }
             }),
             SequentialCommandGroup(
                 //Preload
@@ -75,66 +56,65 @@ class SpecimenAuto : CommandOpMode() {
                         root.outtake.moveArmToHome(),
                         root.intake.moveToHome(),
                     ),
-                    FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), false, 0.9),
+                    FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 0.9),
                 ),
-                //Spec 2
-                root.outtake.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelRaceGroup(
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.8),
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ), WaitUntilCommand { root.outtake.getClawButtonState() }),
-                // spec3
-                root.outtake.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec2(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelRaceGroup(
-                    ParallelCommandGroup(
-                        FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
-                        WaitCommand(800).andThen(
-                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                            root.outtake.moveArmToHome(),
-                            root.intake.moveToHome(),
-                        )
-                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
-                // spec4
-                root.outtake.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec3(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelRaceGroup(
-                    ParallelCommandGroup(
-                        FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
-                        WaitCommand(800).andThen(
-                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                            root.outtake.moveArmToHome(),
-                            root.intake.moveToHome(),
-                        )
-                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
-                // spec5
-                root.outtake.toggleClaw(),
-                WaitCommand(500),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec4(), true, 0.9),
+//                //Spec 2
+//                root.outtake.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
+//                WaitCommand(150),
+//                root.outtake.toggleClaw(),
+//                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+//                ParallelRaceGroup(
+//                ParallelCommandGroup(
+//                    FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.8),
+//                    WaitCommand(800).andThen(
+////                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+//                        root.outtake.moveArmToHome(),
+//                        root.intake.moveToHome(),
+//                    )
+//                ), WaitUntilCommand { root.outtake.getClawButtonState() }),
+//                // spec3
+//                root.outtake.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPath(root.follower, SpecimenAutoPaths.spec2(), true, 0.9),
+//                WaitCommand(150),
+//                root.outtake.toggleClaw(),
+//                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+//                ParallelRaceGroup(
+//                    ParallelCommandGroup(
+//                        FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.8),
+//                        WaitCommand(800).andThen(
+////                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+//                            root.outtake.moveArmToHome(),
+//                            root.intake.moveToHome(),
+//                        )
+//                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
+//                // spec4
+//                root.outtake.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPath(root.follower, SpecimenAutoPaths.spec3(), true, 0.9),
+//                WaitCommand(150),
+//                root.outtake.toggleClaw(),
+//                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+//                ParallelRaceGroup(
+//                    ParallelCommandGroup(
+//                        FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
+//                        WaitCommand(800).andThen(
+////                            root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+//                            root.outtake.moveArmToHome(),
+//                            root.intake.moveToHome(),
+//                        )
+//                    ), WaitUntilCommand { root.outtake.getClawButtonState() }),
+//                // spec5
+//                root.outtake.toggleClaw(),
+//                WaitCommand(500),
+//                specimenCommand,
+//                FollowPath(root.follower, SpecimenAutoPaths.spec4(), true, 0.9),
             )
         )
     }
-
 }

@@ -21,11 +21,11 @@ public class FConstants {
 
         FollowerConstants.mass = 13.567;
 
-        FollowerConstants.xMovement = (78.64873455195782 + 82.80121350449143 + 80.97512180671586) / 3;
-        FollowerConstants.yMovement = ( 62.7841326752475 +  63.824778578181466 + 63.96264482203462) / 3;
+        FollowerConstants.xMovement = (78.649 + 82.801 + 80.975) / 3;
+        FollowerConstants.yMovement = (62.784 + 63.825 + 63.963) / 3;
 
-        FollowerConstants.forwardZeroPowerAcceleration = (-30.69301152685536 - 33.369577227834924 - 28.781538339335054) / 3;
-        FollowerConstants.lateralZeroPowerAcceleration = (-61.27968372601106 -65.57294664392846 - 64.31327978844645) / 3;
+        FollowerConstants.forwardZeroPowerAcceleration = (-30.693 - 33.370 - 28.782) / 3;
+        FollowerConstants.lateralZeroPowerAcceleration = (-61.280 - 65.573 - 64.313) / 3;
 
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.3,0,0.03,0);
         FollowerConstants.useSecondaryTranslationalPID = true;
@@ -54,8 +54,8 @@ public class FConstants {
         FollowerConstants.pathEndTranslationalConstraint = 0.1;
         FollowerConstants.pathEndHeadingConstraint = 0.007;
 
-        FollowerConstants.useVoltageCompensationInAuto = true;
-        FollowerConstants.useVoltageCompensationInTeleOp = true;
+        FollowerConstants.useVoltageCompensationInAuto = false;
+        FollowerConstants.useVoltageCompensationInTeleOp = false;
         FollowerConstants.nominalVoltage = Constants.NOMINAL_BATTERY_VOLTAGE;
     }
 }
