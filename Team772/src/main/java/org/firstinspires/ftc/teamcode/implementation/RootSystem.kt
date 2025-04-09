@@ -22,6 +22,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
     init {
         CommandScheduler.getInstance().reset()
     }
+    val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
 
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
@@ -32,7 +33,6 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
     var isAllianceRed = true
 
-    val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
     private var lastVoltage: Double = 0.0
     var voltage: Double = 0.0 // It's unknown if this is necessary.
         private set

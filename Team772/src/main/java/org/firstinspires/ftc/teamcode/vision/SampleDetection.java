@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.vision;
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -23,7 +24,7 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(25, 255, 255);
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(110, 90, 15);
     public static Scalar BLUE_SAMPLE_HIGH = new Scalar(125, 255, 255);
-    public static double VISION_MIN_AREA = 3000;
+    public static double VISION_MIN_AREA = 20000;
     public static boolean useDst = false;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
@@ -32,7 +33,7 @@ public class SampleDetection extends OpenCvPipeline {
     private final boolean isRed;
 
     public SampleDetection(Telemetry tel) {
-        this(tel, false);
+        this(tel, true);
     }
 
     public SampleDetection(Telemetry tel, boolean isRed) {
@@ -68,7 +69,7 @@ public class SampleDetection extends OpenCvPipeline {
         Imgproc.warpAffine(mat, mat, rotMat, mat.size());
 */
         mat.copyTo(undistortedMat);
-        Calib3d.undistort(mat, undistortedMat, camera_matrix, distortion_coefficients);
+//        Calib3d.undistort(mat, undistortedMat, camera_matrix, distortion_coefficients);
 
         // Convert image to HSV for thresholding.
         Imgproc.cvtColor(undistortedMat, cvt, Imgproc.COLOR_RGB2HSV);
@@ -129,7 +130,6 @@ public class SampleDetection extends OpenCvPipeline {
         centroid = closest.center;
 
         if (!useDst) {
-            Imgproc.cvtColor(undistortedMat, undistortedMat, Imgproc.COLOR_BGR2RGB);
             return undistortedMat;
         } else {
             return dst;
@@ -143,19 +143,22 @@ public class SampleDetection extends OpenCvPipeline {
     }
 
     List<MatOfPoint> findSamples(Mat thresholdedMatrix) {
+        long jim = System.currentTimeMillis();
+        long currentTime = 0;
 
         Imgproc.dilate(thresholdedMatrix, thresholdedMatrix, kernel, new Point(-1, -1), 1);
         Imgproc.distanceTransform(thresholdedMatrix, distance, Imgproc.DIST_L2, 5);
         Core.normalize(distance, distance, 0, 255, Core.NORM_MINMAX);
         Imgproc.threshold(this.distance, distance, 200, 255, Imgproc.THRESH_BINARY);
         distance.convertTo(distance, CvType.CV_8U);
+//        telemetry.addData("time 1", System.currentTimeMillis() - jim);
 
         // Unknown region
         Core.subtract(thresholdedMatrix, distance, unknown);
 // Create markers for watershed
         int nLabels = Imgproc.connectedComponents(distance, markers);
-        telemetry.addData("labels", nLabels);
-        telemetry.update();
+//        telemetry.addData("labels", nLabels);
+//        telemetry.update();
         Core.add(markers, Scalar.all(1), markers);
 
 
@@ -168,23 +171,21 @@ public class SampleDetection extends OpenCvPipeline {
         }
         Imgproc.cvtColor(undistortedMat, undistortedMat, Imgproc.COLOR_RGB2BGR);
         Imgproc.watershed(undistortedMat, markers);
-
         // Visualization - draw boundaries on original image
-
 
         // Find contours
         List<MatOfPoint> filteredContours = new ArrayList<>();
-
+        telemetry.addData("time 2", currentTime);
+        telemetry.addData("segment total", nLabels);
+        long totalTime = System.currentTimeMillis();
+        List<Long> times = new ArrayList<>();
         for (int b = 2; b < nLabels + 1; b++) {
+
+            specimenMask = Mat.zeros(thresholdedMatrix.size(), CvType.CV_8UC1);
+            currentTime = System.currentTimeMillis() - jim;
             Mat wshed = Mat.ones(markers.size(), CvType.CV_8UC3);
-            zeros.copyTo(specimenMask);
-            for (int i = 0; i < wshed.rows(); i++) {
-                for (int j = 0; j < wshed.cols(); j++) {
-                    if (markers.get(i, j)[0] == b) {
-                        specimenMask.put(i, j, 1);
-                    }
-                }
-            }
+            Core.compare(markers, new Scalar(b), specimenMask, Core.CMP_EQ);
+            specimenMask.convertTo(specimenMask, CvType.CV_8U, 1.0/255.0);
 
             thresholdedMatrix.copyTo(wshed, specimenMask);
 
@@ -195,8 +196,14 @@ public class SampleDetection extends OpenCvPipeline {
                     filteredContours.add(contour);
                 }
             }
-
+            currentTime = (System.currentTimeMillis() - jim) - currentTime;
+            times.add(currentTime);
         }
+        telemetry.addData("time sum", System.currentTimeMillis() - totalTime);
+        for (int i = 0; i< times.size(); i++) {
+            telemetry.addData("time" + i, currentTime);
+        }
+        telemetry.update();
         return filteredContours;
     }
 }

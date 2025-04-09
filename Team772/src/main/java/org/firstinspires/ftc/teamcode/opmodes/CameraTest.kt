@@ -34,8 +34,8 @@ class CameraTest : CommandOpMode() {
         var inputValue = ((rotationValue) / PI + 0.5) % 1
         if (inputValue < 0) inputValue += 1
         wristServo.position = inputValue * Constants.VISION_SERVO_MULTIPLIER
-        telemetry.addData("Theta --", rotationValue)
-        telemetry.addData("Rotation", inputValue)
+//        telemetry.addData("Theta --", rotationValue)
+//        telemetry.addData("Rotation", inputValue)
 
 //        leftStrikeServo.position = IntakeSystem.LEFT_PIVOT_TARGET
 //        rightStrikeServo.position = IntakeSystem.RIGHT_PIVOT_TARGET
@@ -83,7 +83,7 @@ class CameraTest : CommandOpMode() {
         rightLinkageServo.position = IntakeSystem.RIGHT_LINKAGE_TARGET
         leftLinkageServo.position = IntakeSystem.LEFT_LINKAGE_TARGET
 
-        sampleDetector = SampleDetection(telemetry, true)
+//        sampleDetector = SampleDetection(, true)
         val webcamName = hardwareMap.get(WebcamName::class.java, "GDVision")
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName)
         camera.openCameraDeviceAsync(object : OpenCvCamera.AsyncCameraOpenListener {

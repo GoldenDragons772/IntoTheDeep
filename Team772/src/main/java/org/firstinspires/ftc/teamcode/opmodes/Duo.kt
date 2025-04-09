@@ -29,7 +29,7 @@ class Duo: CommandOpMode() {
             climbDownMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 1)
         )
         driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping)
-        driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, telemetry)
+        driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, driveManager.root.telemetry)
 
     }
 

@@ -106,7 +106,8 @@ public class IntakeSystem extends SubsystemBase {
         }
         WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
-        sampleDetector = new SampleDetection(root.getTelemetry(), true);
+
+        sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
     }
 
     @Override
@@ -304,27 +305,28 @@ public class IntakeSystem extends SubsystemBase {
                                     setPivot(IntakePosition.TARGET)));
                             put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF).andThen(setClaw(IntakePosition.HOME),
                                     setStrike(IntakePosition.TARGET),
-                                    setPivot(IntakePosition.TARGET))).andThen(new InstantCommand(() -> {
-                                extendState = IntakePosition.TARGET;
-                                camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                                    @Override
-                                    public void onOpened() {
-                                        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-                                        camera.setPipeline(sampleDetector);
-                                        FtcDashboard.getInstance().startCameraStream(camera, 100.0);
-                                    }
-
-                                    @Override
-                                    public void onError(int i) {
-                                    }
-                                });
-                            }));
+                                    setPivot(IntakePosition.TARGET)));
                             put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME).andThen(moveToTransfer()));
                         }},
                         this::getLinkagePos
                 ),
 
+                new InstantCommand(() -> {
+                    Log.i("Camera", "Before camera initialization");
+                    camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                    @Override
+                    public void onOpened() {
+                        Log.i("Camera", "Started streaming");
+                        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                        camera.setPipeline(sampleDetector);
+                        FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+                    }
 
+                    @Override
+                    public void onError(int i) {
+                    }
+                });
+                }),
 //                setLinkage(IntakePosition.TARGET),
                 setClaw(IntakePosition.HOME),
                 setStrike(IntakePosition.TARGET),
