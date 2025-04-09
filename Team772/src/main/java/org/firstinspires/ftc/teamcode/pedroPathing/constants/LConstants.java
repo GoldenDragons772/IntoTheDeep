@@ -22,16 +22,16 @@ public class LConstants {
 //        ThreeWheelConstants.rightEncoderDirection = Encoder.REVERSE;
 //        ThreeWheelConstants.strafeEncoderDirection = Encoder.FORWARD;
 
-        PinpointConstants.forwardY = 2.854;//4.54 - 0.5;
-        PinpointConstants.strafeX = 6.398 - 0.65;     //7+.666;
+        PinpointConstants.forwardY = 2.5; //2.854;//4.54 - 0.5;
+        PinpointConstants.strafeX = 8;//6.398 - 0.65;     //7+.666;
         PinpointConstants.distanceUnit = DistanceUnit.INCH;
         PinpointConstants.hardwareMapName = "pinpoint";
         PinpointConstants.useYawScalar = false;
         PinpointConstants.yawScalar = 1.0;
-        PinpointConstants.useCustomEncoderResolution = true;
-        //PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
-        PinpointConstants.customEncoderResolution = 37.2513512517;
-        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+        //PinpointConstants.useCustomEncoderResolution = true;
+        PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
+        //PinpointConstants.customEncoderResolution = 37.251;
+        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
         PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     }
 }

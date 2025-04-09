@@ -13,16 +13,16 @@ import com.pedropathing.pathgen.Point;
  */
 public class SpecimenAutoPaths {
 
-    private static final Pose startPose = new Pose(8.50, 53.500, Math.toRadians(180));
-    private static final Pose preloadPose = new Pose(42.0, 72.000, Math.toRadians(180));
+    private static final Pose startPose = new Pose(7.4, 53.500, Math.toRadians(180));
+    private static final Pose preloadPose = new Pose(42.0, 74.000, Math.toRadians(180));
     private static final Pose grab1Pose = new Pose(8.50,20.000, Math.toRadians(180));
-    private static final Pose grab2Pose = new Pose(0.000,20.000, Math.toRadians(180));
-    private static final Pose grab3Pose = new Pose(8.000,20.000, Math.toRadians(180));
-    private static final Pose grab4Pose = new Pose(8.000,20.000, Math.toRadians(180));
-    private static final Pose spec1Pose = new Pose(45.000, 66.000, Math.toRadians(180));
-    private static final Pose spec2Pose = new Pose(45.000, 66.000, Math.toRadians(180));
-    private static final Pose spec3Pose = new Pose(45.000, 66.000, Math.toRadians(180));
-    private static final Pose spec4Pose = new Pose(45.000, 66.000, Math.toRadians(180));
+    private static final Pose grab2Pose = new Pose(8.50,20.000, Math.toRadians(180));
+    private static final Pose grab3Pose = new Pose(8.50,20.000, Math.toRadians(180));
+    private static final Pose grab4Pose = new Pose(8.50,20.000, Math.toRadians(180));
+    private static final Pose spec1Pose = new Pose(42.000, 70.000, Math.toRadians(180));
+    private static final Pose spec2Pose = new Pose(42.000, 68.000, Math.toRadians(180));
+    private static final Pose spec3Pose = new Pose(42.000, 66.000, Math.toRadians(180));
+    private static final Pose spec4Pose = new Pose(42.000, 66.000, Math.toRadians(180));
     private static final Pose parkPose = new Pose(8.000,10.000, Math.toRadians(180));
 
     public static PathChain preload() {
@@ -35,8 +35,7 @@ public class SpecimenAutoPaths {
                 )
             )
             .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(0.3)
-                .setPathEndVelocityConstraint(2.5)
+            .setZeroPowerAccelerationMultiplier(2)
             .build();
     }
 
@@ -74,7 +73,6 @@ public class SpecimenAutoPaths {
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
 
-
                 //Line 4
                 .addPath(
                         new BezierLine(
@@ -83,7 +81,6 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-
 
                 //Line 5
                 .addPath(
@@ -94,7 +91,6 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-
 
                 //Line 6
                 .addPath(
@@ -114,8 +110,8 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .setZeroPowerAccelerationMultiplier(0.3)
-                .setPathEndVelocityConstraint(2.0)
+                .setZeroPowerAccelerationMultiplier(4)
+                .setPathEndTimeoutConstraint(50)
                 .build();
     }
 

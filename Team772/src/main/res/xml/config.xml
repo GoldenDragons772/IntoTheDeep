@@ -18,17 +18,17 @@
             <Servo name="vRightStrikeServo" port="5" />
         </ServoHub>
         <LynxModule name="Control Hub" port="173">
-            <goBILDA5202SeriesMotor name="FLMotor" port="1" />
+            <goBILDA5202SeriesMotor name="FLMotor" port="0" />
             <goBILDA5202SeriesMotor name="FRMotor" port="2" />
-            <goBILDA5202SeriesMotor name="BLMotor" port="0" />
+            <goBILDA5202SeriesMotor name="BLMotor" port="1" />
             <goBILDA5202SeriesMotor name="BRMotor" port="3" />
 
             <Servo name="outPivotServo" port="1" />
             <Servo name="outClawServo" port="0" />
             <Servo name="outWristServo" port="3" />
             <Servo name="hSwivelServo" port="2" />
-            <goBILDAPinpoint name="pinpoint" port="0" />
-            <LynxEmbeddedIMU name="imu" port="0" bus="0" />
+            <goBILDAPinpoint name="pinpoint" port="2" />
+<!--            <LynxEmbeddedIMU name="imu" port="0" bus="0" />-->
         </LynxModule>
     </LynxUsbDevice>
     <Webcam name="GDVision" serialNumber="VendorProduct:vendor=0x32e4|product=0x9230|connection=" />
