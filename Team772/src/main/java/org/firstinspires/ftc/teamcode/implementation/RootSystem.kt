@@ -18,16 +18,16 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
+class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean) {
     init {
         CommandScheduler.getInstance().reset()
     }
 
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
-    val outtake = OuttakeSystem(this)
-    val climb = ClimbSystem(this)
-    val intake = IntakeSystem(this)
+    val outtake = OuttakeSystem(this, isAuto)
+    val climb = ClimbSystem(this, isAuto)
+    val intake = IntakeSystem(this, isAuto)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
     var isAllianceRed = true
@@ -57,6 +57,13 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry) {
         val xSquared = x.pow(2) * (x).sign
         val ySquared = y.pow(2) * y.sign
         val thSquared = theta.pow(2) * theta.sign
+        this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
+    }
+
+    fun teleOpDriveScaled(x: Double, y: Double, theta: Double) {
+        val xSquared = 0.3 * (x.pow(2) * (x).sign)
+        val ySquared = 0.3 * (y.pow(2) * y.sign)
+        val thSquared = 0.3 * (theta.pow(2) * theta.sign)
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 

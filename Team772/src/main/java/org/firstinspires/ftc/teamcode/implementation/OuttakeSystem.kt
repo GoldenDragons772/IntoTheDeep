@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo
  * It does not control the climb system, which must be changed separately in order to actually climb.
  *
  */
-class OuttakeSystem(root: RootSystem) : SubsystemBase() {
+class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBase() {
 
     // Defines servos
     private val rstrikeServo: Servo = root.hw.get(Servo::class.java, "vRightStrikeServo")

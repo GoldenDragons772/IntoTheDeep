@@ -21,8 +21,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
     /**
      * Subsystems
      */
-    val root: RootSystem = RootSystem(hw, telemetry)
-
+    val root: RootSystem = RootSystem(hw, telemetry, false)
     /**
      * Controllers
      */
@@ -39,11 +38,19 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      */
     fun update() {
         root.update() // Updates bulk reads and odometry.
-        root.teleOpDrive(
-            -gamepad1.rightX,
-            gamepad1.rightY,
-            -gamepad1.leftX
-        )
+        if(gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.0){
+            root.teleOpDriveScaled(
+                -gamepad1.rightX,
+                gamepad1.rightY,
+                -gamepad1.leftX
+            )
+        }else {
+            root.teleOpDrive(
+                -gamepad1.rightX,
+                gamepad1.rightY,
+                -gamepad1.leftX
+            )
+        }
     }
 
     /**
@@ -119,9 +126,15 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      * Take the bindings created in an OpMode and bind them to functions.
      */
     private fun initializeBindings(mapping: Mapping) {
+
+        //Climb controls
         setPressedBinding(mapping.lowclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))
         setPressedBinding(mapping.highclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
         setPressedBinding(mapping.unClimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME))
+        setPressedBinding(mapping.climbUpMapping, root.climb.sendRawMotors(1.0))
+        setPressedBinding(mapping.climbDownMapping, root.climb.sendRawMotors(-1.0))
+
+
         setPressedBinding(mapping.hangSpecMapping, SpecimenCommand(root.intake, root.outtake, root.climb))
         setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(root.intake, root.outtake))
         setPressedBinding(mapping.transferMapping, TransferSampleCommand(root.intake, root.outtake, root.climb))
@@ -138,13 +151,8 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
-        setPressedBinding(mapping.parallelMapping, root.intake.toggleWrist())
-        setPressedTriggerBinding(
-            mapping.intakePivotMapping,
-            ConditionalCommand(
-                root.intake.setPivot(IntakeSystem.IntakePosition.HOME),
-                root.intake.setPivot(IntakeSystem.IntakePosition.TARGET)
-            ) { root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET })
+        setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
+        setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
 
     }
 
@@ -160,8 +168,10 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val transferMapping: Pair<GamepadKeys.Button, Int>,
         val climbToHangSpec: Pair<GamepadKeys.Button, Int>,
         val clawMapping: Pair<GamepadKeys.Trigger, Int>,
-        val parallelMapping: Pair<GamepadKeys.Button, Int>,
+        val wristMappingLeft: Pair<GamepadKeys.Button, Int>,
+        val wristMappingRight: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
-        val intakePivotMapping: Pair<GamepadKeys.Trigger, Int>
+        val climbUpMapping: Pair<GamepadKeys.Button, Int>,
+        val climbDownMapping: Pair<GamepadKeys.Button, Int>
     )
 }
