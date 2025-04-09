@@ -58,23 +58,23 @@ class SpecimenAuto : CommandOpMode() {
                     ),
                     FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 0.9),
                 ),
-//                //Spec 2
-//                root.outtake.toggleClaw(),
-//                WaitCommand(500),
-//                specimenCommand,
-//                FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
-//                WaitCommand(150),
-//                root.outtake.toggleClaw(),
-//                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-//                ParallelRaceGroup(
-//                ParallelCommandGroup(
-//                    FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.8),
-//                    WaitCommand(800).andThen(
-////                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-//                        root.outtake.moveArmToHome(),
-//                        root.intake.moveToHome(),
-//                    )
-//                ), WaitUntilCommand { root.outtake.getClawButtonState() }),
+                //Spec 2
+                root.outtake.toggleClaw(),
+                WaitCommand(500),
+                specimenCommand,
+                FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
+                WaitCommand(150),
+                root.outtake.toggleClaw(),
+                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                ParallelRaceGroup(
+                ParallelCommandGroup(
+                    FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.8),
+                    WaitCommand(800).andThen(
+//                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        root.outtake.moveArmToHome(),
+                        root.intake.moveToHome(),
+                    )
+                ), WaitUntilCommand { root.outtake.getClawButtonState() }),
 //                // spec3
 //                root.outtake.toggleClaw(),
 //                WaitCommand(500),
