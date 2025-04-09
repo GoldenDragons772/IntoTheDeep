@@ -22,6 +22,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      * Subsystems
      */
     val root: RootSystem = RootSystem(hw, telemetry, false)
+
     /**
      * Controllers
      */
@@ -38,13 +39,13 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
      */
     fun update() {
         root.update() // Updates bulk reads and odometry.
-        if(gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.0){
+        if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.0) {
             root.teleOpDriveScaled(
                 -gamepad1.rightX,
                 gamepad1.rightY,
                 -gamepad1.leftX
             )
-        }else {
+        } else {
             root.teleOpDrive(
                 -gamepad1.rightX,
                 gamepad1.rightY,
@@ -153,6 +154,13 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
         setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
+//        setPressedTriggerBinding(
+//            mapping.moveIntakeMapping,
+//            ConditionalCommand(
+//                root.intake.setPivot(IntakeSystem.IntakePosition.TRANSFER),
+//                root.intake.setPivot(IntakeSystem.IntakePosition.TARGET)
+//            ) { return@ConditionalCommand root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET }
+//        )
 
     }
 
@@ -172,6 +180,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val wristMappingRight: Pair<GamepadKeys.Button, Int>,
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
         val climbUpMapping: Pair<GamepadKeys.Button, Int>,
-        val climbDownMapping: Pair<GamepadKeys.Button, Int>
+        val climbDownMapping: Pair<GamepadKeys.Button, Int>,
+//        val moveIntakeMapping: Pair<GamepadKeys.Trigger, Int>
     )
 }
