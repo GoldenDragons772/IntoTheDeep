@@ -67,14 +67,14 @@ public class SampleDetection extends OpenCvPipeline {
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0, 0, kvs.val[2]);
         if (!DEBUG) {
-//            Calib3d.undistort(mat, garbage, camera_matrix, distortion_coefficients);
-//            garbage.copyTo(mat);
+            Calib3d.undistort(mat, garbage, camera_matrix, distortion_coefficients);
+            garbage.copyTo(mat);
         }
 
         // Convert image to HSV for thresholding.
         Imgproc.cvtColor(mat, cvt, Imgproc.COLOR_RGB2HSV);
         Core.inRange(cvt, SAMPLE_LOW, SAMPLE_HIGH, dst);
-        mat.copyTo(yellow);
+//        mat.copyTo(yellow);
         Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellow);
 
         List<MatOfPoint> filteredContours = findSamples(dst);

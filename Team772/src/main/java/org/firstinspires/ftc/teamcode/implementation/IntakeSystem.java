@@ -8,9 +8,11 @@ import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.HashMap;
 
@@ -39,7 +41,7 @@ public class IntakeSystem extends SubsystemBase {
     static IntakePosition extendState = IntakePosition.HOME;
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
-    public IntakePosition pivotPosition;
+    public IntakePosition pivotPosition = IntakePosition.HOME;
 
     public enum IntakePosition {
         HOME,
@@ -66,7 +68,7 @@ public class IntakeSystem extends SubsystemBase {
     Servo clawServo;
     SampleDetection sampleDetector;
     RootSystem root;
-    OpenCvCamera camera;
+    OpenCvWebcam camera;
 
 
     public IntakeSystem(RootSystem root, boolean isAuto) {
@@ -112,7 +114,10 @@ public class IntakeSystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (extendState == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0) {
+        root.getTelemetry().addData("extendState", extendState.toString());
+        root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
+        root.getTelemetry().addData("linkageState", linkageState.toString());
+        if (pivotPosition == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0 && !clawState) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
             if (inputValue < 0) inputValue += 1;
@@ -317,7 +322,7 @@ public class IntakeSystem extends SubsystemBase {
                     @Override
                     public void onOpened() {
                         Log.i("Camera", "Started streaming");
-                        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
                         camera.setPipeline(sampleDetector);
                         FtcDashboard.getInstance().startCameraStream(camera, 100.0);
                     }

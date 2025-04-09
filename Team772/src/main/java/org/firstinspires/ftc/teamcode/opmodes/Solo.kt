@@ -34,6 +34,7 @@ class Solo: CommandOpMode() {
         driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, driveManager.root.telemetry)
     }
 
+
     /**
      * Runs when the run button is pressed. Runs the main drive loop.
      */
