@@ -40,7 +40,8 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         SPEC_TARGET,
         TRANSFER_PREP,
         TRANSFER,
-        SAFE
+        SAFE,
+        PRELOAD
     }
 
     init {
@@ -73,6 +74,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             OuttakePosition.TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
             OuttakePosition.SPEC_TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
             OuttakePosition.SAFE -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SAFE })
+            OuttakePosition.PRELOAD -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_PRELOAD })
         }
 
     }
@@ -110,8 +112,13 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
                 lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
             })
 
-        }
+            OuttakePosition.PRELOAD -> InstantCommand({
+                // do
+                rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
+                lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
+            })
 
+        }
     }
 
     fun getClawButtonState() = clawButton.state
