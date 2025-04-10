@@ -118,8 +118,8 @@ public class IntakeSystem extends SubsystemBase {
                 Log.i("Camera", "Started streaming");
                 camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
                 camera.setPipeline(sampleDetector);
-                //FtcDashboard.getInstance().startCameraStream(camera, 100.0);
-                camera.pauseViewport(); // have it paused by default.
+                FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+//                camera.pauseViewport(); // have it paused by default.
             }
 
             @Override
@@ -133,7 +133,7 @@ public class IntakeSystem extends SubsystemBase {
         root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
         root.getTelemetry().addData("linkageState", linkageState.toString());
         //
-        if (pivotPosition == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0 && !clawState) {
+        if (pivotPosition == IntakePosition.HOME && sampleDetector.sampleRotation != -70.0 && !clawState) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
             if (inputValue < 0) inputValue += 1;
@@ -300,10 +300,7 @@ public class IntakeSystem extends SubsystemBase {
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.HOME),
-                setPivot(IntakePosition.HOME),
-                new InstantCommand(() -> {
-                    camera.pauseViewport();
-                })
+                setPivot(IntakePosition.HOME)
         );
     }
 
@@ -311,7 +308,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
-                    camera.pauseViewport();
+                    camera.stopStreaming();
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
@@ -336,9 +333,9 @@ public class IntakeSystem extends SubsystemBase {
                 ),
 
                 new InstantCommand(() -> {
-//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
-//                    camera.setPipeline(sampleDetector);
-                    camera.resumeViewport();
+                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+                    camera.setPipeline(sampleDetector);
+//                    camera.resumeViewport();
                 })
 //                setLinkage(IntakePosition.TARGET),
 //                setClaw(IntakePosition.HOME),

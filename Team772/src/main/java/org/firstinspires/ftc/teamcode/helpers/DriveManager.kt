@@ -154,6 +154,18 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
         setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
+        if (mapping.moveIntakeMapping != null) {
+            setPressedTriggerBinding(
+                mapping.moveIntakeMapping,
+                ConditionalCommand(
+                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.HOME), root.intake.setStrike(IntakeSystem.IntakePosition.TRANSFER) ),
+                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.TARGET), WaitCommand(100), root.intake.setStrike(IntakeSystem.IntakePosition.TARGET) )
+                ) {
+                    root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET
+                }
+            )
+        }
+
 //        setPressedTriggerBinding(
 //            mapping.moveIntakeMapping,
 //            ConditionalCommand(
@@ -181,6 +193,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
         val climbUpMapping: Pair<GamepadKeys.Button, Int>,
         val climbDownMapping: Pair<GamepadKeys.Button, Int>,
-//        val moveIntakeMapping: Pair<GamepadKeys.Trigger, Int>
+        val moveIntakeMapping: Pair<GamepadKeys.Trigger, Int>?
     )
 }
