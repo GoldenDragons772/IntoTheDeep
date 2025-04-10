@@ -18,10 +18,12 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean) {
+class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean) {
     init {
         CommandScheduler.getInstance().reset()
     }
+    val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
+
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
     val outtake = OuttakeSystem(this, isAuto)
@@ -29,9 +31,8 @@ class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry, val isA
     val intake = IntakeSystem(this, isAuto)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
-    val isAllianceRed = false;
+    var isAllianceRed = true
 
-    val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
     private var lastVoltage: Double = 0.0
     var voltage: Double = 0.0 // It's unknown if this is necessary.
         private set
@@ -55,14 +56,14 @@ class RootSystem(@JvmField val hw: HardwareMap, rawTelemetry: Telemetry, val isA
     fun teleOpDrive(x: Double, y: Double, theta: Double) {
         val xSquared = x.pow(2) * (x).sign
         val ySquared = y.pow(2) * y.sign
-        val thSquared = theta.pow(2) * theta.sign
+        val thSquared = (theta.pow(2) * theta.sign) * 0.8
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
     fun teleOpDriveScaled(x: Double, y: Double, theta: Double) {
-        val xSquared = 0.3 * (x.pow(2) * (x).sign)
-        val ySquared = 0.3 * (y.pow(2) * y.sign)
-        val thSquared = 0.3 * (theta.pow(2) * theta.sign)
+        val xSquared = (x.pow(2) * (x).sign) // * 0.3
+        val ySquared = (y.pow(2) * y.sign)// * 0.3
+        val thSquared = 0.2 * (theta.pow(2) * theta.sign)
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 

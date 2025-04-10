@@ -44,9 +44,9 @@ public class ClimbSystem extends SubsystemBase {
         this.root = root;
 
 
-        this.climbMotor1 = root.hw.get(DcMotorEx.class, "climbMotorUp");
-        this.climbMotor2 = root.hw.get(DcMotorEx.class, "climbMotorDown");
-        this.climbMotor3 = root.hw.get(DcMotorEx.class, "climbMotor3");
+        this.climbMotor1 = root.getHw().get(DcMotorEx.class, "climbMotorUp");
+        this.climbMotor2 = root.getHw().get(DcMotorEx.class, "climbMotorDown");
+        this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
         climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -82,10 +82,9 @@ public class ClimbSystem extends SubsystemBase {
 //        Log.i("Climb", String.valueOf(position));
 
         root.getTelemetry().addData("Slide Position", this.getSlidesPosition());
-        root.getTelemetry().update();
 
         //Make sure to stop PIDing when we're home
-        if(position == ClimbState.HOME && this.getSlidesPosition() < 50){
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);

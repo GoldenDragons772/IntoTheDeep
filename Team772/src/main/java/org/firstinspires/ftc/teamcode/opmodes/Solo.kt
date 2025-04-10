@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
 @TeleOp(name = "Solo TeleOp")
@@ -28,10 +29,12 @@ class Solo: CommandOpMode() {
             transferMapping = Pair(GamepadKeys.Button.A, 1),
             climbUpMapping = Pair(GamepadKeys.Button.A, 2),
             climbDownMapping = Pair(GamepadKeys.Button.B, 2),
+            moveIntakeMapping = null
         )
         driveManager = DriveManager(hardwareMap,telemetry, gamepad1, gamepad2, mapping)
-
+        driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, driveManager.root.telemetry)
     }
+
 
     /**
      * Runs when the run button is pressed. Runs the main drive loop.

@@ -1,11 +1,18 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.HashMap;
 
@@ -17,15 +24,15 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.58, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.58, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.64, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
@@ -34,6 +41,7 @@ public class IntakeSystem extends SubsystemBase {
     static IntakePosition extendState = IntakePosition.HOME;
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
+    public IntakePosition pivotPosition = IntakePosition.HOME;
 
     public enum IntakePosition {
         HOME,
@@ -59,30 +67,32 @@ public class IntakeSystem extends SubsystemBase {
     Servo wristServo;
     Servo clawServo;
     SampleDetection sampleDetector;
+    RootSystem root;
+    OpenCvWebcam camera;
 
 
     public IntakeSystem(RootSystem root, boolean isAuto) {
         // Linkage Servo
-        leftLinkageServo = root.hw.get(Servo.class, "lLinkageServo");
-        rightLinkageServo = root.hw.get(Servo.class, "rLinkageServo");
+        this.root = root;
+        leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
+        rightLinkageServo = root.getHw().get(Servo.class, "rLinkageServo");
 
         // strike servo
-        leftStrikeServo = root.hw.get(Servo.class, "hLeftStrike");
-        rightStrikeServo = root.hw.get(Servo.class, "hRightStrike");
+        leftStrikeServo = root.getHw().get(Servo.class, "hLeftStrike");
+        rightStrikeServo = root.getHw().get(Servo.class, "hRightStrike");
 
         // Pivot Servo
-        pivotServo = root.hw.get(Servo.class, "hPivot");
+        pivotServo = root.getHw().get(Servo.class, "hPivot");
 
         //Wrist Servo
-        wristServo = root.hw.get(Servo.class, "hSwivelServo");
+        wristServo = root.getHw().get(Servo.class, "hSwivelServo");
 
         //Claw Servo
-        clawServo = root.hw.get(Servo.class, "intakeClawServo");
-
-
+        clawServo = root.getHw().get(Servo.class, "intakeClawServo");
 
         rightLinkageServo.setDirection(Servo.Direction.REVERSE);
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
+        wristServo.setDirection(Servo.Direction.REVERSE);
 
         if(!isAuto) {
             leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
@@ -96,12 +106,42 @@ public class IntakeSystem extends SubsystemBase {
             pivotServo.setPosition(PIVOT_HOME);
             wristServo.setPosition(WRIST_HOME);
         }
+        WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
+        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
+
+        sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+
+        Log.i("Camera", "Before camera initialization");
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                Log.i("Camera", "Started streaming");
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+                camera.setPipeline(sampleDetector);
+                FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+//                camera.pauseViewport(); // have it paused by default.
+            }
+
+            @Override
+            public void onError(int i) { }
+        });
     }
 
-//    public void initSystem() {
-//        // Set Default positions:
-//
-//    }
+    @Override
+    public void periodic() {
+        root.getTelemetry().addData("extendState", extendState.toString());
+        root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
+        root.getTelemetry().addData("linkageState", linkageState.toString());
+        //
+        if (pivotPosition == IntakePosition.HOME && sampleDetector.sampleRotation != -70.0 && !clawState) {
+            double rotationValue = sampleDetector.sampleRotation;
+            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
+            if (inputValue < 0) inputValue += 1;
+            wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+            root.getTelemetry().addData("Theta --", rotationValue);
+            root.getTelemetry().addData("Rotation", inputValue);
+        }
+    }
 
     public WristPosition getWristPos() {
         return wristState;
@@ -173,9 +213,18 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command setPivot(IntakePosition pos) {
         return switch (pos) {
-            case HOME -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_HOME));
-            case TARGET -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_TARGET));
-            case TRANSFER -> new InstantCommand(() -> pivotServo.setPosition(PIVOT_TRANSFER));
+            case HOME -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_HOME);
+                pivotPosition = pos;
+            });
+            case TARGET -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_TARGET);
+                pivotPosition = pos;
+            });
+            case TRANSFER -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_TRANSFER);
+                pivotPosition = pos;
+            });
         };
     }
 
@@ -259,6 +308,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
+                    camera.stopStreaming();
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
@@ -280,7 +330,17 @@ public class IntakeSystem extends SubsystemBase {
                             put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME).andThen(moveToTransfer()));
                         }},
                         this::getLinkagePos
-                )
+                ),
+
+                new InstantCommand(() -> {
+                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+                    camera.setPipeline(sampleDetector);
+//                    camera.resumeViewport();
+                })
+//                setLinkage(IntakePosition.TARGET),
+//                setClaw(IntakePosition.HOME),
+//                setStrike(IntakePosition.TARGET),
+//                setPivot(IntakePosition.TARGET)
         );
     }
 
