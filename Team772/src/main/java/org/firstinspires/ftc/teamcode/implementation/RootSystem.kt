@@ -56,14 +56,14 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
     fun teleOpDrive(x: Double, y: Double, theta: Double) {
         val xSquared = x.pow(2) * (x).sign
         val ySquared = y.pow(2) * y.sign
-        val thSquared = theta.pow(2) * theta.sign
+        val thSquared = (theta.pow(2) * theta.sign) * 0.8
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
     fun teleOpDriveScaled(x: Double, y: Double, theta: Double) {
-        val xSquared = 0.3 * (x.pow(2) * (x).sign)
-        val ySquared = 0.3 * (y.pow(2) * y.sign)
-        val thSquared = 0.3 * (theta.pow(2) * theta.sign)
+        val xSquared = (x.pow(2) * (x).sign) // * 0.3
+        val ySquared = (y.pow(2) * y.sign)// * 0.3
+        val thSquared = 0.2 * (theta.pow(2) * theta.sign)
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 

@@ -24,15 +24,15 @@ public class IntakeSystem extends SubsystemBase {
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.58, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.58, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.64, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
@@ -110,6 +110,21 @@ public class IntakeSystem extends SubsystemBase {
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
 
         sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+
+        Log.i("Camera", "Before camera initialization");
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                Log.i("Camera", "Started streaming");
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+                camera.setPipeline(sampleDetector);
+                //FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+                camera.pauseViewport(); // have it paused by default.
+            }
+
+            @Override
+            public void onError(int i) { }
+        });
     }
 
     @Override
@@ -117,6 +132,7 @@ public class IntakeSystem extends SubsystemBase {
         root.getTelemetry().addData("extendState", extendState.toString());
         root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
         root.getTelemetry().addData("linkageState", linkageState.toString());
+        //
         if (pivotPosition == IntakePosition.TARGET && sampleDetector.sampleRotation != -70.0 && !clawState) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
@@ -284,7 +300,10 @@ public class IntakeSystem extends SubsystemBase {
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
                 setStrike(IntakePosition.HOME),
-                setPivot(IntakePosition.HOME)
+                setPivot(IntakePosition.HOME),
+                new InstantCommand(() -> {
+                    camera.pauseViewport();
+                })
         );
     }
 
@@ -292,7 +311,7 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
-                    camera.closeCameraDevice();
+                    camera.pauseViewport();
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
@@ -317,25 +336,14 @@ public class IntakeSystem extends SubsystemBase {
                 ),
 
                 new InstantCommand(() -> {
-                    Log.i("Camera", "Before camera initialization");
-                    camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                    @Override
-                    public void onOpened() {
-                        Log.i("Camera", "Started streaming");
-                        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
-                        camera.setPipeline(sampleDetector);
-                        FtcDashboard.getInstance().startCameraStream(camera, 100.0);
-                    }
-
-                    @Override
-                    public void onError(int i) {
-                    }
-                });
-                }),
+//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+//                    camera.setPipeline(sampleDetector);
+                    camera.resumeViewport();
+                })
 //                setLinkage(IntakePosition.TARGET),
-                setClaw(IntakePosition.HOME),
-                setStrike(IntakePosition.TARGET),
-                setPivot(IntakePosition.TARGET)
+//                setClaw(IntakePosition.HOME),
+//                setStrike(IntakePosition.TARGET),
+//                setPivot(IntakePosition.TARGET)
         );
     }
 

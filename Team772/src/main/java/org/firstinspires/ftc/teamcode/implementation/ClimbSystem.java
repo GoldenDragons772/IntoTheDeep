@@ -84,7 +84,7 @@ public class ClimbSystem extends SubsystemBase {
         root.getTelemetry().addData("Slide Position", this.getSlidesPosition());
 
         //Make sure to stop PIDing when we're home
-        if(position == ClimbState.HOME && this.getSlidesPosition() < 50){
+        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);
