@@ -38,6 +38,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         HOME,
         TARGET,
         SPEC_TARGET,
+        SPEC_INV,
         TRANSFER_PREP,
         TRANSFER,
         SAFE,
@@ -73,6 +74,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             OuttakePosition.TRANSFER -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER })
             OuttakePosition.TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
             OuttakePosition.SPEC_TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
+            OuttakePosition.SPEC_INV -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC_INV})
             OuttakePosition.SAFE -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SAFE })
             OuttakePosition.PRELOAD -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_PRELOAD })
         }
@@ -116,6 +118,11 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
                 // do
                 rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
                 lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
+            })
+
+            OuttakePosition.SPEC_INV -> InstantCommand({
+                rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC_INV
+                lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC_INV
             })
 
         }
@@ -187,6 +194,13 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             .andThen(wristScore())
             .andThen(InstantCommand({ homeState = false }))
 
+    fun moveArmToScoreSpecInv(): Command =
+        setStrike(OuttakePosition.SPEC_INV)
+            .andThen(WaitCommand(500))
+            .andThen(setPivot(OuttakePosition.SPEC_INV))
+            .andThen(wristHome())
+            .andThen(InstantCommand({ homeState = false}))
+
     fun moveArmToTransferPrep(): Command =
         wristHome()
             .andThen(setPivot(OuttakePosition.TRANSFER))
@@ -210,6 +224,8 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      * Toggles the arm between the home position and the Specimen scoring position based on the saved arm state.
      */
     fun toggleArmSpec() = ConditionalCommand(moveArmToScoreSpec(), moveArmToHome()) { homeState }
+
+    fun toggleArmSpecInv() = ConditionalCommand(moveArmToScoreSpecInv(), moveArmToHome()) { homeState }
 
     /**
      * Toggles the claw between the open (ready to score) position and the closed position.

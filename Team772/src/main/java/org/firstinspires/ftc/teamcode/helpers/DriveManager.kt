@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
+import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommandInverted
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
 
@@ -136,7 +137,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.climbDownMapping, root.climb.sendRawMotors(-1.0))
 
 
-        setPressedBinding(mapping.hangSpecMapping, SpecimenCommand(root.intake, root.outtake, root.climb))
+        setPressedBinding(mapping.hangSpecMapping, SpecimenCommandInverted(root.intake, root.outtake, root.climb))
         setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(root.intake, root.outtake))
         setPressedBinding(mapping.transferMapping, TransferSampleCommand(root.intake, root.outtake, root.climb))
         // Try to move to transfer position if some conditions are met
@@ -157,12 +158,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         if (mapping.moveIntakeMapping != null) {
             setPressedTriggerBinding(
                 mapping.moveIntakeMapping,
-                ConditionalCommand(
-                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.HOME), root.intake.setStrike(IntakeSystem.IntakePosition.TRANSFER) ),
-                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.TARGET), WaitCommand(100), root.intake.setStrike(IntakeSystem.IntakePosition.TARGET) )
-                ) {
-                    root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET
-                }
+                root.intake.toggleHover()
             )
         }
 
