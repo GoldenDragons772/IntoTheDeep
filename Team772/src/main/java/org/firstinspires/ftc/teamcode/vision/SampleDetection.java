@@ -25,14 +25,17 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(25, 255, 255);
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(107, 90, 15);
     public static Scalar BLUE_SAMPLE_HIGH = new Scalar(125, 255, 255);
+    public static Scalar RECTANGLE_BOUNDS = new Scalar(80, 80, 460, 320);
+    // 640
+
     public static double VISION_MIN_AREA = 2000;
     public static boolean useDst = false;
+    public static boolean DEBUG = true;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
     public Point centroid;
     private final boolean isRed;
-    private static boolean DEBUG = false;
 
     public SampleDetection(Telemetry tel) {
         this(tel, false);
@@ -66,10 +69,17 @@ public class SampleDetection extends OpenCvPipeline {
 
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0, 0, kvs.val[2]);
+        Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
         if (!DEBUG) {
             Calib3d.undistort(mat, garbage, camera_matrix, distortion_coefficients);
             garbage.copyTo(mat);
+            mat = mat.submat(rectangle);
         }
+        else {
+            Imgproc.rectangle(mat, rectangle, new Scalar(255,0,0));
+        }
+//        mat = mat.submat(new Rect());
+
 
         // Convert image to HSV for thresholding.
         Imgproc.cvtColor(mat, cvt, Imgproc.COLOR_RGB2HSV);
