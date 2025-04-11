@@ -23,7 +23,7 @@ class SpecimenAuto : CommandOpMode() {
     override fun initialize() {
 
         val root = RootSystem(hardwareMap, telemetry, true)
-        root.follower.setStartingPose(Pose(8.50, 53.500, Math.toRadians(180.0)))
+        root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
         val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
 
         //The actual auto code
@@ -57,12 +57,13 @@ class SpecimenAuto : CommandOpMode() {
                         root.intake.moveToHome(),
                     ),
                     FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 1.0).andThen(
-                        FollowPath(root.follower, SpecimenAutoPaths.grab1(), true, 0.9)
+                        FollowPath(root.follower, SpecimenAutoPaths.grab1(), true, 0.9),
+                        FollowPath(root.follower, SpecimenAutoPaths.lineGrab1(), true, 0.7).interruptOn { root.outtake.getClawButtonState() }
                     ),
-                ), WaitUntilCommand { root.outtake.getClawButtonState() },
+                ), //WaitUntilCommand { root.outtake.getClawButtonState() },
                 //Spec 2
                 root.outtake.toggleClaw(),
-                WaitCommand(500),
+                //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
                 WaitCommand(150),
@@ -70,18 +71,17 @@ class SpecimenAuto : CommandOpMode() {
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.9),
-                    WaitCommand(800).andThen(
+                    WaitCommand(600).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         root.outtake.moveArmToHome(),
                         root.intake.moveToHome(),
                     )
-                ), WaitUntilCommand { root.outtake.getClawButtonState() },
-//                ParallelRaceGroup(
-//
-//                ),
+                ),
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab2(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
+
 //                // spec3
                 root.outtake.toggleClaw(),
-                WaitCommand(500),
+                //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec2(), true, 0.9),
                 WaitCommand(150),
@@ -89,19 +89,16 @@ class SpecimenAuto : CommandOpMode() {
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.9),
-                    WaitCommand(800).andThen(
+                    WaitCommand(600).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         root.outtake.moveArmToHome(),
                         root.intake.moveToHome(),
                     )
                 ),
-                WaitUntilCommand { root.outtake.getClawButtonState() },
-//                ParallelRaceGroup(
-//
-//                ),
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab3(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
 //                // spec4
                 root.outtake.toggleClaw(),
-                WaitCommand(500),
+                //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec3(), true, 0.9),
                 WaitCommand(150),
@@ -110,18 +107,17 @@ class SpecimenAuto : CommandOpMode() {
 
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
-                    WaitCommand(800).andThen(
+                    WaitCommand(600).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
                         root.outtake.moveArmToHome(),
                         root.intake.moveToHome(),
                     )
-                ), WaitUntilCommand { root.outtake.getClawButtonState() },
-//                ParallelRaceGroup(
-//
-//                ),
+                ),
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab4(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
+
 //                // spec5
                 root.outtake.toggleClaw(),
-                WaitCommand(500),
+                //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec4(), true, 0.9),
             )

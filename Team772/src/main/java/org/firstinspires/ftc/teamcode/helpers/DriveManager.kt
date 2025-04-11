@@ -157,12 +157,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         if (mapping.moveIntakeMapping != null) {
             setPressedTriggerBinding(
                 mapping.moveIntakeMapping,
-                ConditionalCommand(
-                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.HOME), root.intake.setStrike(IntakeSystem.IntakePosition.TRANSFER) ),
-                    SequentialCommandGroup( root.intake.setPivot(IntakeSystem.IntakePosition.TARGET), WaitCommand(100), root.intake.setStrike(IntakeSystem.IntakePosition.TARGET) )
-                ) {
-                    root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET
-                }
+                root.intake.toggleHover()
             )
         }
 

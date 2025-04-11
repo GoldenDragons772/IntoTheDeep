@@ -46,7 +46,8 @@ public class IntakeSystem extends SubsystemBase {
     public enum IntakePosition {
         HOME,
         TARGET,
-        TRANSFER
+        TRANSFER,
+        HOVER
     }
 
     public enum LinkagePosition {
@@ -133,7 +134,7 @@ public class IntakeSystem extends SubsystemBase {
         root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
         root.getTelemetry().addData("linkageState", linkageState.toString());
         //
-        if (pivotPosition == IntakePosition.HOME && sampleDetector.sampleRotation != -70.0 && !clawState) {
+        if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
             if (inputValue < 0) inputValue += 1;
@@ -149,6 +150,10 @@ public class IntakeSystem extends SubsystemBase {
 
     public IntakePosition getIntakePos() {
         return extendState;
+    }
+
+    public IntakePosition getPivotPosition(){
+        return pivotPosition;
     }
 
     public LinkagePosition getLinkagePos() { return linkageState; }
@@ -207,6 +212,10 @@ public class IntakeSystem extends SubsystemBase {
                 leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
                 rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
             });
+            case HOVER -> new InstantCommand(() -> {
+                leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
+                rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
+            });
         };
 
     }
@@ -223,6 +232,10 @@ public class IntakeSystem extends SubsystemBase {
             });
             case TRANSFER -> new InstantCommand(() -> {
                 pivotServo.setPosition(PIVOT_TRANSFER);
+                pivotPosition = pos;
+            });
+            case HOVER -> new InstantCommand(() -> {
+                pivotServo.setPosition(PIVOT_HOME);
                 pivotPosition = pos;
             });
         };
@@ -289,6 +302,11 @@ public class IntakeSystem extends SubsystemBase {
                 clawState = false;
                 clawServo.setPosition(CLAW_STROKE);
             });
+
+            case HOVER -> new InstantCommand(() -> {
+                clawState = false;
+                clawServo.setPosition(CLAW_HOME);
+            });
         };
     }
 
@@ -321,13 +339,17 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new SelectCommand(
                         new HashMap<>() {{
-                            put(LinkagePosition.HOME, setLinkage(LinkagePosition.FULL).andThen(setClaw(IntakePosition.HOME),
-                                    setStrike(IntakePosition.TARGET),
-                                    setPivot(IntakePosition.TARGET)));
-                            put(LinkagePosition.FULL, setLinkage(LinkagePosition.HALF).andThen(setClaw(IntakePosition.HOME),
-                                    setStrike(IntakePosition.TARGET),
-                                    setPivot(IntakePosition.TARGET)));
-                            put(LinkagePosition.HALF, setLinkage(LinkagePosition.HOME).andThen(moveToTransfer()));
+                            put(LinkagePosition.HOME,
+                                    setLinkage(LinkagePosition.FULL)
+                                    .andThen(setClaw(IntakePosition.HOME),
+                                    hoverIntake()));
+                            put(LinkagePosition.FULL,
+                                    setLinkage(LinkagePosition.HALF)
+                                            .andThen(setClaw(IntakePosition.HOME),
+                                    hoverIntake()));
+                            put(LinkagePosition.HALF,
+                                    setLinkage(LinkagePosition.HOME)
+                                    .andThen(moveToTransfer()));
                         }},
                         this::getLinkagePos
                 ),
@@ -352,6 +374,37 @@ public class IntakeSystem extends SubsystemBase {
                     put(IntakePosition.TARGET, moveToTransfer());
                 }},
                 this::getIntakePos
+        );
+    }
+
+    public Command toggleHover() {
+        return new SelectCommand(
+                new HashMap<>() {{
+                    put(IntakePosition.HOVER, strikeIntake());
+                    put(IntakePosition.TARGET, hoverIntake());
+                }},
+                this::getPivotPosition
+        );
+    }
+
+    public Command hoverIntake(){
+        return new SequentialCommandGroup(
+                        setPivot(IntakePosition.HOME),
+                        setStrike(IntakePosition.TRANSFER),
+                        new InstantCommand(() -> {
+                            pivotPosition = IntakePosition.HOVER;
+                        })
+                );
+    }
+
+    public Command strikeIntake(){
+        return new SequentialCommandGroup(
+                setPivot(IntakePosition.TARGET),
+                new WaitCommand(150),
+                setStrike(IntakePosition.TARGET),
+                new InstantCommand(() -> {
+                    pivotPosition = IntakePosition.TARGET;
+                })
         );
     }
 

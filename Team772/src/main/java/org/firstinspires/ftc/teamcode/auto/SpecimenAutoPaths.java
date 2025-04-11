@@ -13,12 +13,12 @@ import com.pedropathing.pathgen.Point;
  */
 public class SpecimenAutoPaths {
 
-    private static final Pose startPose =  new Pose(7.4, 53.500, Math.toRadians(180));
+    private static final Pose startPose =  new Pose(7.4, 66.500, Math.toRadians(180)); //Original 53.5 55.5?
     private static final Pose preloadPose = new Pose(42.0, 74.000, Math.toRadians(180));
-    private static final Pose grab1Pose = new Pose(7.4,20.000, Math.toRadians(180));
-    private static final Pose grab2Pose = new Pose(8,20.000, Math.toRadians(180));
-    private static final Pose grab3Pose = new Pose(8,20.000, Math.toRadians(180));
-    private static final Pose grab4Pose = new Pose(8,20.000, Math.toRadians(180));
+    private static final Pose grab1Pose = new Pose(7.4,25.000, Math.toRadians(180)); //This pose looks really promising.
+    private static final Pose grab2Pose = new Pose(13.0,25.000, Math.toRadians(180));
+    private static final Pose grab3Pose = new Pose(9.5,25.000, Math.toRadians(180));
+    private static final Pose grab4Pose = new Pose(9.5,25.000, Math.toRadians(180));
     private static final Pose spec1Pose = new Pose(43.000, 74.000, Math.toRadians(180));
     private static final Pose spec2Pose = new Pose(43.000, 74.000, Math.toRadians(180));
     private static final Pose spec3Pose = new Pose(43.000, 74.000, Math.toRadians(180));
@@ -130,6 +130,20 @@ public class SpecimenAutoPaths {
             .build();
     }
 
+    public static PathChain lineGrab1() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(grab1Pose),
+                                new Point(grab1Pose.getX() - 12, grab1Pose.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(grab1Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(75)
+                .build();
+    }
+
     public static PathChain spec1() {
         return new PathBuilder()
             .addPath(
@@ -160,6 +174,20 @@ public class SpecimenAutoPaths {
             .setZeroPowerAccelerationMultiplier(2)
             .setPathEndTimeoutConstraint(100)
             .build();
+    }
+
+    public static PathChain lineGrab2() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(grab2Pose),
+                                new Point(grab2Pose.getX() - 12, grab2Pose.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(grab2Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(75)
+                .build();
     }
 
 
@@ -195,6 +223,20 @@ public class SpecimenAutoPaths {
             .build();
     }
 
+    public static PathChain lineGrab3() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(grab3Pose),
+                                new Point(grab3Pose.getX() - 12, grab3Pose.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(grab4Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(75)
+                .build();
+    }
+
 
     public static PathChain spec3() {
         return new PathBuilder()
@@ -225,6 +267,20 @@ public class SpecimenAutoPaths {
             .setZeroPowerAccelerationMultiplier(2)
             .setPathEndTimeoutConstraint(100)
             .build();
+    }
+
+    public static PathChain lineGrab4() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(grab4Pose),
+                                new Point(grab4Pose.getX() - 12, grab4Pose.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(grab4Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(75)
+                .build();
     }
 
 
