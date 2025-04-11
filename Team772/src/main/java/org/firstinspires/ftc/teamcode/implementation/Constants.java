@@ -25,6 +25,7 @@ import com.acmerobotics.dashboard.config.Config;
     public static double PIVOT_SERVO_HOME = 0.56;
     public static double PIVOT_SERVO_SCORE = 0.6;
     public static double PIVOT_SERVO_SPEC = 0.9;
+    public static double PIVOT_SERVO_SPEC_INV = 0.55;
     public static double PIVOT_SERVO_TRANSFER = 1.0;
     public static double PIVOT_SERVO_SAFE = 0.65;
     public static double PIVOT_SERVO_PRELOAD = 0.0;
@@ -42,6 +43,8 @@ import com.acmerobotics.dashboard.config.Config;
     public static double OUT_STRIKE_L_TRANSFER = 0.54;
     public static double OUT_STRIKE_R_SPEC = 0.06;
     public static double OUT_STRIKE_L_SPEC = 0.06;
+    public static double OUT_STRIKE_R_SPEC_INV = 0.0;
+    public static double OUT_STRIKE_L_SPEC_INV = 0.0;
     public static double OUT_STRIKE_R_SAFE = 0.8;
     public static double OUT_STRIKE_L_SAFE = 0.8;
 
