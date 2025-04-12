@@ -120,6 +120,11 @@ class SpecimenAuto : CommandOpMode() {
                 //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec4(), true, 0.9),
+
+                WaitCommand(150),
+                root.outtake.toggleClaw(),
+                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0)
             )
         )
     }
