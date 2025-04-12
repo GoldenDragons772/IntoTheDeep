@@ -23,13 +23,14 @@ public class IntakeSystem extends SubsystemBase {
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
     public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
+    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.59, BOTH_PIVOT_TRANSFER = 0.5;
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = 0.59, LEFT_PIVOT_TRANSFER = 0.5;
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = 0.59, RIGHT_PIVOT_TRANSFER = 0.5;
+    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
+    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.24, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.27, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
@@ -389,8 +390,9 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command hoverIntake(){
         return new SequentialCommandGroup(
-                        setPivot(IntakePosition.HOME),
                         setStrike(IntakePosition.TRANSFER),
+                        new WaitCommand(150),
+                        setPivot(IntakePosition.HOME),
                         new InstantCommand(() -> {
                             pivotPosition = IntakePosition.HOVER;
                         })
