@@ -33,7 +33,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.27, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.4;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.75, CLAW_STROKE = 0.5;
@@ -341,11 +341,11 @@ public class IntakeSystem extends SubsystemBase {
                 new SelectCommand(
                         new HashMap<>() {{
                             put(LinkagePosition.HOME,
-                                    setLinkage(LinkagePosition.FULL));
-                                    hoverIntake();
+                                    setLinkage(LinkagePosition.FULL)
+                                            .andThen(hoverIntake()));
                             put(LinkagePosition.FULL,
-                                    setLinkage(LinkagePosition.HALF));
-                                    hoverIntake();
+                                    setLinkage(LinkagePosition.HALF)
+                                            .andThen(hoverIntake()));
                             put(LinkagePosition.HALF,
                                     setLinkage(LinkagePosition.HOME)
                                     .andThen(moveToTransfer()));
@@ -388,11 +388,12 @@ public class IntakeSystem extends SubsystemBase {
 
     public Command hoverIntake(){
         return new SequentialCommandGroup(
-                        setStrike(IntakePosition.TRANSFER),
+                        setStrike(IntakePosition.HOVER),
                         new WaitCommand(150),
                         setPivot(IntakePosition.HOME),
                         new InstantCommand(() -> {
                             pivotPosition = IntakePosition.HOVER;
+                            extendState = IntakePosition.TARGET;
                         })
                 );
     }
@@ -404,6 +405,7 @@ public class IntakeSystem extends SubsystemBase {
                 setStrike(IntakePosition.TARGET),
                 new InstantCommand(() -> {
                     pivotPosition = IntakePosition.TARGET;
+                    extendState = IntakePosition.TARGET;
                 })
         );
     }
