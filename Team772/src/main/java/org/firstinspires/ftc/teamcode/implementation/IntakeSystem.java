@@ -393,7 +393,7 @@ public class IntakeSystem extends SubsystemBase {
                         setPivot(IntakePosition.HOME),
                         new InstantCommand(() -> {
                             pivotPosition = IntakePosition.HOVER;
-                            extendState = IntakePosition.TARGET;
+                            //extendState = IntakePosition.TARGET;
                         })
                 );
     }
@@ -405,7 +405,7 @@ public class IntakeSystem extends SubsystemBase {
                 setStrike(IntakePosition.TARGET),
                 new InstantCommand(() -> {
                     pivotPosition = IntakePosition.TARGET;
-                    extendState = IntakePosition.TARGET;
+                    //extendState = IntakePosition.TARGET;
                 })
         );
     }
