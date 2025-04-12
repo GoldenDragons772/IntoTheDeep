@@ -36,7 +36,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.1;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.74, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.75, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
@@ -341,13 +341,11 @@ public class IntakeSystem extends SubsystemBase {
                 new SelectCommand(
                         new HashMap<>() {{
                             put(LinkagePosition.HOME,
-                                    setLinkage(LinkagePosition.FULL)
-                                    .andThen(setClaw(IntakePosition.HOME),
-                                    hoverIntake()));
+                                    setLinkage(LinkagePosition.FULL));
+                                    hoverIntake();
                             put(LinkagePosition.FULL,
-                                    setLinkage(LinkagePosition.HALF)
-                                            .andThen(setClaw(IntakePosition.HOME),
-                                    hoverIntake()));
+                                    setLinkage(LinkagePosition.HALF));
+                                    hoverIntake();
                             put(LinkagePosition.HALF,
                                     setLinkage(LinkagePosition.HOME)
                                     .andThen(moveToTransfer()));
