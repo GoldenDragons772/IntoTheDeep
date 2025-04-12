@@ -30,7 +30,7 @@ public class SampleDetection extends OpenCvPipeline {
 
     public static double VISION_MIN_AREA = 2000;
     public static boolean useDst = false;
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
