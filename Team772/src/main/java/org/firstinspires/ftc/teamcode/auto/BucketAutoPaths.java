@@ -106,7 +106,7 @@ public class BucketAutoPaths {
                 .addPath(
                         new BezierCurve(
                                 new Point(scorePose),
-                                new Point(scorePose.getX(), scorePose.getY() + 25),
+                                new Point(scorePose.getX(), scorePose.getY() + 20),
                                 new Point(subPose)
                         )
                 )
@@ -119,11 +119,23 @@ public class BucketAutoPaths {
                 .addPath(
                         new BezierCurve(
                                 new Point(subPose),
-                                new Point(scorePose.getX(), scorePose.getY() + 25),
+                                new Point(scorePose.getX(), scorePose.getY() + 20),
                                 new Point(scorePose)
                         )
                 )
                 .setLinearHeadingInterpolation(subPose.getHeading(), scorePose.getHeading())
+                .build();
+    }
+
+    public static PathChain finishAuto() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(scorePose),
+                                new Point(scorePose.getX() + 10, scorePose.getY() -10)
+                        )
+                )
+                .setConstantHeadingInterpolation(scorePose.getHeading())
                 .build();
     }
 

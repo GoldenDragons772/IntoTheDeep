@@ -103,7 +103,7 @@ class BucketAuto(): CommandOpMode() {
                 // pickup sample 3
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.sample3(), true, 0.9),
-                    WaitCommand(800).andThen(
+                    WaitCommand(1000).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
                     ),
                 ),
@@ -130,7 +130,7 @@ class BucketAuto(): CommandOpMode() {
 
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.goToSub(), true, 0.9),
-                    WaitCommand(500).andThen(
+                    WaitCommand(1000).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
                     ),
                 ),
@@ -158,7 +158,7 @@ class BucketAuto(): CommandOpMode() {
 
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.goToSub(), true, 0.9),
-                    WaitCommand(500).andThen(
+                    WaitCommand(1000).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
                     ),
                 ),
@@ -182,7 +182,13 @@ class BucketAuto(): CommandOpMode() {
                 root.outtake.clawOpen(),
                 WaitCommand(250),
 
-
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.finishAuto(), true, 0.9),
+                    WaitCommand(1000).andThen(
+                        root.outtake.moveArmToHome(),
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
+                    ),
+                ),
 
 
             )
