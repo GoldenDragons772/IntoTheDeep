@@ -8,7 +8,7 @@ import com.pedropathing.pathgen.Point;
 
 public class BucketAutoPaths {
 
-    public static final Pose startPose = new Pose(8, 88, Math.toRadians(270));
+    public static final Pose startPose = new Pose(8, 104, Math.toRadians(270));
     public static final Pose scorePose = new Pose(18, 125, Math.toRadians(315));
     public static final Pose sample1 = new Pose(20, 120, Math.toRadians(0));
     public static final Pose sample2 = new Pose(20, 130, Math.toRadians(0));

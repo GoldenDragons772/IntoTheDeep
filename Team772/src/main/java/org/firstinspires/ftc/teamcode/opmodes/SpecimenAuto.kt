@@ -30,8 +30,8 @@ class SpecimenAuto : CommandOpMode() {
         schedule(
             root.outtake.clawClose(),
             root.outtake.setPivot(OuttakeSystem.OuttakePosition.PRELOAD),
-            WaitUntilCommand(this::opModeIsActive),
 
+            WaitUntilCommand(this::opModeIsActive),
             RunCommand({
                 root.update()
                 if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)

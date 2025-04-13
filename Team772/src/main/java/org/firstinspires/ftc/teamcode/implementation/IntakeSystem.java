@@ -134,7 +134,6 @@ public class IntakeSystem extends SubsystemBase {
         root.getTelemetry().addData("extendState", extendState.toString());
         root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
         root.getTelemetry().addData("linkageState", linkageState.toString());
-        //
         if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
             double rotationValue = sampleDetector.sampleRotation;
             var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
