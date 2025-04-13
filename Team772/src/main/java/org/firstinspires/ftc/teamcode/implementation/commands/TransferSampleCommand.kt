@@ -11,21 +11,19 @@ import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
     init {
-        super.addCommands(
-            SequentialCommandGroup(
-                climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                //intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
-                outtakeSystem.clawOpen(),
-                //outtakeSystem.moveArmToTransferPrep(),
-                intakeSystem.moveToTransfer(),
-                WaitCommand(200),
-                outtakeSystem.moveArmToTransfer(),
-                WaitUntilCommand{ outtakeSystem.getClawButtonState() }.withTimeout(1500),
-                outtakeSystem.clawClose(),
-                WaitCommand(500),
-                intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
-                outtakeSystem.moveArmToScore()
-            )
+        addCommands(
+            climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
+            //intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
+            outtakeSystem.clawOpen(),
+            //outtakeSystem.moveArmToTransferPrep(),
+            intakeSystem.moveToTransfer(),
+            WaitCommand(200),
+            outtakeSystem.moveArmToTransfer(),
+            WaitUntilCommand{ outtakeSystem.getClawButtonState() }.withTimeout(1500),
+            outtakeSystem.clawClose(),
+            WaitCommand(500),
+            intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
+            outtakeSystem.moveArmToScore()
         )
     }
 
