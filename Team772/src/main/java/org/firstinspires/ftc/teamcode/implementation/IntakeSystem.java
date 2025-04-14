@@ -68,7 +68,7 @@ public class IntakeSystem extends SubsystemBase {
     Servo pivotServo;
     Servo wristServo;
     Servo clawServo;
-    SampleDetection sampleDetector;
+    public SampleDetection sampleDetector;
     RootSystem root;
     OpenCvWebcam camera;
 
@@ -157,6 +157,8 @@ public class IntakeSystem extends SubsystemBase {
     }
 
     public LinkagePosition getLinkagePos() { return linkageState; }
+
+    public double getCentroidX() {return sampleDetector.centroid.x;}
 
     public Command setLinkage(LinkagePosition pos) {
 

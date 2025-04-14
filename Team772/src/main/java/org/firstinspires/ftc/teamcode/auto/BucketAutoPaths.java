@@ -12,7 +12,7 @@ public class BucketAutoPaths {
     public static final Pose startPose = new Pose(8, 104, Math.toRadians(270));
     public static final Pose scorePose = new Pose(18, 125, Math.toRadians(315));
     public static final Pose sample1 = new Pose(21, 121, Math.toRadians(0));
-    public static final Pose sample2 = new Pose(20, 132, Math.toRadians(0));
+    public static final Pose sample2 = new Pose(20, 128, Math.toRadians(0));
     public static final Pose sample3 = new Pose(25, 135, Math.toRadians(0));
     public static final Pose subPose = new Pose(67, 95, Math.toRadians(-90));
 
@@ -106,7 +106,8 @@ public class BucketAutoPaths {
                 .addPath(
                         new BezierCurve(
                                 new Point(scorePose),
-                                new Point(scorePose.getX(), scorePose.getY() + 20),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
                                 new Point(subPose)
                         )
                 )
@@ -119,7 +120,8 @@ public class BucketAutoPaths {
                 .addPath(
                         new BezierCurve(
                                 new Point(subPose),
-                                new Point(scorePose.getX(), scorePose.getY() + 20),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
                                 new Point(scorePose)
                         )
                 )
