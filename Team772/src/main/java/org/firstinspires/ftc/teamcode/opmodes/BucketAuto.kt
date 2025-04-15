@@ -24,6 +24,9 @@ class BucketAuto(): CommandOpMode() {
 
         root.intake.moveToHome()
 
+        // reset slide encoder only once in auto.
+        root.climb.resetEncoders()
+
         //The actual auto code
         schedule(
             RunCommand({

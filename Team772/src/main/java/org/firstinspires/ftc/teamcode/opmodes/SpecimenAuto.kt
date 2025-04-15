@@ -26,6 +26,9 @@ class SpecimenAuto : CommandOpMode() {
         root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
         val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
 
+        // reset encoders only once during auto.
+        root.climb.resetEncoders()
+
         //The actual auto code
         schedule(
             root.outtake.clawClose(),
