@@ -71,6 +71,16 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         ).whenReleased(whenReleased)
     }
 
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: Command,
+        whenReleased: Command = InstantCommand()
+    ) {
+        getGamepad(map.second).getGamepadButton(map.first)!!.whileHeld(
+            function
+        ).whenReleased(whenReleased)
+    }
+
 
     /**
      * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
@@ -153,8 +163,8 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
-        setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
-        setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
+        setHeldBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
+        setHeldBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
         if (mapping.moveIntakeMapping != null) {
             setPressedTriggerBinding(
                 mapping.moveIntakeMapping,

@@ -24,9 +24,6 @@ class BucketAuto(): CommandOpMode() {
 
         root.intake.moveToHome()
 
-        // reset slide encoder only once in auto.
-        root.climb.resetEncoders()
-
         //The actual auto code
         schedule(
             RunCommand({
@@ -34,9 +31,6 @@ class BucketAuto(): CommandOpMode() {
                 if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)
             }),
             SequentialCommandGroup(
-
-                //Initialize Robot
-
                 root.outtake.clawClose(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.PRELOAD),
 

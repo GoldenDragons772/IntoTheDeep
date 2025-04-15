@@ -20,15 +20,17 @@ import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenComman
 
 @Autonomous(name = "Specimen Auto")
 class SpecimenAuto : CommandOpMode() {
+
+
+
     override fun initialize() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = true)
         root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
         val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
 
-        // reset encoders only once during auto.
-        root.climb.resetEncoders()
-
+//        // reset encoders only once during auto.
+//        root.climb.resetEncoders()
         //The actual auto code
         schedule(
             root.outtake.clawClose(),
