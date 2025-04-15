@@ -39,7 +39,7 @@ public class ClimbSystem extends SubsystemBase {
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
-    private int initialPosition = 0;
+    //private int initialPosition = 0;
 
     public ClimbSystem(RootSystem root, boolean isAuto) {
         this.root = root;
@@ -58,7 +58,7 @@ public class ClimbSystem extends SubsystemBase {
         climbMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
         climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        initialPosition = climbMotor2.getCurrentPosition();
+       // initialPosition = climbMotor2.getCurrentPosition();
     }
 
 //    public void resetEncoders() {
@@ -69,7 +69,7 @@ public class ClimbSystem extends SubsystemBase {
 
     // Get the current position from the slide
     public double getSlidesPosition() {
-        return (Math.max((climbMotor2.getCurrentPosition() * -1) - initialPosition, 0) / 8192.0 * 360);
+        return (Math.max((climbMotor2.getCurrentPosition() * -1), 0) / 8192.0 * 360);
     }
 
     @Override
