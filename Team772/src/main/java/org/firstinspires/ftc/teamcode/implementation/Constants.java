@@ -22,7 +22,7 @@ import com.acmerobotics.dashboard.config.Config;
     public static double VISION_SERVO_MULTIPLIER = 0.66;
 
     // Pivot Positions (Joint 2)
-    public static double PIVOT_SERVO_HOME = 0.56;
+    public static double PIVOT_SERVO_HOME = 0.55;
     public static double PIVOT_SERVO_SCORE = 0.6;
     public static double PIVOT_SERVO_SPEC = 0.9;
     public static double PIVOT_SERVO_SPEC_INV = 0.55;

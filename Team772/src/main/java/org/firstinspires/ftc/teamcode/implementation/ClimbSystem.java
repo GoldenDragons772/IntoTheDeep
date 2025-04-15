@@ -21,7 +21,7 @@ public class ClimbSystem extends SubsystemBase {
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
         HIGH_CHAMBER(420),
-        HIGH_CHAMBER_INVERTED(1300),
+        HIGH_CHAMBER_INVERTED(1350),
         HIGH_BASKET(2200);
 
         public final double position;
