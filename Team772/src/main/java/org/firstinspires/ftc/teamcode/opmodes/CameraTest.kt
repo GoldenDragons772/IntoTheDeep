@@ -77,7 +77,7 @@ class CameraTest : CommandOpMode() {
     }
 
     override fun initialize() {
-        root = RootSystem(hardwareMap, telemetry, false)
+        root = RootSystem(hardwareMap, telemetry, false, isSpecAuto = false)
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         wristServo = hardwareMap.get(Servo::class.java, "hSwivelServo")
         wristServo.direction = Servo.Direction.REVERSE

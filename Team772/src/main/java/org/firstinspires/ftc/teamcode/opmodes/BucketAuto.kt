@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleComm
 class BucketAuto(): CommandOpMode() {
     override fun initialize() {
 
-        val root = RootSystem(hardwareMap, telemetry, false)
+        val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
 
         val transferSampleCommand = TransferSampleCommand(root.intake, root.outtake, root.climb);
 
@@ -71,25 +71,27 @@ class BucketAuto(): CommandOpMode() {
                 //Get in scanning position.
                 root.intake.moveToTarget(),
                 root.intake.hoverIntake(),
-                WaitCommand(500),
+                root.intake.setWrist(IntakeSystem.WristPosition.HOME),
+                WaitCommand(200),
 
                 //Strike the intake down and close the claw
                 root.intake.strikeIntake(),
                 WaitCommand(300),
-                root.intake.toggleClaw(),
+                root.intake.setClaw(IntakeSystem.IntakePosition.TARGET),
 
                 //Transfer the sample and start moving the climb to score.
                 transferSampleCommand,
                 root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
 
-                WaitCommand(500),
+                WaitCommand(300),
 
                 //Move the robot to score.
                 FollowPath(root.follower, BucketAutoPaths.score1(), true, 0.9),
+                WaitCommand(200),
 
                 //Let go of the sample
                 root.outtake.clawOpen(),
-                WaitCommand(250),
+                WaitCommand(400),
 
                 // pickup sample 2
 
@@ -105,7 +107,8 @@ class BucketAuto(): CommandOpMode() {
                 //Get in scanning position.
                 root.intake.moveToTarget(),
                 root.intake.hoverIntake(),
-                WaitCommand(500),
+                root.intake.setWrist(IntakeSystem.WristPosition.HOME),
+                WaitCommand(200),
 
                 //Strike the intake down and close the claw
                 root.intake.strikeIntake(),
@@ -116,14 +119,15 @@ class BucketAuto(): CommandOpMode() {
                 transferSampleCommand,
                 root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
 
-                WaitCommand(500),
+                //WaitCommand(500),
 
                 //Move the robot to score.
                 FollowPath(root.follower, BucketAutoPaths.score2(), true, 0.9),
+                WaitCommand(200),
 
                 //Let go of the sample
                 root.outtake.clawOpen(),
-                WaitCommand(250),
+                WaitCommand(600),
 
                 // pickup sample 3
 
@@ -139,7 +143,8 @@ class BucketAuto(): CommandOpMode() {
                 //Get in scanning position.
                 root.intake.moveToTarget(),
                 root.intake.hoverIntake(),
-                WaitCommand(500),
+                root.intake.setWrist(IntakeSystem.WristPosition.ANGLE_BUCKET),
+                WaitCommand(200),
 
                 //Strike the intake down and close the claw
                 root.intake.strikeIntake(),
@@ -150,14 +155,15 @@ class BucketAuto(): CommandOpMode() {
                 transferSampleCommand,
                 root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
 
-                WaitCommand(500),
+                //WaitCommand(500),
 
                 //Move the robot to score.
                 FollowPath(root.follower, BucketAutoPaths.score3(), true, 0.9),
+                WaitCommand(200),
 
                 //Let go of the sample.
                 root.outtake.clawOpen(),
-                WaitCommand(250),
+                WaitCommand(400),
 
                 //Pickup from sub first
 

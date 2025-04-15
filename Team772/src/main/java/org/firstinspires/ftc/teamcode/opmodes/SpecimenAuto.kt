@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenComman
 class SpecimenAuto : CommandOpMode() {
     override fun initialize() {
 
-        val root = RootSystem(hardwareMap, telemetry, true)
+        val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = true)
         root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
         val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
 

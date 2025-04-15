@@ -22,7 +22,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
     /**
      * Subsystems
      */
-    val root: RootSystem = RootSystem(hw, telemetry, false)
+    val root: RootSystem = RootSystem(hw, telemetry, false, isSpecAuto = false)
 
     /**
      * Controllers

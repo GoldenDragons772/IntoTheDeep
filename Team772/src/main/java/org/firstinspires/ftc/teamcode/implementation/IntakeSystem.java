@@ -33,7 +33,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.27, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_INC = 0.4;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.45, WRIST_INC = 0.4;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.75, CLAW_STROKE = 0.5;
@@ -43,6 +43,9 @@ public class IntakeSystem extends SubsystemBase {
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
     public IntakePosition pivotPosition = IntakePosition.HOME;
+
+    //Boolean to keep track of if were in auto.
+    boolean isAuto;
 
     public enum IntakePosition {
         HOME,
@@ -60,7 +63,8 @@ public class IntakeSystem extends SubsystemBase {
     public enum WristPosition {
         HOME,
         TARGET,
-        ANGLE
+        ANGLE,
+        ANGLE_BUCKET
     }
 
     Servo leftLinkageServo, rightLinkageServo;
@@ -73,7 +77,7 @@ public class IntakeSystem extends SubsystemBase {
     OpenCvWebcam camera;
 
 
-    public IntakeSystem(RootSystem root, boolean isAuto) {
+    public IntakeSystem(RootSystem root, boolean isAuto, boolean isSpecAuto) {
         // Linkage Servo
         this.root = root;
         leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
@@ -96,7 +100,7 @@ public class IntakeSystem extends SubsystemBase {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        if(!isAuto) {
+        if(!isSpecAuto) {
             leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
             rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
 
@@ -108,6 +112,9 @@ public class IntakeSystem extends SubsystemBase {
             pivotServo.setPosition(PIVOT_HOME);
             wristServo.setPosition(WRIST_HOME);
         }
+
+        this.isAuto = isAuto;
+
         WebcamName webcamName = root.getHw().get(WebcamName.class, "GDVision");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
 
@@ -131,16 +138,20 @@ public class IntakeSystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        root.getTelemetry().addData("extendState", extendState.toString());
-        root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
-        root.getTelemetry().addData("linkageState", linkageState.toString());
-        if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
-            double rotationValue = sampleDetector.sampleRotation;
-            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
-            if (inputValue < 0) inputValue += 1;
-            wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
-            root.getTelemetry().addData("Theta --", rotationValue);
-            root.getTelemetry().addData("Rotation", inputValue);
+
+        if(!isAuto) {
+
+            root.getTelemetry().addData("extendState", extendState.toString());
+            root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
+            root.getTelemetry().addData("linkageState", linkageState.toString());
+            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
+                double rotationValue = sampleDetector.sampleRotation;
+                var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
+                if (inputValue < 0) inputValue += 1;
+                wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+                root.getTelemetry().addData("Theta --", rotationValue);
+                root.getTelemetry().addData("Rotation", inputValue);
+            }
         }
     }
 
@@ -261,6 +272,12 @@ public class IntakeSystem extends SubsystemBase {
                 return new InstantCommand(() -> {
                     wristState = WristPosition.ANGLE;
                     wristServo.setPosition(WRIST_ANGLE);
+                });
+            }
+            case ANGLE_BUCKET -> {
+                return new InstantCommand(() -> {
+                    wristState = WristPosition.ANGLE_BUCKET;
+                    wristServo.setPosition(WRIST_ANGLE_BUCKET);
                 });
             }
         }
