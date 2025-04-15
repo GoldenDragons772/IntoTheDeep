@@ -21,7 +21,7 @@ public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
-    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
+//    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.59, BOTH_PIVOT_TRANSFER = 0.5;
     // Set Positions for Strike Servos
@@ -43,6 +43,9 @@ public class IntakeSystem extends SubsystemBase {
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
     public IntakePosition pivotPosition = IntakePosition.HOME;
+    public class ValueCache {
+        public double linkagePosition;
+    }
 
     public enum IntakePosition {
         HOME,
@@ -63,19 +66,21 @@ public class IntakeSystem extends SubsystemBase {
         ANGLE
     }
 
-    Servo leftLinkageServo, rightLinkageServo;
-    Servo leftStrikeServo, rightStrikeServo;
+    public Servo leftLinkageServo, rightLinkageServo;
+    public Servo leftStrikeServo, rightStrikeServo;
     Servo pivotServo;
     Servo wristServo;
     Servo clawServo;
     SampleDetection sampleDetector;
     RootSystem root;
     OpenCvWebcam camera;
+    public ValueCache valueCache;
 
 
     public IntakeSystem(RootSystem root, boolean isAuto) {
         // Linkage Servo
         this.root = root;
+        valueCache = new ValueCache();
         leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
         rightLinkageServo = root.getHw().get(Servo.class, "rLinkageServo");
 
@@ -97,8 +102,9 @@ public class IntakeSystem extends SubsystemBase {
         wristServo.setDirection(Servo.Direction.REVERSE);
 
         if(!isAuto) {
-            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+//            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+            setLinkage(LEFT_LINKAGE_HOME);
+//            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
 
             clawServo.setPosition(CLAW_HOME);
 
@@ -163,20 +169,17 @@ public class IntakeSystem extends SubsystemBase {
 
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+                setLinkage(LEFT_LINKAGE_HOME).schedule();
                 linkageState  = LinkagePosition.HOME;
             });
 
             case FULL -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_TARGET);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_TARGET);
+                setLinkage(LEFT_LINKAGE_TARGET).schedule();
                 linkageState  = LinkagePosition.FULL;
             });
 
             case HALF -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_HALF);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_HALF);
+                setLinkage(LEFT_LINKAGE_HALF).schedule();
                 linkageState  = LinkagePosition.HALF;
             });
 
@@ -185,16 +188,10 @@ public class IntakeSystem extends SubsystemBase {
     }
 
     public Command setLinkage(Double pos) {
-
-        if (pos >= 0.2) {
-            pos = 0.2;
-        }
-
-        var scaledPos = Math.sqrt(pos);
-
         return new InstantCommand(() -> {
-            leftLinkageServo.setPosition(scaledPos);
-            rightLinkageServo.setPosition(scaledPos);
+            valueCache.linkagePosition = pos;
+            leftLinkageServo.setPosition(pos);
+            rightLinkageServo.setPosition(pos);
         }
         );
     }
