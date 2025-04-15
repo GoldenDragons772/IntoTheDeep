@@ -364,8 +364,8 @@ public class IntakeSystem extends SubsystemBase {
                                     setLinkage(LinkagePosition.FULL)
                                             .andThen(hoverIntake()));
                             put(LinkagePosition.FULL,
-                                    setLinkage(LinkagePosition.HALF)
-                                            .andThen(hoverIntake()));
+                                    setLinkage(LinkagePosition.HOME)
+                                            .andThen(moveToTransfer()));
                             put(LinkagePosition.HALF,
                                     setLinkage(LinkagePosition.HOME)
                                     .andThen(moveToTransfer()));
