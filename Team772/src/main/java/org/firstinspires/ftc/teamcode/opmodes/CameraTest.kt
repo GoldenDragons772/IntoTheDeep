@@ -3,41 +3,36 @@ package org.firstinspires.ftc.teamcode.opmodes
 import android.util.Log
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.WaitCommand
-import com.arcrobotics.ftclib.kotlin.extensions.util.clamp
+import com.arcrobotics.ftclib.command.*
+import com.pedropathing.localization.Pose
+import com.pedropathing.pathgen.BezierLine
+import com.pedropathing.pathgen.PathBuilder
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
+import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
 import org.openftc.easyopencv.OpenCvCameraRotation
 import kotlin.math.PI
-import kotlin.math.exp
 import kotlin.math.pow
+import kotlin.math.sin
 
 // ~ should always sort last alphabetically
 @TeleOp(name = "~Camera Test")
 class CameraTest : CommandOpMode() {
-    private lateinit var camera: OpenCvCamera
-    private lateinit var sampleDetector: SampleDetection
     private lateinit var wristServo: Servo
-    private var lastRotation = 0.0
-    private var foundSample: Point? = null
     private lateinit var root: RootSystem
-    private var initialLinkage = 0.0
-    private var done = false
-
 
     override fun run() {
         super.run()
         root.update()
+/*
 
         // Wrist Servo
         if (done) return
@@ -49,14 +44,14 @@ class CameraTest : CommandOpMode() {
             val xPosInches = corelation(SampleDetection.WIDTH - foundSample!!.x)
             telemetry.addData("xPos", SampleDetection.WIDTH - foundSample!!.x)
             telemetry.addData("xPos -- related", xPosInches)
-            val xDiff = Constants.CAMERA_BOTTOM_OFFSET - xPosInches
-            if (xDiff > Constants.GOOFY_AHH_ACCEPTABLE_ERROR) {
+            val xDiff = Constants.CAMERA_BOTTOM_OFFSET - xPosInches // inches
+                // Convert the difference (inches) to an output (servo space) to be used with the horizontal slides.
                 val outputValue =
-                    (root.intake.valueCache.linkagePosition - (xDiff / Constants.INCHES_PER_LINKAGE) + Constants.CAMERA_LERRCOEFF * (root.intake.valueCache.linkagePosition / IntakeSystem.LEFT_LINKAGE_TARGET)).clamp(
-                        0.0,
-                        IntakeSystem.LEFT_LINKAGE_TARGET
-                    )
-                Log.i("Camera", outputValue.toString());
+                    (root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - xDiff))
+                // Throwing an error if the value is out of the range makes debugging easier than coercing the values
+                // into an acceptable range because we see if the values are actually insane.
+                assert(outputValue in 0.0..IntakeSystem.LEFT_PIVOT_TARGET)
+                Log.i("Camera", outputValue.toString())
                 done = true
                 root.intake.setLinkage(outputValue).andThen(WaitCommand(250)).andThen(InstantCommand({
                     var rotationValue =
@@ -68,46 +63,45 @@ class CameraTest : CommandOpMode() {
                     telemetry.addData("Rotation", inputValue)
                 })).andThen(WaitCommand(500)).andThen(root.intake.strikeIntake())
                     .andThen(WaitCommand(500))
+                    .andThen(root.intake.setClaw(IntakeSystem.IntakePosition.TARGET))
+                    .andThen(WaitCommand(500))
                     .andThen(root.intake.hoverIntake()).schedule()
                 Log.i("Camera", "diff ${xDiff / Constants.INCHES_PER_LINKAGE}")
                 telemetry.addData("theory out", outputValue)
                 telemetry.addData("initial", initialLinkage)
                 telemetry.addData("Moving slides ppv", xDiff)
                 telemetry.addLine("Moving slides ppv ${foundSample!!}")
-            }
             return
         }
 
         try {
             if (sampleDetector.centroid != null) {
+                // TODO: Move a little bit farther and then find the centroid
                 foundSample = sampleDetector.centroid
                 val yDiff = ((SampleDetection.HEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
                 initialLinkage = root.intake.valueCache.linkagePosition
-                /*
-                                root.follower.followPath(
-                                    PathBuilder().addPath(
-                                        BezierLine(
-                                            root.follower.pose,
-                                            Pose(root.follower.pose.x + yDiff * sin(root.follower.pose.heading), root.follower.pose.y
-                                            )
-                                        )
-                                    ).build()
-                                )
-                */
+                root.follower.followPath(
+                    PathBuilder().addPath(
+                        BezierLine(
+                            root.follower.pose,
+                            Pose(root.follower.pose.x + yDiff * sin(root.follower.pose.heading), root.follower.pose.y)
+                        )
+                    ).build()
+                )
             } else {
-                root.intake.setLinkage(root.intake.valueCache.linkagePosition - Constants.LINKAGE_SCAN_SPEED).schedule()
+                root.intake.setLinkage(root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED).schedule()
             }
         } catch (e: NullPointerException) {
             Log.i("CAMERA", "ong dumbahh error")
         }
 
         telemetry.update()
+*/
 //        lastRotation = rotationValue
     }
 
     override fun initialize() {
         root = RootSystem(hardwareMap, telemetry, true)
-        telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         wristServo = hardwareMap.get(Servo::class.java, "hSwivelServo")
         wristServo.direction = Servo.Direction.REVERSE
         root.intake.setClaw(IntakeSystem.IntakePosition.HOME).schedule()
@@ -115,21 +109,8 @@ class CameraTest : CommandOpMode() {
         root.intake.setLinkage(IntakeSystem.LinkagePosition.FULL).schedule()
         root.intake.hoverIntake().schedule()
         root.intake.setPivot(IntakeSystem.IntakePosition.HOME).schedule()
-        sampleDetector = SampleDetection(telemetry, false)
-        val webcamName = hardwareMap.get(WebcamName::class.java, "GDVision")
-        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName)
-        camera.openCameraDeviceAsync(object : OpenCvCamera.AsyncCameraOpenListener {
-            override fun onOpened() {
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT)
-                camera.setPipeline(sampleDetector)
-                FtcDashboard.getInstance().startCameraStream(camera, 100.0);
-            }
-
-            override fun onError(p0: Int) {
-                camera.stopStreaming()
-                camera.closeCameraDevice()
-            }
-        })
+        waitForStart()
+        GrabSampleCommand(root).perpetually().schedule();
 //        root.intake.toggleIntake().schedule()
     }
 

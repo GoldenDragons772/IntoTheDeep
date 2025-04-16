@@ -21,17 +21,19 @@ public class Constants {
     // Claw Positions
     public static double CLAW_SERVO_HOME = 0.3;
     public static double CLAW_SERVO_TARGET = 0.04;
+
+    // Camera stuff
     public static double GOOFY_AHH_SERVO_OFFSET = 0.66;
-    // The conversion ratio from length in the camera length in the real world. Probably not the best.
-    public static double GOOFY_AHH_CAMERA_LST = 0.01; // linkage space transformation
-    public static double GOOFY_AHH_ACCEPTABLE_ERROR = 0.0001;
     public static double GOOFY_AHH_CAMERA_HST = 0.5; // horizontal space transformation
-    public static double CAMERA_LERRCOEFF = 0.175; // Scalar for error scanning (less error correction for more retracted slides)
-    public static double CAMERA_BOTTOM_OFFSET = 5.2; // inches.
+    public static double CAMERA_BOTTOM_OFFSET = 4.0; // inches
     public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LEFT_LINKAGE_TARGET;
-    public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH;
+    public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH; // Doesn't work because it's not a linear transformation
     public static double INCHES_PER_CAMERA_Y = 8.0 / SampleDetection.HEIGHT;
-    public static double LINKAGE_SCAN_SPEED = 0.001;
+    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
+    public static double LINKAGE_TARGET_ANGLE = 12.0 * Math.PI/180; // radians
+    public static double VISION_LONG_SEARCH_SPEED = 0.001; // inches per tick
+    public static double VISION_LAT_SEARCH_SPEED = 5; // inches
+    public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
     public static double VISION_SERVO_MULTIPLIER = 0.66;
 
     // Pivot Positions (Joint 2)
