@@ -14,15 +14,15 @@ import com.pedropathing.pathgen.Point;
 public class SpecimenAutoPaths {
 
     private static final Pose startPose =  new Pose(7.4, 66.500, Math.toRadians(180)); //Original 53.5 55.5?
-    private static final Pose preloadPose = new Pose(42.0, 74.000, Math.toRadians(180));
+    private static final Pose preloadPose = new Pose(40.0, 74.000, Math.toRadians(180));
     private static final Pose grab1Pose = new Pose(7.4,25.000, Math.toRadians(180)); //This pose looks really promising.
     private static final Pose grab2Pose = new Pose(13.0,25.000, Math.toRadians(180));
     private static final Pose grab3Pose = new Pose(9.5,25.000, Math.toRadians(180));
     private static final Pose grab4Pose = new Pose(9.5,25.000, Math.toRadians(180));
-    private static final Pose spec1Pose = new Pose(43.000, 74.000, Math.toRadians(180));
-    private static final Pose spec2Pose = new Pose(43.000, 74.000, Math.toRadians(180));
-    private static final Pose spec3Pose = new Pose(43.000, 74.000, Math.toRadians(180));
-    private static final Pose spec4Pose = new Pose(43.000, 74.000, Math.toRadians(180));
+    private static final Pose spec1Pose = new Pose(43.000, 76.000, Math.toRadians(180));
+    private static final Pose spec2Pose = new Pose(43.000, 76.000, Math.toRadians(180));
+    private static final Pose spec3Pose = new Pose(43.000, 76.000, Math.toRadians(180));
+    private static final Pose spec4Pose = new Pose(43.000, 76.000, Math.toRadians(180));
     private static final Pose parkPose = new Pose(8.000,10.000, Math.toRadians(180));
 
     public static PathChain preload() {
@@ -140,7 +140,7 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(grab1Pose.getHeading())
-                .setZeroPowerAccelerationMultiplier(2)
+                .setZeroPowerAccelerationMultiplier(2.5)
                 .setPathEndTimeoutConstraint(75)
                 .build();
     }
@@ -186,7 +186,7 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(grab2Pose.getHeading())
-                .setZeroPowerAccelerationMultiplier(2)
+                .setZeroPowerAccelerationMultiplier(2.5)
                 .setPathEndTimeoutConstraint(75)
                 .build();
     }
@@ -233,7 +233,7 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(grab4Pose.getHeading())
-                .setZeroPowerAccelerationMultiplier(2)
+                .setZeroPowerAccelerationMultiplier(2.5)
                 .setPathEndTimeoutConstraint(75)
                 .build();
     }
@@ -279,7 +279,7 @@ public class SpecimenAutoPaths {
                         )
                 )
                 .setConstantHeadingInterpolation(grab4Pose.getHeading())
-                .setZeroPowerAccelerationMultiplier(2)
+                .setZeroPowerAccelerationMultiplier(2.5)
                 .setPathEndTimeoutConstraint(75)
                 .build();
     }

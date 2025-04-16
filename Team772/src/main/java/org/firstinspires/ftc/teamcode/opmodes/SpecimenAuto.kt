@@ -9,7 +9,9 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
 import com.pedropathing.commands.FollowPath
+import com.pedropathing.commands.HoldPoint
 import com.pedropathing.localization.Pose
+import com.pedropathing.pathgen.Point
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.auto.SpecimenAutoPaths
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
@@ -63,7 +65,7 @@ class SpecimenAuto : CommandOpMode() {
                     ),
                     FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 1.0).andThen(
                         FollowPath(root.follower, SpecimenAutoPaths.grab1(), true, 0.9),
-                        FollowPath(root.follower, SpecimenAutoPaths.lineGrab1(), true, 0.7).interruptOn { root.outtake.getClawButtonState() }
+                        FollowPath(root.follower, SpecimenAutoPaths.lineGrab1(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500)
                     ),
                 ), //WaitUntilCommand { root.outtake.getClawButtonState() },
                 //Spec 2
@@ -82,8 +84,7 @@ class SpecimenAuto : CommandOpMode() {
                         root.intake.moveToHome(),
                     )
                 ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab2(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
-
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab2(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
 //                // spec3
                 root.outtake.toggleClaw(),
                 //WaitCommand(200),
@@ -100,7 +101,7 @@ class SpecimenAuto : CommandOpMode() {
                         root.intake.moveToHome(),
                     )
                 ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab3(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab3(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
 //                // spec4
                 root.outtake.toggleClaw(),
                 //WaitCommand(200),
@@ -118,8 +119,7 @@ class SpecimenAuto : CommandOpMode() {
                         root.intake.moveToHome(),
                     )
                 ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab4(), true, 0.7).interruptOn { root.outtake.getClawButtonState() },
-
+                FollowPath(root.follower, SpecimenAutoPaths.lineGrab4(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
 //                // spec5
                 root.outtake.toggleClaw(),
                 //WaitCommand(200),

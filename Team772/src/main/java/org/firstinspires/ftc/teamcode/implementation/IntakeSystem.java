@@ -30,7 +30,7 @@ public class IntakeSystem extends SubsystemBase {
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.28, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.7, PIVOT_TARGET = 0.28, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.45, WRIST_INC = 0.4;
@@ -100,7 +100,7 @@ public class IntakeSystem extends SubsystemBase {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        if(!isSpecAuto) {
+        if(isSpecAuto) {
             leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
             rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
 
@@ -109,7 +109,7 @@ public class IntakeSystem extends SubsystemBase {
             leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
             rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
 
-            pivotServo.setPosition(PIVOT_HOME);
+            pivotServo.setPosition(PIVOT_HOME + 0.2);
             wristServo.setPosition(WRIST_HOME);
         }
 
