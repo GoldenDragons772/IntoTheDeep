@@ -96,8 +96,7 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
             root.intake.setLinkage(outputValue)
-
-                            .andThen(WaitCommand(1500))
+                            .andThen(WaitCommand(500))
                             .andThen(InstantCommand(root.intake::visionWristRotation)).andThen(WaitCommand(250))
                             .andThen(root.intake.strikeIntake())
                             .andThen(WaitCommand(250))

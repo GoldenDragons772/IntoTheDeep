@@ -7,8 +7,7 @@ import org.firstinspires.ftc.teamcode.vision.SampleDetection;
 public class Constants {
 
 
-    public static double TVS_2 = 0.1;
-    public static double TVS_1 = 0.0;
+    public static int CAMERA_GAIN = 50;
     public static double NOMINAL_BATTERY_VOLTAGE = 13.5;
 
 
@@ -25,13 +24,13 @@ public class Constants {
     // Camera stuff
     public static double GOOFY_AHH_SERVO_OFFSET = 0.66;
     public static double GOOFY_AHH_CAMERA_HST = 0.5; // horizontal space transformation
-    public static double CAMERA_BOTTOM_OFFSET = 4.0; // inches
+    public static double CAMERA_BOTTOM_OFFSET = 4.3; // inches
     public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LEFT_LINKAGE_TARGET;
     public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH; // Doesn't work because it's not a linear transformation
-    public static double INCHES_PER_CAMERA_Y = 8.0 / SampleDetection.HEIGHT;
+    public static double INCHES_PER_CAMERA_Y = 7.0 / 240;
     public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
     public static double LINKAGE_TARGET_ANGLE = 12.0 * Math.PI/180; // radians
-    public static double VISION_LONG_SEARCH_SPEED = 0.001; // inches per tick
+    public static double VISION_LONG_SEARCH_SPEED = 0.006;
     public static double VISION_LAT_SEARCH_SPEED = 5; // inches
     public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
     public static double VISION_SERVO_MULTIPLIER = 0.66;

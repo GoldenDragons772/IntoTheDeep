@@ -5,9 +5,9 @@ package org.firstinspires.ftc.teamcode.vision;
 
 //import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.implementation.Constants;
+//import org.firstinspires.ftc.teamcode.implementation.Constants;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // must be java because easy opencv sim only compiles java
-@Config
+//@Config
 public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
     public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
@@ -29,11 +29,14 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(100, 90, 15);
     public static Scalar BLUE_SAMPLE_HIGH = new Scalar(120, 255, 255);
     public static Scalar RECTANGLE_BOUNDS = new Scalar(80, 80, 460, 320);
+    List<RotatedRect> boxCenters = new ArrayList<>();
+    List<MatOfPoint> filteredContours = new ArrayList<>();
     // 640
 
-    public static double VISION_MIN_AREA = 2500;
+
+    public static double VISION_MIN_AREA = 3300;
     public static boolean useDst = false;
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
 //    public static Scalar tvs = new Scalar(Constants.TVS_1,Constants.TVS_2);
     public Scalar SAMPLE_LOW;
@@ -48,20 +51,8 @@ public class SampleDetection extends OpenCvPipeline {
     public SampleDetection(Telemetry tel, boolean isRed) {
         this.telemetry = tel;
         this.isRed = isRed;
-    }
-
-    Mat garbage = new Mat(), dst = new Mat(), cvt = new Mat(), yellow = new Mat();
-    Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(2 * 3 + 1, 2 * 3 + 1),
-            new Point(3, 3));
-    Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
-    Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
-    public double sampleRotation = 0.0;
-    public static int HEIGHT = 480, WIDTH = 640;
-
-    //    public double rotation;
-    @Override
-    public Mat processFrame(Mat mat) {
-        useDst = DEBUG && useDst;
+        camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
+        distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0.0, 0.1, kvs.val[2]);
         if (isRed) {
             SAMPLE_LOW = RED_SAMPLE_LOW;
             SAMPLE_HIGH = RED_SAMPLE_HIGH;
@@ -69,18 +60,30 @@ public class SampleDetection extends OpenCvPipeline {
             SAMPLE_LOW = BLUE_SAMPLE_LOW;
             SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
+    }
 
-        camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
-        distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], Constants.TVS_1, Constants.TVS_2, kvs.val[2]);
-        Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
-        Calib3d.undistort(mat, garbage, camera_matrix, distortion_coefficients);
-        garbage.copyTo(mat);
+    Mat garbage = new Mat(), dst = new Mat(), cvt = new Mat(), yellow = new Mat();
+    Mat kernel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(2 * 3 + 1, 2 * 3 + 1),
+            new Point(3, 3));
+    Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
+    Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
+    Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
+    public double sampleRotation = 0.0;
+    public static int HEIGHT = 480, WIDTH = 640;
+
+    //    public double rotation;
+    @Override
+    public Mat processFrame(Mat mat) {
+        useDst = DEBUG && useDst;
+
         if (!DEBUG) {
             mat = mat.submat(rectangle);
         }
         else {
             Imgproc.rectangle(mat, rectangle, new Scalar(255,0,0));
         }
+//        Calib3d.undistort(mat, garbage, camera_matrix, distortion_coefficients);
+//        garbage.copyTo(mat);
 //        mat = mat.submat(new Rect());
 
 
@@ -109,7 +112,7 @@ public class SampleDetection extends OpenCvPipeline {
             Imgproc.drawContours(mat, filteredContours, -1, new Scalar(255, 0, 0), 5);
         }
 
-        List<RotatedRect> boxCenters = new ArrayList<>();
+        boxCenters.clear();
 
         for (MatOfPoint i : filteredContours) {
             // Create the rectangles and plot them onto the rects mat.
@@ -185,9 +188,9 @@ public class SampleDetection extends OpenCvPipeline {
 
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(thresholdedMatrix, contours, garbage, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        List<MatOfPoint> filteredContours = new ArrayList<>();
+        filteredContours.clear();
         for (MatOfPoint contour : contours) {
-            if (Imgproc.contourArea(contour) > Constants.VISION_MIN_AREA) {
+            if (Imgproc.contourArea(contour) > VISION_MIN_AREA) {
                 filteredContours.add(contour);
             }
         }

@@ -127,12 +127,14 @@ public class IntakeSystem extends SubsystemBase {
                 camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
                 camera.setPipeline(sampleDetector);
                 FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+//                camera.getGainControl().setGain(Constants.CAMERA_GAIN);
 //                camera.pauseViewport(); // have it paused by default.
             }
 
             @Override
             public void onError(int i) {
             }
+
         });
     }
 
