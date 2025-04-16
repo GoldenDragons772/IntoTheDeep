@@ -22,7 +22,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
     /**
      * Subsystems
      */
-    val root: RootSystem = RootSystem(hw, telemetry, false)
+    val root: RootSystem = RootSystem(hw, telemetry, false, isSpecAuto = false)
 
     /**
      * Controllers
@@ -67,6 +67,16 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         whenReleased: Command = InstantCommand()
     ) {
         getGamepad(map.second).getGamepadButton(map.first)!!.whenPressed(
+            function
+        ).whenReleased(whenReleased)
+    }
+
+    private fun setHeldBinding(
+        map: Pair<GamepadKeys.Button, Int>,
+        function: Command,
+        whenReleased: Command = InstantCommand()
+    ) {
+        getGamepad(map.second).getGamepadButton(map.first)!!.whileHeld(
             function
         ).whenReleased(whenReleased)
     }
@@ -153,8 +163,8 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
-        setPressedBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
-        setPressedBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
+        setHeldBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
+        setHeldBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
         if (mapping.moveIntakeMapping != null) {
             setPressedTriggerBinding(
                 mapping.moveIntakeMapping,

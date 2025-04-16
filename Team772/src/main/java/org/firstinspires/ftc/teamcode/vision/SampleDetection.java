@@ -41,7 +41,7 @@ public class SampleDetection extends OpenCvPipeline {
 //    public static Scalar tvs = new Scalar(Constants.TVS_1,Constants.TVS_2);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
-    public Point centroid;
+    public Point centroid = new Point(0.0, 0.0);
     private final boolean isRed;
 
     public SampleDetection(Telemetry tel) {

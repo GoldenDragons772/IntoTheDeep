@@ -21,7 +21,7 @@ public class ClimbSystem extends SubsystemBase {
         LOW_CHAMBER(100),
         LOW_BASKET(1100),
         HIGH_CHAMBER(420),
-        HIGH_CHAMBER_INVERTED(1300),
+        HIGH_CHAMBER_INVERTED(1350),
         HIGH_BASKET(2200);
 
         public final double position;
@@ -39,7 +39,7 @@ public class ClimbSystem extends SubsystemBase {
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
-    private int initialPosition;
+    //private int initialPosition = 0;
 
     public ClimbSystem(RootSystem root, boolean isAuto) {
         this.root = root;
@@ -49,26 +49,27 @@ public class ClimbSystem extends SubsystemBase {
         this.climbMotor2 = root.getHw().get(DcMotorEx.class, "climbMotorDown");
         this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
-        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(isAuto) {
+            climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         climbMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
         climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        initialPosition = climbMotor2.getCurrentPosition();
+       // initialPosition = climbMotor2.getCurrentPosition();
     }
 
-    public void resetEncoders() {
-        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        climbMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
-        climbMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
-    }
+//    public void resetEncoders() {
+//        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//    }
 
     // Get the current position from the slide
     public double getSlidesPosition() {
-        return Math.max((climbMotor2.getCurrentPosition() * -1) - initialPosition, 0) / 8192.0 * 360;
+        return (Math.max((climbMotor2.getCurrentPosition() * -1), 0) / 8192.0 * 360);
     }
 
     @Override
@@ -89,6 +90,10 @@ public class ClimbSystem extends SubsystemBase {
             climbMotor1.setPower(0);
             climbMotor2.setPower(0);
             climbMotor3.setPower(0);
+
+//            climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         }else if(position == null){
             //Don't pid
         }

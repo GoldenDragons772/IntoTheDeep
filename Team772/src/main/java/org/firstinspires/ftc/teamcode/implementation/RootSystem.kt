@@ -18,7 +18,7 @@ import kotlin.math.sign
 /**
  * Root subsystem -- he's the guy in charge.
  */
-class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean) {
+class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean, val isSpecAuto: Boolean) {
     init {
         CommandScheduler.getInstance().reset()
     }
@@ -28,7 +28,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
 
     val outtake = OuttakeSystem(this, isAuto)
     val climb = ClimbSystem(this, isAuto)
-    val intake = IntakeSystem(this, isAuto)
+    val intake = IntakeSystem(this, isAuto, isSpecAuto)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
     var isAllianceRed = true

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
@@ -8,11 +9,12 @@ import com.pedropathing.pathgen.Point;
 
 public class BucketAutoPaths {
 
-    public static final Pose startPose = new Pose(8, 88, Math.toRadians(270));
+    public static final Pose startPose = new Pose(8, 104, Math.toRadians(270));
     public static final Pose scorePose = new Pose(18, 125, Math.toRadians(315));
     public static final Pose sample1 = new Pose(20, 120, Math.toRadians(0));
-    public static final Pose sample2 = new Pose(20, 130, Math.toRadians(0));
-    public static final Pose sample3 = new Pose(20, 135, Math.toRadians(0));
+    public static final Pose sample2 = new Pose(20, 129, Math.toRadians(0));
+    public static final Pose sample3 = new Pose(21, 129, Math.toRadians(23));
+    public static final Pose subPose = new Pose(67, 95, Math.toRadians(-90));
 
     public static PathChain scorePreload() {
         return new PathBuilder()
@@ -86,4 +88,58 @@ public class BucketAutoPaths {
             .setLinearHeadingInterpolation(scorePose.getHeading(), sample3.getHeading())
             .build();
     }
+
+    public static PathChain score3() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(sample3),
+                                new Point(scorePose)
+                        )
+                )
+                .setLinearHeadingInterpolation(sample3.getHeading(), scorePose.getHeading())
+                .build();
+    }
+
+    public static PathChain goToSub() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(scorePose),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
+                                new Point(scorePose.getX(), scorePose.getY() + 7),
+                                new Point(subPose)
+                        )
+                )
+                .setLinearHeadingInterpolation(scorePose.getHeading(), subPose.getHeading())
+                .build();
+    }
+
+    public static PathChain scoreFromSub() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(subPose),
+                                new Point(scorePose.getX(), scorePose.getY() + 8),
+                                new Point(scorePose.getX(), scorePose.getY() + 8),
+                                new Point(scorePose)
+                        )
+                )
+                .setLinearHeadingInterpolation(subPose.getHeading(), scorePose.getHeading())
+                .build();
+    }
+
+    public static PathChain finishAuto() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(scorePose),
+                                new Point(scorePose.getX() + 10, scorePose.getY() -10)
+                        )
+                )
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .build();
+    }
+
+
 }

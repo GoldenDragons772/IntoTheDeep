@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.opmodes
 import android.util.Log
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+
 import com.arcrobotics.ftclib.command.*
 import com.pedropathing.localization.Pose
 import com.pedropathing.pathgen.BezierLine
 import com.pedropathing.pathgen.PathBuilder
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
@@ -26,13 +28,30 @@ import kotlin.math.sin
 // ~ should always sort last alphabetically
 @TeleOp(name = "~Camera Test")
 class CameraTest : CommandOpMode() {
+
     private lateinit var wristServo: Servo
     private lateinit var root: RootSystem
+
 
     override fun run() {
         super.run()
         root.update()
+
 /*
+=======
+        root.teleOpDrive(1.0, 0.0, 0.0)
+
+
+//        // Wrist Servo
+//        var rotationValue = if (sampleDetector.sampleRotation == -70.0) lastRotation else sampleDetector.sampleRotation
+//        var inputValue = ((rotationValue) / PI + 0.5) % 1
+//        if (inputValue < 0) inputValue += 1
+//        wristServo.position = inputValue * Constants.VISION_SERVO_MULTIPLIER
+
+
+//        telemetry.addData("Theta --", rotationValue)
+//        telemetry.addData("Rotation", inputValue)
+
 
         // Wrist Servo
         if (done) return
@@ -95,13 +114,19 @@ class CameraTest : CommandOpMode() {
             Log.i("CAMERA", "ong dumbahh error")
         }
 
+
         telemetry.update()
 */
+
+//        telemetry.update()
+
 //        lastRotation = rotationValue
     }
 
     override fun initialize() {
+
         root = RootSystem(hardwareMap, telemetry, true)
+
         wristServo = hardwareMap.get(Servo::class.java, "hSwivelServo")
         wristServo.direction = Servo.Direction.REVERSE
         root.intake.setClaw(IntakeSystem.IntakePosition.HOME).schedule()
@@ -115,9 +140,5 @@ class CameraTest : CommandOpMode() {
     }
 
 
-    fun corelation(x: Double): Double { // input pixels to output inches
-//        return 0.842 * exp(x* 0.00594)
-//        return 0.0176 * x - 0.205;
-        return 0.0817 + 0.0112 * x + 1.9 * (10.0).pow(-5) * x * x
-    }
+
 }

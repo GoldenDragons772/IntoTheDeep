@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.implementation.RootSystem
 class lap : CommandOpMode() {
     override fun initialize() {
 
-        val root = RootSystem(hardwareMap, telemetry, true)
+        val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
         root.follower.setStartingPose(Pose(8.0, 56.0, Math.toRadians(0.0)))
 //        follower.setMaxPower(0.8)
 

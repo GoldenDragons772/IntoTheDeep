@@ -9,9 +9,9 @@ class ToggleIntakeCommand(private val intakeSystem: IntakeSystem, private val ou
     init {
         super.addCommands(
             SequentialCommandGroup(
-                intakeSystem.toggleIntake(),
                 outtakeSystem.clawOpen(),
-                outtakeSystem.moveArmToTransferPrep()
+                outtakeSystem.moveArmToTransferPrep(),
+                intakeSystem.toggleIntake()
             )
         )
     }
