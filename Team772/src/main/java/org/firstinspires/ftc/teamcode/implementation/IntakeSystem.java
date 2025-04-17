@@ -22,7 +22,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.9, BOTH_PIVOT_TRANSFER = 0.85;
+    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.91, BOTH_PIVOT_TRANSFER = 0.85;
     // Set Positions for Strike Servos
     public static double LEFT_PIVOT_HOME = 0.35, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
     public static double RIGHT_PIVOT_HOME = 0.35, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;

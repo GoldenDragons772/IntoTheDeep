@@ -24,6 +24,4 @@ public class AlignTranslationalPath extends PathChain {
                 )
                 .build();
     }
-
-
 }
