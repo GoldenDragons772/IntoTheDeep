@@ -5,6 +5,10 @@ import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.Subsystem
 import com.arcrobotics.ftclib.command.WaitCommand
+import com.pedropathing.commands.FollowPath
+import com.pedropathing.commands.HoldPoint
+import com.pedropathing.follower.Follower
+import com.pedropathing.localization.Pose
 import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
@@ -19,6 +23,9 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
 
     override fun initialize() {
         super.initialize()
+
+        Log.i("Grab Command", "Grab Command Init")
+
 //        sampleDetector = SampleDetection(root.telemetry, false)
 //        val webcamName = root.hw.get(WebcamName::class.java, "GDVision")
 //        root.intake.camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName)
@@ -27,7 +34,7 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
     override fun execute() {
         if (done) return
         try {
-            if (root.intake.sampleDetector.centroid != null) {
+            if (root.intake.sampleDetector.centroid.get() != null) {
                 // TODO: Move a little bit farther and then find the centroid
                 if (firstGo) {
 //                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
@@ -36,7 +43,7 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
                     return
                 }
 
-                foundSample = root.intake.sampleDetector.centroid
+                foundSample = root.intake.sampleDetector.centroid.get()
                 val yDiff = ((SampleDetection.HEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
                 val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
                 /*
@@ -93,17 +100,23 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             // Throwing an error if the value is out of the range makes debugging easier than coercing the values
             // into an acceptable range because we see if the values are actually insane.
             assert(outputValue in 0.0..IntakeSystem.LEFT_PIVOT_TARGET) { outputValue }
+
+            val yDiff = ((SampleDetection.HEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
+//            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
+            Log.i("VisionH", root.follower.pose.heading.toString())
+            Log.i("VisionH", yDiff.toString())
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
             root.intake.setLinkage(outputValue)
                             .andThen(WaitCommand(500))
                             .andThen(InstantCommand(root.intake::visionWristRotation)).andThen(WaitCommand(250))
+                            .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
                             .andThen(root.intake.strikeIntake())
                             .andThen(WaitCommand(250))
                             .andThen(root.intake.setClaw(IntakeSystem.IntakePosition.TARGET))
                             .andThen(WaitCommand(250))
-                           .andThen(root.intake.hoverIntake()).schedule()
-
+                            .andThen(root.intake.hoverIntake()).schedule()
+            Log.i("Grab Command", "Command Finished")
             done = true
         }
     }

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.arcrobotics.ftclib.command.*
 import com.pedropathing.commands.FollowPath
+import com.pedropathing.commands.HoldPoint
+import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.frozenmilk.sinister.loading.Preload
 import org.firstinspires.ftc.teamcode.auto.BucketAutoPaths
@@ -9,6 +11,7 @@ import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
+import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 
@@ -84,6 +87,7 @@ class BucketAuto(): CommandOpMode() {
 
                 //Move the robot to score.
                 FollowPath(root.follower, BucketAutoPaths.score1(), true, 0.9),
+
                 WaitCommand(200),
 
                 //Let go of the sample
@@ -176,6 +180,7 @@ class BucketAuto(): CommandOpMode() {
                 //Move the intake into scanning position
                 root.intake.moveToTarget(),
                 root.intake.hoverIntake(),
+                GrabSampleCommand(root),
                 WaitCommand(500),
 
                 //Strike the intake and close the claw.

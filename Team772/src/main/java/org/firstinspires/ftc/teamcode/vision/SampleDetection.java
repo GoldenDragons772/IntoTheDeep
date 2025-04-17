@@ -16,6 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 // must be java because easy opencv sim only compiles java
@@ -41,7 +42,7 @@ public class SampleDetection extends OpenCvPipeline {
 //    public static Scalar tvs = new Scalar(Constants.TVS_1,Constants.TVS_2);
     public Scalar SAMPLE_LOW;
     public Scalar SAMPLE_HIGH;
-    public Point centroid = new Point(0.0, 0.0);
+    public AtomicReference<Point> centroid = new AtomicReference<>();
     private final boolean isRed;
 
     public SampleDetection(Telemetry tel) {
@@ -60,6 +61,8 @@ public class SampleDetection extends OpenCvPipeline {
             SAMPLE_LOW = BLUE_SAMPLE_LOW;
             SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
+        centroid.set(null);
+        sampleRotation.set(0.0);
     }
 
     Mat garbage = new Mat(), dst = new Mat(), cvt = new Mat(), yellow = new Mat();
@@ -68,7 +71,7 @@ public class SampleDetection extends OpenCvPipeline {
     Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
     Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
     Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
-    public double sampleRotation = 0.0;
+    public AtomicReference<Double> sampleRotation = new AtomicReference<>();
     public static int HEIGHT = 480, WIDTH = 640;
 
     //    public double rotation;
@@ -132,8 +135,8 @@ public class SampleDetection extends OpenCvPipeline {
         }
         // Do nothing if there's nothing on the screen
         if (boxCenters.isEmpty()) {
-            sampleRotation = -70.0; // Generic value we can check for
-            centroid = null;
+            sampleRotation.set(-70.0); // Generic value we can check for
+            centroid.set(null);
 //            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGR);
             return mat;
             // The usage of two returns is not DeGennaro approved.
@@ -170,8 +173,8 @@ public class SampleDetection extends OpenCvPipeline {
             Imgproc.putText(mat, ((double) Math.round(theta * 1000)) / 1000 + "rad", closest.center, 1, 1, new Scalar(0, 0, 255));
         }
         Imgproc.line(mat, new Point(closest.center.x - 250 * Math.cos(theta), closest.center.y - 250 * Math.sin(theta)), new Point(closest.center.x + 250 * Math.cos(theta), closest.center.y + 250 * Math.sin(theta)), new Scalar(255, 0, 255), 3);
-        sampleRotation = theta;
-        centroid = closest.center;
+        sampleRotation.set(theta);
+        centroid.set(closest.center);
 
         return mat;
 

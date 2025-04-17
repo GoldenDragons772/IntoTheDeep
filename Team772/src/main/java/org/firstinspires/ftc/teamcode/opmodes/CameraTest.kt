@@ -11,6 +11,7 @@ import com.pedropathing.pathgen.PathBuilder
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
@@ -125,7 +126,7 @@ class CameraTest : CommandOpMode() {
 
     override fun initialize() {
 
-        root = RootSystem(hardwareMap, telemetry, true)
+        root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
 
         wristServo = hardwareMap.get(Servo::class.java, "hSwivelServo")
         wristServo.direction = Servo.Direction.REVERSE

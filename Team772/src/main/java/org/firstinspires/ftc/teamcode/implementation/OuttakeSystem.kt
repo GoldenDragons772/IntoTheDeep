@@ -174,9 +174,8 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      */
     fun moveArmToHome(): Command =
         setStrike(OuttakePosition.HOME)
-            .andThen(wristHome())
-            .andThen(WaitCommand(800))
             .andThen(setPivot(OuttakePosition.HOME))
+            .andThen(wristHome())
             .andThen(InstantCommand({homeState = true}))
             //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
 

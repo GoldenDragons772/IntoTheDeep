@@ -11,7 +11,7 @@ class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val ou
         addCommands(
             climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER),
             outtakeSystem.moveArmToScoreSpec(),
-            intakeSystem.moveToHome()
+            //intakeSystem.moveToHome()
         )
 
         addRequirements(climbSystem, outtakeSystem, intakeSystem)

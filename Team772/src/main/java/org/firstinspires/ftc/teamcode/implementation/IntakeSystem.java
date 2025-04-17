@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.58, BOTH_PIVOT_TRANSFER = 0.5;
@@ -78,6 +78,7 @@ public class IntakeSystem extends SubsystemBase {
     RootSystem root;
     public OpenCvWebcam camera;
     public ValueCache valueCache;
+    private double lastRotation = 0;
 
 
     public IntakeSystem(RootSystem root, boolean isAuto, boolean isSpecAuto) {
@@ -151,16 +152,17 @@ public class IntakeSystem extends SubsystemBase {
             root.getTelemetry().addData("extendState", extendState.toString());
             root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
             root.getTelemetry().addData("linkageState", linkageState.toString());
-            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
+            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation.get() != -70.0 && !clawState) {
                 visionWristRotation();
             }
         }
     }
     public void visionWristRotation(){
-        double rotationValue = sampleDetector.sampleRotation;
+        double rotationValue = sampleDetector.sampleRotation.get();
         var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
         if (inputValue < 0) inputValue += 1;
         wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+        wristPos = inputValue;
         root.getTelemetry().addData("Theta --", rotationValue);
         root.getTelemetry().addData("Rotation", inputValue);
     }
@@ -210,7 +212,7 @@ public class IntakeSystem extends SubsystemBase {
         return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE));
     }
 
-    public double getCentroidX() {return sampleDetector.centroid.x;}
+    public double getCentroidX() {return sampleDetector.centroid.get().x;}
 
     public Command setLinkage(LinkagePosition pos) {
 
@@ -445,7 +447,7 @@ public class IntakeSystem extends SubsystemBase {
     public Command hoverIntake() {
         return new SequentialCommandGroup(
 
-                        setStrike(IntakePosition.HOVER),
+                        setStrike(IntakePosition.TRANSFER),
                         new WaitCommand(150),
                         setPivot(IntakePosition.HOME),
                         new InstantCommand(() -> {

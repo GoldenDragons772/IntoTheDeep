@@ -43,8 +43,8 @@ public class AlignWithSample extends CommandBase {
     @Override
     public void execute() {
 
-        if(intake.sampleDetector.centroid != null) {
-            double error = (intake.sampleDetector.centroid.x - (640 / 2));
+        if(intake.sampleDetector.centroid.get() != null) {
+            double error = (intake.sampleDetector.centroid.get().x - (640 / 2));
             double derivative = (error - lastError) / timer.seconds();
 
             double PID_output = (pidfCoefficients.p * error) + (pidfCoefficients.d  * derivative);
