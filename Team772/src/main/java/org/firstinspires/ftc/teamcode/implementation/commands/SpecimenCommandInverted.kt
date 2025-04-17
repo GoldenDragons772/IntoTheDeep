@@ -23,6 +23,7 @@ class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private va
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER_INVERTED),
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME)
                 ) { outtakeSystem.getSpecState() },
+                WaitCommand(500),
                 outtakeSystem.toggleArmSpecInv()
             )
         )

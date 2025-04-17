@@ -129,7 +129,16 @@ class SpecimenAuto : CommandOpMode() {
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0)
+//                FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0),
+
+                ParallelCommandGroup(
+                    FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0),
+                    WaitCommand(600).andThen(
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
+                        root.outtake.moveArmToHome(),
+                        root.intake.moveToHome(),
+                    )
+                ),
             )
         )
     }
