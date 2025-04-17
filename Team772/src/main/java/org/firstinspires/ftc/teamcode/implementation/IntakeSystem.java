@@ -105,10 +105,15 @@ public class IntakeSystem extends SubsystemBase {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        if (!isAuto || isSpecAuto) {
-//            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+        rightLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+
+        pivotServo.setPosition(PIVOT_HOME);
+
+        if (!isAuto || !isSpecAuto) {
+
             setLinkage(LEFT_LINKAGE_HOME);
-//            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+
 
             clawServo.setPosition(CLAW_HOME);
 
