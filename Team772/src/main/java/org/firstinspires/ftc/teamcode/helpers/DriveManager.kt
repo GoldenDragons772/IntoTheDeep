@@ -18,11 +18,11 @@ import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeComman
 /**
  * Manages driving and button mappings for TeleOps.
  */
-class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gamepad, mapping: Mapping) {
+class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gamepad, mapping: Mapping, isAllianceRed: Boolean) {
     /**
      * Subsystems
      */
-    val root: RootSystem = RootSystem(hw, telemetry, false, isSpecAuto = false)
+    val root: RootSystem = RootSystem(hw, telemetry, false, isSpecAuto = false, isAllianceRed)
 
     /**
      * Controllers

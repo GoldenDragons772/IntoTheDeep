@@ -31,8 +31,7 @@ class Solo: CommandOpMode() {
             climbDownMapping = Pair(GamepadKeys.Button.B, 2),
             moveIntakeMapping = null
         )
-        driveManager = DriveManager(hardwareMap,telemetry, gamepad1, gamepad2, mapping)
-        driveManager.root.isAllianceRed = AllianceSelector.selectAlliance(gamepad1, driveManager.root.telemetry)
+        driveManager = DriveManager(hardwareMap,telemetry, gamepad1, gamepad2, mapping,AllianceSelector.selectAlliance(gamepad1, telemetry))
     }
 
 

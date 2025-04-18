@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.vision;
 
 //import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-//import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 //import org.firstinspires.ftc.teamcode.implementation.Constants;
 import org.opencv.calib3d.Calib3d;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 // must be java because easy opencv sim only compiles java
-//@Config
+@Config
 public class SampleDetection extends OpenCvPipeline {
     private Telemetry telemetry;
     public static Scalar RED_SAMPLE_LOW = new Scalar(170, 90, 90);
@@ -33,7 +33,7 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar RECTANGLE_BOUNDS = new Scalar(80, 80, 460, 320);
     List<RotatedRect> boxCenters = new ArrayList<>();
     List<MatOfPoint> filteredContours = new ArrayList<>();
-    public AtomicBoolean isEnabled = new AtomicBoolean(false);
+    public AtomicBoolean isEnabled = new AtomicBoolean(true);
     // 640
 
 
@@ -42,13 +42,13 @@ public class SampleDetection extends OpenCvPipeline {
     public static boolean DEBUG = false;
     public static Scalar kvs = new Scalar(-1.382, 2.25, -1.5);
 //    public static Scalar tvs = new Scalar(Constants.TVS_1,Constants.TVS_2);
-    public Scalar SAMPLE_LOW;
-    public Scalar SAMPLE_HIGH;
+    private final Scalar SAMPLE_LOW;
+    private final Scalar SAMPLE_HIGH;
     public AtomicReference<Point> centroid = new AtomicReference<>();
     private final boolean isRed;
 
     public SampleDetection(Telemetry tel) {
-        this(tel, false);
+        this(tel, true);
     }
 
     public SampleDetection(Telemetry tel, boolean isRed) {
@@ -56,15 +56,15 @@ public class SampleDetection extends OpenCvPipeline {
         this.isRed = isRed;
         camera_matrix.put(0, 0, WIDTH, 0, WIDTH / 2.0, 0, HEIGHT, HEIGHT / 2.0, 0, 0, 1);
         distortion_coefficients.put(0, 0, kvs.val[0], kvs.val[1], 0.0, 0.1, kvs.val[2]);
-        if (isRed) {
+        centroid.set(null);
+        sampleRotation.set(0.0);
+        if (this.isRed) {
             SAMPLE_LOW = RED_SAMPLE_LOW;
             SAMPLE_HIGH = RED_SAMPLE_HIGH;
         } else {
             SAMPLE_LOW = BLUE_SAMPLE_LOW;
             SAMPLE_HIGH = BLUE_SAMPLE_HIGH;
         }
-        centroid.set(null);
-        sampleRotation.set(0.0);
     }
 
     Mat garbage = new Mat(), dst = new Mat(), cvt = new Mat(), yellow = new Mat();
@@ -80,7 +80,9 @@ public class SampleDetection extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat mat) {
         if (!isEnabled.get()) return mat;
-        useDst = DEBUG && useDst;
+//        useDst = DEBUG && useDst;
+//        Scalar SAMPLE_LOW, SAMPLE_HIGH;
+//        telemetry.update();
 
         if (!DEBUG) {
             mat = mat.submat(rectangle);
@@ -99,8 +101,10 @@ public class SampleDetection extends OpenCvPipeline {
 //        mat.copyTo(yellow);
         Core.inRange(cvt, YELLOW_SAMPLE_LOW, YELLOW_SAMPLE_HIGH, yellow);
 
-        List<MatOfPoint> filteredContours = findSamples(dst);
+        List<MatOfPoint> filteredContours = new ArrayList<>();
         filteredContours.addAll(findSamples(yellow));
+        filteredContours.addAll(findSamples(dst));
+
 
         if (useDst) {
             Imgproc.cvtColor(dst, dst, Imgproc.COLOR_GRAY2RGB);
@@ -190,7 +194,7 @@ public class SampleDetection extends OpenCvPipeline {
 
     List<MatOfPoint> findSamples(Mat thresholdedMatrix) {
         Imgproc.medianBlur(thresholdedMatrix, thresholdedMatrix, 3);
-        Imgproc.erode(thresholdedMatrix, thresholdedMatrix, kernel, new Point(-1, -1), 7);
+        Imgproc.erode(thresholdedMatrix, thresholdedMatrix, kernel, new Point(-1, -1), 5);
 
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(thresholdedMatrix, contours, garbage, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);

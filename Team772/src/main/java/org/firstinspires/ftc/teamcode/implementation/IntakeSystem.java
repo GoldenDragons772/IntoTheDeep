@@ -130,6 +130,7 @@ public class IntakeSystem extends SubsystemBase {
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
 
         sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+        Log.i("Camera", "Started with color" + root.isAllianceRed());
 
         Log.i("Camera", "Before camera initialization");
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

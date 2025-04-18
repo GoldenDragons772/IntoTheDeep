@@ -12,7 +12,7 @@ public class ButtonTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        RootSystem root = new RootSystem(hardwareMap, telemetry, false, false);
+        RootSystem root = new RootSystem(hardwareMap, telemetry, false, false, false);
 
         // get a reference to our touchSensor object.
         digitalTouch = hardwareMap.get(DigitalChannel.class, "outLimitSwitch"); // we called it "back" since it was called that in config.

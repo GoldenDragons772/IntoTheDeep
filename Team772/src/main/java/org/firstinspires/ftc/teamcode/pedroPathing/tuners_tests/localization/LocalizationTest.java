@@ -95,7 +95,7 @@ public class LocalizationTest extends OpMode {
                 + "allowing robot control through a basic mecanum drive on gamepad 1.");
         telemetryA.update();
 
-        root = new RootSystem(hardwareMap, telemetry, true, false);
+        root = new RootSystem(hardwareMap, telemetry, true, false, false);
 
         wristServo = hardwareMap.get(Servo.class, "hSwivelServo");
         wristServo.setDirection(Servo.Direction.REVERSE);
