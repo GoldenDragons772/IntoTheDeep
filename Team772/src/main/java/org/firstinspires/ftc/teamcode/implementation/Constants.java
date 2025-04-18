@@ -27,7 +27,7 @@ public class Constants {
     public static double CAMERA_BOTTOM_OFFSET = 4.3; // inches
     public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LEFT_LINKAGE_TARGET;
     public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH; // Doesn't work because it's not a linear transformation
-    public static double INCHES_PER_CAMERA_Y = 14.0 / 240;
+    public static double INCHES_PER_CAMERA_Y = 7.0 / 320;
     public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
     public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
     public static double VISION_LONG_SEARCH_SPEED = 0.006;
@@ -54,8 +54,8 @@ public class Constants {
     public static double OUT_STRIKE_L_SCORE = 0.2;
     public static double OUT_STRIKE_L_TRANSFER_PREP = 0.42;
     public static double OUT_STRIKE_R_TRANSFER_PREP = 0.42;
-    public static double OUT_STRIKE_R_TRANSFER = 0.54;
-    public static double OUT_STRIKE_L_TRANSFER = 0.54;
+    public static double OUT_STRIKE_R_TRANSFER = 0.55;
+    public static double OUT_STRIKE_L_TRANSFER = 0.55;
     public static double OUT_STRIKE_R_SPEC = 0.06;
     public static double OUT_STRIKE_L_SPEC = 0.06;
     public static double OUT_STRIKE_R_SPEC_INV = 0.0;

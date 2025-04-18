@@ -20,7 +20,7 @@ public class AlignTranslationalPath extends PathChain {
                 .addPath(
                         new BezierLine(
                                 new Point(follower.getPose()),
-                                new Point(diff,follower.getPose().getX())
+                                new Point(follower.getPose().getX(), diff)
                         )
                 )
                 .setConstantHeadingInterpolation(follower.getPose().getHeading())
