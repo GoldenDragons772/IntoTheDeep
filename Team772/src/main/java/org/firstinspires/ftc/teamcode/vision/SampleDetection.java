@@ -30,7 +30,6 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar YELLOW_SAMPLE_HIGH = new Scalar(30, 255, 255);
     public static Scalar BLUE_SAMPLE_LOW = new Scalar(100, 90, 15);
     public static Scalar BLUE_SAMPLE_HIGH = new Scalar(120, 255, 255);
-    public static Scalar RECTANGLE_BOUNDS = new Scalar(80, 80, 460, 320);
     List<RotatedRect> boxCenters = new ArrayList<>();
     List<MatOfPoint> filteredContours = new ArrayList<>();
     public AtomicBoolean isEnabled = new AtomicBoolean(true);
@@ -72,9 +71,12 @@ public class SampleDetection extends OpenCvPipeline {
             new Point(3, 3));
     Mat camera_matrix = new Mat(3, 3, CvType.CV_64FC1);
     Mat distortion_coefficients = new Mat(1, 5, CvType.CV_64FC1);
-    Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
     public AtomicReference<Double> sampleRotation = new AtomicReference<>();
+    public static int BORDER = 80;
     public static int HEIGHT = 480, WIDTH = 640;
+    public static int SUBHEIGHT = HEIGHT -2*BORDER, SUBWIDTH = WIDTH - 2*BORDER;
+    public static Scalar RECTANGLE_BOUNDS = new Scalar(BORDER, BORDER, SUBWIDTH, SUBHEIGHT);
+    Rect rectangle = new Rect(RECTANGLE_BOUNDS.val);
 
     //    public double rotation;
     @Override
