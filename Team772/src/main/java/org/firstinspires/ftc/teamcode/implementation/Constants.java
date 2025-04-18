@@ -32,6 +32,7 @@ public class Constants {
     public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
     public static double VISION_LONG_SEARCH_SPEED = 0.006;
     public static double VISION_LAT_SEARCH_SPEED = 5; // inches
+    public static double VISION_MAX_HEIGHT = 50; // inches -- maximum height from the bottom of the screen to find samples in. (arbitrarily large for now)
     public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
     public static double VISION_SERVO_MULTIPLIER = 0.66;
 

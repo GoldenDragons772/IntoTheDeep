@@ -12,10 +12,12 @@ import static com.pedropathing.follower.FollowerConstants.rightRearMotorDirectio
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -26,6 +28,8 @@ import com.pedropathing.util.Drawing;
 import java.util.Arrays;
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.implementation.IntakeSystem;
+import org.firstinspires.ftc.teamcode.implementation.RootSystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 
@@ -51,6 +55,9 @@ public class LocalizationTest extends OpMode {
     private DcMotorEx rightRear;
     private List<DcMotorEx> motors;
 
+    RootSystem root;
+    Servo wristServo;
+
     /**
      * This initializes the PoseUpdater, the mecanum drive motors, and the FTC Dashboard telemetry.
      */
@@ -58,12 +65,14 @@ public class LocalizationTest extends OpMode {
     public void init() {
         poseUpdater = new PoseUpdater(hardwareMap, FConstants.class, LConstants.class);
 
+
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 
         leftFront = hardwareMap.get(DcMotorEx.class, leftFrontMotorName);
         leftRear = hardwareMap.get(DcMotorEx.class, leftRearMotorName);
         rightRear = hardwareMap.get(DcMotorEx.class, rightRearMotorName);
         rightFront = hardwareMap.get(DcMotorEx.class, rightFrontMotorName);
+
         leftFront.setDirection(leftFrontMotorDirection);
         leftRear.setDirection(leftRearMotorDirection);
         rightFront.setDirection(rightFrontMotorDirection);
@@ -86,6 +95,19 @@ public class LocalizationTest extends OpMode {
                 + "allowing robot control through a basic mecanum drive on gamepad 1.");
         telemetryA.update();
 
+        root = new RootSystem(hardwareMap, telemetry, true, false);
+
+        wristServo = hardwareMap.get(Servo.class, "hSwivelServo");
+        wristServo.setDirection(Servo.Direction.REVERSE);
+        root.getIntake().setClaw(IntakeSystem.IntakePosition.HOME).schedule();
+
+        root.getIntake().setLinkage(IntakeSystem.LinkagePosition.FULL).schedule();
+        root.getIntake().hoverIntake().schedule();
+        root.getIntake().setPivot(IntakeSystem.IntakePosition.HOME).schedule();
+        root.getIntake().strikeIntake().schedule();
+
+        poseUpdater.setPose(new Pose(8, 104, Math.toRadians(270)));
+
         Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
         Drawing.sendPacket();
     }
@@ -97,6 +119,7 @@ public class LocalizationTest extends OpMode {
     @Override
     public void loop() {
         poseUpdater.update();
+
         dashboardPoseTracker.update();
 
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!

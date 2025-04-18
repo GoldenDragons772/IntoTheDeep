@@ -16,6 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class SampleDetection extends OpenCvPipeline {
     public static Scalar RECTANGLE_BOUNDS = new Scalar(80, 80, 460, 320);
     List<RotatedRect> boxCenters = new ArrayList<>();
     List<MatOfPoint> filteredContours = new ArrayList<>();
+    public AtomicBoolean isEnabled = new AtomicBoolean(false);
     // 640
 
 
@@ -77,6 +79,7 @@ public class SampleDetection extends OpenCvPipeline {
     //    public double rotation;
     @Override
     public Mat processFrame(Mat mat) {
+        if (!isEnabled.get()) return mat;
         useDst = DEBUG && useDst;
 
         if (!DEBUG) {

@@ -22,7 +22,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.91, BOTH_PIVOT_TRANSFER = 0.85;
+    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.91, BOTH_PIVOT_TRANSFER = 0.84;
     // Set Positions for Strike Servos
     public static double LEFT_PIVOT_HOME = 0.35, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
     public static double RIGHT_PIVOT_HOME = 0.35, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
@@ -32,7 +32,7 @@ public class IntakeSystem extends SubsystemBase {
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.28, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.45, WRIST_INC = 0.4;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.5, WRIST_INC = 0.4;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.75, CLAW_STROKE = 0.5;
@@ -389,7 +389,8 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
-                    camera.stopStreaming();
+//                    camera.stopStreaming();
+                    sampleDetector.isEnabled.set(false);
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
@@ -417,8 +418,9 @@ public class IntakeSystem extends SubsystemBase {
                 ),
 
                 new InstantCommand(() -> {
-                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
-                    camera.setPipeline(sampleDetector);
+//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+//                    camera.setPipeline(sampleDetector);
+                    sampleDetector.isEnabled.set(true);
 //                    camera.resumeViewport();
                 })
 //                setLinkage(IntakePosition.TARGET),
