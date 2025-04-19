@@ -88,7 +88,7 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             // into an acceptable range because we see if the values are actually insane.
             assert(outputValue in 0.0..IntakeSystem.LEFT_PIVOT_TARGET) { outputValue }
 
-            val yDiff = ((320 / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
+            val yDiff = ((SampleDetection.SUBHEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
 //            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
             Log.i("VisionH", root.follower.pose.heading.toString())
             Log.i("VisionH", "$yDiff yDiff")
