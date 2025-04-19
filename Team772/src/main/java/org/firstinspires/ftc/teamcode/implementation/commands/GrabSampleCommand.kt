@@ -49,8 +49,9 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
                 root.telemetry.addData("linkageValue", linkageValue)
                 if (linkageValue < 0) { // TODO: get a better lower bound than 0
                     // Move to the left and start searching again if nothing is found.
-                    FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED)).andThen(
-                    root.intake.setLinkage(IntakeSystem.LinkagePosition.FULL)).schedule()
+                    root.intake.setLinkage(IntakeSystem.LinkagePosition.FULL).schedule()
+                    FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED)).schedule()
+
                 } else {
                     root.intake.setLinkage(linkageValue).schedule()
                 }
@@ -67,8 +68,12 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             // All operations have to be operated on a single frame because we can't be sure that a sample is the same sample between frames.
             val xPosInches = corelation(SampleDetection.WIDTH - foundSample!!.x)
             val xDiff = Constants.CAMERA_BOTTOM_OFFSET - xPosInches // inches
-            if (xDiff > Constants.VISION_MAX_HEIGHT) { // Discard if it's too high up the screen and keep looking for values further down
-                foundSample = null;
+            if (xDiff > Constants.VISION_MAX_HEIGHT || xDiff < 0) { // Discard if it's too high up the screen and keep looking for values further down
+                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
+                foundSample = null
+                if (linkageValue > 0) {
+                    root.intake.setLinkage(linkageValue).schedule()
+                }
                 return
             }
             // Convert the difference (inches) to an output (servo space) to be used with the horizontal slides.
@@ -86,14 +91,14 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             val yDiff = ((320 / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
 //            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
             Log.i("VisionH", root.follower.pose.heading.toString())
-            Log.i("VisionH", yDiff.toString())
+            Log.i("VisionH", "$yDiff yDiff")
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
             root.intake.setLinkage(outputValue)
                             .andThen(WaitCommand(500))
                             .andThen(InstantCommand(root.intake::visionWristRotation)).andThen(WaitCommand(250))
 //                           ` .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
-                            .andThen(FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff), 1.0))
+                            .andThen(FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff), 0.8))
                             .andThen(root.intake.strikeIntake())
                             .andThen(WaitCommand(250))
                             .andThen(root.intake.setClaw(IntakeSystem.IntakePosition.TARGET))

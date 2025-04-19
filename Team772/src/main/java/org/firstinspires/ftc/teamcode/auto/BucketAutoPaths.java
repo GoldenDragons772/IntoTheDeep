@@ -13,8 +13,8 @@ public class BucketAutoPaths {
     public static final Pose scorePose = new Pose(18, 125, Math.toRadians(315));
     public static final Pose sample1 = new Pose(20, 120.5, Math.toRadians(0));
     public static final Pose sample2 = new Pose(20, 129, Math.toRadians(0));
-    public static final Pose sample3 = new Pose(24.4, 122.8, Math.toRadians(39));
-    public static final Pose subPose = new Pose(67, 95, Math.toRadians(-90));
+    public static final Pose sample3 = new Pose(47, 111, Math.toRadians(80));
+    public static final Pose subPose = new Pose(65, 102, Math.toRadians(-90));
 
     public static PathChain scorePreload() {
         return new PathBuilder()
@@ -89,6 +89,18 @@ public class BucketAutoPaths {
             .build();
     }
 
+    public static PathChain sample3Align() {
+        return new PathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(sample3),
+                                new Point(sample3.getX(), sample3.getY() + 2)
+                        )
+                )
+                .setConstantHeadingInterpolation(sample3.getHeading() + Math.toRadians(10))
+                .build();
+    }
+
     public static PathChain score3() {
         return new PathBuilder()
                 .addPath(
@@ -100,6 +112,7 @@ public class BucketAutoPaths {
                 .setLinearHeadingInterpolation(sample3.getHeading(), scorePose.getHeading())
                 .build();
     }
+
 
     public static PathChain goToSub() {
         return new PathBuilder()

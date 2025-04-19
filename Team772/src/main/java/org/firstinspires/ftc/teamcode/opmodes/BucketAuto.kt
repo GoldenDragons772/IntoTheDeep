@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
+import kotlin.math.floor
 
 @Autonomous(name = "Bucket Auto")
 class BucketAuto(): CommandOpMode() {
@@ -23,6 +24,7 @@ class BucketAuto(): CommandOpMode() {
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
 
         val transferSampleCommand = TransferSampleCommand(root.intake, root.outtake, root.climb);
+
 
         root.follower.setStartingPose(BucketAutoPaths.startPose)
 
@@ -147,11 +149,12 @@ class BucketAuto(): CommandOpMode() {
                 root.intake.setLinkage(IntakeSystem.LEFT_LINKAGE_TARGET - 0.02)
                     .andThen(root.intake.hoverIntake()),
 //                root.intake.hoverIntake(),
-                root.intake.setWrist(IntakeSystem.WristPosition.ANGLE_BUCKET),
-                WaitCommand(200),
+                root.intake.setWrist(IntakeSystem.WristPosition.TARGET),
+                WaitCommand(1200),
 
                 //Strike the intake down and close the claw
                 root.intake.strikeIntake(),
+                FollowPath(root.follower, BucketAutoPaths.sample3Align(), 0.7),
                 WaitCommand(300),
                 root.intake.toggleClaw(),
                 WaitCommand(500),
@@ -175,7 +178,8 @@ class BucketAuto(): CommandOpMode() {
                 //Move to the sub while getting the outtake ready for transfer.
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.goToSub(), true, 0.9),
-                    root.outtake.moveArmToTransferPrep(),
+                    root.intake.moveToHome(),
+                    WaitCommand(2000).andThen(root.outtake.toggleArmSpec()),
                     WaitCommand(1500).andThen(
                         root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
                     ),

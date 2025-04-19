@@ -25,6 +25,7 @@ public class AlignTranslationalPath extends PathChain {
                 )
                 .setConstantHeadingInterpolation(follower.getPose().getHeading())
                 .setZeroPowerAccelerationMultiplier(2.8)
+//                .setPathEndTimeoutConstraint()
                 .build();
     }
 
