@@ -6,11 +6,11 @@ import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.Subsystem
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.pedropathing.commands.FollowPath
-import com.pedropathing.localization.Pose
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
 import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
+import org.firstinspires.ftc.teamcode.opmodes.PathDelegateCommand
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import kotlin.math.pow
@@ -32,33 +32,6 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
 
     override fun execute() {
         if (done) return
-        try {
-            if (root.intake.sampleDetector.centroid.get() != null) {
-                // TODO: Move a little bit farther and then find the centroid
-                if (firstGo) {
-//                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
-//                        .schedule()
-                    firstGo = false
-                    return
-                }
-
-                foundSample = root.intake.sampleDetector.centroid.get()
-
-            } else {
-                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
-                root.telemetry.addData("linkageValue", linkageValue)
-                if (linkageValue < 0) { // TODO: get a better lower bound than 0
-                    // Move to the left and start searching again if nothing is found.
-                    root.intake.setLinkage(IntakeSystem.LinkagePosition.FULL).schedule()
-                    FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED)).schedule()
-
-                } else {
-                    root.intake.setLinkage(linkageValue).schedule()
-                }
-            }
-        } catch (e: NullPointerException) {
-            Log.i("CAMERA", "ong dumbahh error") // I don't know why this line is necessary
-        }
         Log.i("Vision", root.intake.horizontalSlideExtension.toString())
         if (foundSample != null) {
             Log.i("Vision", "found sample")
@@ -94,18 +67,47 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
             Log.i("VisionH", "$yDiff yDiff")
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
+
             root.intake.setLinkage(outputValue)
                             .andThen(WaitCommand(500))
                             .andThen(InstantCommand(root.intake::visionWristRotation)).andThen(WaitCommand(250))
 //                           ` .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
-                            .andThen(FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff), 0.8))
+                            .andThen(PathDelegateCommand({ FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower.pose, root.follower.pose.x - yDiff), 0.8) }))
                             .andThen(root.intake.strikeIntake())
                             .andThen(WaitCommand(250))
                             .andThen(root.intake.setClaw(IntakeSystem.IntakePosition.TARGET))
                             .andThen(WaitCommand(250))
                             .andThen(root.intake.hoverIntake()).schedule()
-            Log.i("Grab Command", "Command Finished")
+
+            Log.i("Sample Auto", "Command Finished")
             done = true
+        }
+        try {
+            if (root.intake.sampleDetector.centroid.get() != null) {
+                // TODO: Move a little bit farther and then find the centroid
+                if (firstGo) {
+//                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
+//                        .schedule()
+                    firstGo = false
+                    return
+                }
+
+                foundSample = root.intake.sampleDetector.centroid.get()
+
+            } else {
+                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
+                root.telemetry.addData("linkageValue", linkageValue)
+                if (linkageValue < 0) { // TODO: get a better lower bound than 0
+                    // Move to the left and start searching again if nothing is found.
+                    root.intake.setLinkage(IntakeSystem.LinkagePosition.FULL).schedule()
+                    FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower.pose, root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED)).schedule()
+                    Log.i("Sample Auto", "Move to Translational.")
+                } else {
+                    root.intake.setLinkage(linkageValue).schedule()
+                }
+            }
+        } catch (e: NullPointerException) {
+            Log.i("CAMERA", "ong dumbahh error") // I don't know why this line is necessary
         }
     }
 

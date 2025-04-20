@@ -136,7 +136,7 @@ class CameraTest : CommandOpMode() {
         root.intake.hoverIntake().schedule()
         root.intake.setPivot(IntakeSystem.IntakePosition.HOME).schedule()
         waitForStart()
-        GrabSampleCommand(root).perpetually().schedule();
+        GrabSampleCommand(root).schedule();
 //        root.intake.toggleIntake().schedule()
     }
 

@@ -150,7 +150,7 @@ class BucketAuto(): CommandOpMode() {
                     .andThen(root.intake.hoverIntake()),
 //                root.intake.hoverIntake(),
                 root.intake.setWrist(IntakeSystem.WristPosition.TARGET),
-                WaitCommand(1200),
+                WaitCommand(600),
 
                 //Strike the intake down and close the claw
                 root.intake.strikeIntake(),

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
@@ -14,20 +15,17 @@ public class AlignTranslationalPath extends PathChain {
 //        this.targetPosition = targetPosition;
 //    }
 
-    public static PathChain alignLatitudinal(Follower follower, double diff) {
+    public static PathChain alignLatitudinal(Pose currentPose, double diff) {
 
         return new PathBuilder()
-                .addPath(
-                        new BezierLine(
-                                new Point(follower.getPose()),
-                                new Point(follower.getPose().getX(), diff)
-                        )
-                )
-                .setConstantHeadingInterpolation(follower.getPose().getHeading())
-                .setZeroPowerAccelerationMultiplier(2.8)
-//                .setPathEndTimeoutConstraint()
-                .build();
+            .addPath(
+                    new BezierLine(
+                            new Point(currentPose),
+                            new Point(currentPose.getX(), diff)
+                    )
+            )
+            .setConstantHeadingInterpolation(currentPose.getHeading())
+            .setZeroPowerAccelerationMultiplier(2.8)
+            .build();
     }
-
-
 }
