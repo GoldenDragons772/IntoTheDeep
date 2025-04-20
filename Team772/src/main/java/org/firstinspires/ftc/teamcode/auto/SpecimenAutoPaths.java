@@ -27,22 +27,22 @@ public class SpecimenAutoPaths {
 
     public static PathChain preload() {
         return new PathBuilder()
-            .addPath(
-                new BezierCurve(
-                    new Point(startPose),
-                    new Point(preloadPose.getX() - 15, preloadPose.getY(), Point.CARTESIAN),
-                    new Point(preloadPose)
+                .addPath(
+                        new BezierCurve(
+                                new Point(startPose),
+                                new Point(preloadPose.getX() - 15, preloadPose.getY(), Point.CARTESIAN),
+                                new Point(preloadPose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(Math.toRadians(180))
-            .setZeroPowerAccelerationMultiplier(4)
-            .build();
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(4)
+                .build();
     }
 
 
     public static PathChain knockSpecsIntoZone() {
         return new PathBuilder()
-            // line 1
+                // line 1
                 .addPath(
                         new BezierCurve(
                                 new Point(preloadPose),
@@ -118,17 +118,17 @@ public class SpecimenAutoPaths {
 
     public static PathChain grab1() {
         return new PathBuilder()
-            .addPath(
-                    new BezierCurve(
-                            new Point(26.000, 8.000, Point.CARTESIAN),
-                            new Point(grab1Pose.getX() + 30, grab1Pose.getY(), Point.CARTESIAN),
-                            new Point(grab1Pose)
-                    )
-            )
-            .setConstantHeadingInterpolation(grab1Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(2)
-            .setPathEndTimeoutConstraint(75)
-            .build();
+                .addPath(
+                        new BezierCurve(
+                                new Point(26.000, 8.000, Point.CARTESIAN),
+                                new Point(grab1Pose.getX() + 30, grab1Pose.getY(), Point.CARTESIAN),
+                                new Point(grab1Pose)
+                        )
+                )
+                .setConstantHeadingInterpolation(grab1Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(75)
+                .build();
     }
 
     public static PathChain lineGrab1() {
@@ -147,34 +147,34 @@ public class SpecimenAutoPaths {
 
     public static PathChain spec1() {
         return new PathBuilder()
-            .addPath(
-                // Line 1
-                new BezierLine(
-                    new Point(grab1Pose),
-                    //new Point(spec1Pose.getX() - 15, spec1Pose.getY(), Point.CARTESIAN),
-                    new Point(spec1Pose)
+                .addPath(
+                        // Line 1
+                        new BezierLine(
+                                new Point(grab1Pose),
+                                //new Point(spec1Pose.getX() - 15, spec1Pose.getY(), Point.CARTESIAN),
+                                new Point(spec1Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(spec1Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(5)
-            .build();
+                .setConstantHeadingInterpolation(spec1Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(5)
+                .build();
     }
 
 
     public static PathChain grab2() {
         return new PathBuilder()
-            .addPath(
-                new BezierCurve(
-                    new Point(spec1Pose),
-                    new Point(spec1Pose.getX() - 30, spec1Pose.getY(), Point.CARTESIAN),
-                    new Point(grab2Pose.getX() + 35, grab2Pose.getY(), Point.CARTESIAN),
-                    new Point(grab2Pose)
+                .addPath(
+                        new BezierCurve(
+                                new Point(spec1Pose),
+                                new Point(spec1Pose.getX() - 30, spec1Pose.getY(), Point.CARTESIAN),
+                                new Point(grab2Pose.getX() + 35, grab2Pose.getY(), Point.CARTESIAN),
+                                new Point(grab2Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(grab2Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(2)
-            .setPathEndTimeoutConstraint(100)
-            .build();
+                .setConstantHeadingInterpolation(grab2Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(100)
+                .build();
     }
 
     public static PathChain lineGrab2() {
@@ -194,34 +194,34 @@ public class SpecimenAutoPaths {
 
     public static PathChain spec2() {
         return new PathBuilder()
-            .addPath(
-                new BezierLine(
-                    new Point(grab2Pose),
-                    //new Point(spec2Pose.getX() - 15, spec2Pose.getY(), Point.CARTESIAN),
-                    new Point(spec2Pose)
+                .addPath(
+                        new BezierLine(
+                                new Point(grab2Pose),
+                                //new Point(spec2Pose.getX() - 15, spec2Pose.getY(), Point.CARTESIAN),
+                                new Point(spec2Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(spec2Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(5)
-            .setPathEndTimeoutConstraint(100)
-            .build();
+                .setConstantHeadingInterpolation(spec2Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(5)
+                .setPathEndTimeoutConstraint(100)
+                .build();
     }
 
 
     public static PathChain grab3() {
         return new PathBuilder()
-            .addPath(
-                new BezierCurve(
-                    new Point(spec2Pose),
-                    new Point(spec2Pose.getX() - 30, spec2Pose.getY(), Point.CARTESIAN),
-                    new Point(grab3Pose.getX() + 35, grab3Pose.getY(), Point.CARTESIAN),
-                    new Point(grab3Pose)
+                .addPath(
+                        new BezierCurve(
+                                new Point(spec2Pose),
+                                new Point(spec2Pose.getX() - 30, spec2Pose.getY(), Point.CARTESIAN),
+                                new Point(grab3Pose.getX() + 35, grab3Pose.getY(), Point.CARTESIAN),
+                                new Point(grab3Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(grab3Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(2)
-            .setPathEndTimeoutConstraint(100)
-            .build();
+                .setConstantHeadingInterpolation(grab3Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(100)
+                .build();
     }
 
     public static PathChain lineGrab3() {
@@ -241,33 +241,33 @@ public class SpecimenAutoPaths {
 
     public static PathChain spec3() {
         return new PathBuilder()
-            .addPath(
-                new BezierLine(
-                    new Point(grab3Pose),
-                    //new Point(spec3Pose.getX() - 15, spec3Pose.getY(), Point.CARTESIAN),
-                    new Point(spec3Pose)
+                .addPath(
+                        new BezierLine(
+                                new Point(grab3Pose),
+                                //new Point(spec3Pose.getX() - 15, spec3Pose.getY(), Point.CARTESIAN),
+                                new Point(spec3Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(spec3Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(5)
-            .build();
+                .setConstantHeadingInterpolation(spec3Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(5)
+                .build();
     }
 
 
     public static PathChain grab4() {
         return new PathBuilder()
-            .addPath(
-                new BezierCurve(
-                    new Point(spec3Pose),
-                    new Point(spec3Pose.getX() - 30, spec3Pose.getY(), Point.CARTESIAN),
-                    new Point(grab4Pose.getX() + 35, grab4Pose.getY(), Point.CARTESIAN),
-                    new Point(grab4Pose)
+                .addPath(
+                        new BezierCurve(
+                                new Point(spec3Pose),
+                                new Point(spec3Pose.getX() - 30, spec3Pose.getY(), Point.CARTESIAN),
+                                new Point(grab4Pose.getX() + 35, grab4Pose.getY(), Point.CARTESIAN),
+                                new Point(grab4Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(grab4Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(2)
-            .setPathEndTimeoutConstraint(100)
-            .build();
+                .setConstantHeadingInterpolation(grab4Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .setPathEndTimeoutConstraint(100)
+                .build();
     }
 
     public static PathChain lineGrab4() {
@@ -287,29 +287,29 @@ public class SpecimenAutoPaths {
 
     public static PathChain spec4() {
         return new PathBuilder()
-            .addPath(
-                new BezierLine(
-                    new Point(grab4Pose),
-                    //new Point(spec4Pose.getX() - 15, spec4Pose.getY(), Point.CARTESIAN),
-                    new Point(spec4Pose)
+                .addPath(
+                        new BezierLine(
+                                new Point(grab4Pose),
+                                //new Point(spec4Pose.getX() - 15, spec4Pose.getY(), Point.CARTESIAN),
+                                new Point(spec4Pose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(spec4Pose.getHeading())
-            .setZeroPowerAccelerationMultiplier(5)
-            .build();
+                .setConstantHeadingInterpolation(spec4Pose.getHeading())
+                .setZeroPowerAccelerationMultiplier(5)
+                .build();
     }
 
 
     public static PathChain park() {
         return new PathBuilder()
-            .addPath(
-                new BezierCurve(
-                    new Point(spec4Pose),
-                    new Point(parkPose)
+                .addPath(
+                        new BezierCurve(
+                                new Point(spec4Pose),
+                                new Point(parkPose)
+                        )
                 )
-            )
-            .setConstantHeadingInterpolation(parkPose.getHeading())
-            .setZeroPowerAccelerationMultiplier(7)
-            .build();
+                .setConstantHeadingInterpolation(parkPose.getHeading())
+                .setZeroPowerAccelerationMultiplier(7)
+                .build();
     }
 }

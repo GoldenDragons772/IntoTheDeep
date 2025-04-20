@@ -1,3 +1,8 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package org.firstinspires.ftc.teamcode.implementation.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -6,13 +11,10 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.pathgen.Point;
 
-@Deprecated
 public class HoldPointCommand extends CommandBase {
-
     private final BezierPoint holdPoint;
     private final double heading;
     private final Follower follower;
-
 
     public HoldPointCommand(Follower follower, BezierPoint holdPoint, double heading) {
         this.follower = follower;
@@ -28,13 +30,17 @@ public class HoldPointCommand extends CommandBase {
         this(follower, new BezierPoint(new Point(holdPose)), holdPose.getHeading());
     }
 
-    @Override
     public void initialize() {
-        follower.holdPoint(holdPoint, heading);
+        this.follower.breakFollowing();
+        this.follower.holdPoint(this.holdPoint, this.heading);
+    }
+
+    public void end(boolean interrupted) {
+        this.follower.breakFollowing();
     }
 
     @Override
-    public void end(boolean interrupted) {
-        follower.breakFollowing();
+    public boolean isFinished() {
+        return follower.atPoint(holdPoint.getPoint(1), 0.5, 0.5);
     }
 }

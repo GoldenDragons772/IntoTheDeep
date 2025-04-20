@@ -8,7 +8,6 @@ import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -20,30 +19,33 @@ import java.util.HashMap;
 public class IntakeSystem extends SubsystemBase {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.46, LEFT_LINKAGE_HALF = 0.23;
-    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
+    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
+//    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.58, BOTH_PIVOT_TRANSFER = 0.5;
+    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.91, BOTH_PIVOT_TRANSFER = 0.84;
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
-    public static double RIGHT_PIVOT_HOME = 0, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
+    public static double LEFT_PIVOT_HOME = 0.35, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
+    public static double RIGHT_PIVOT_HOME = 0.35, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.7, PIVOT_TARGET = 0.28, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.28, PIVOT_TRANSFER = 1.0;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.45, WRIST_INC = 0.4;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.5, WRIST_INC = 0.4;
 
     // Set Positions for claw
-    public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.75, CLAW_STROKE = 0.5;
+    public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.765, CLAW_STROKE = 0.5;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
     public IntakePosition pivotPosition = IntakePosition.HOME;
-
+  
+    public class ValueCache {
+        public double linkagePosition;
+    }
     //Boolean to keep track of if were in auto.
     boolean isAuto;
 
@@ -67,19 +69,22 @@ public class IntakeSystem extends SubsystemBase {
         ANGLE_BUCKET
     }
 
-    Servo leftLinkageServo, rightLinkageServo;
-    Servo leftStrikeServo, rightStrikeServo;
+    public Servo leftLinkageServo, rightLinkageServo;
+    public Servo leftStrikeServo, rightStrikeServo;
     Servo pivotServo;
     Servo wristServo;
     Servo clawServo;
     public SampleDetection sampleDetector;
     RootSystem root;
-    OpenCvWebcam camera;
+    public OpenCvWebcam camera;
+    public ValueCache valueCache;
+    private double lastRotation = 0;
 
 
     public IntakeSystem(RootSystem root, boolean isAuto, boolean isSpecAuto) {
         // Linkage Servo
         this.root = root;
+        valueCache = new ValueCache();
         leftLinkageServo = root.getHw().get(Servo.class, "lLinkageServo");
         rightLinkageServo = root.getHw().get(Servo.class, "rLinkageServo");
 
@@ -100,9 +105,15 @@ public class IntakeSystem extends SubsystemBase {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        if(isSpecAuto) {
-            leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-            rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
+        rightLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+
+        pivotServo.setPosition(PIVOT_HOME);
+
+        if (!isAuto || !isSpecAuto) {
+
+            setLinkage(LEFT_LINKAGE_HOME);
+
 
             clawServo.setPosition(CLAW_HOME);
 
@@ -119,6 +130,7 @@ public class IntakeSystem extends SubsystemBase {
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
 
         sampleDetector = new SampleDetection(root.getTelemetry(), root.isAllianceRed());
+        Log.i("Camera", "Started with color" + root.isAllianceRed());
 
         Log.i("Camera", "Before camera initialization");
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -128,31 +140,37 @@ public class IntakeSystem extends SubsystemBase {
                 camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
                 camera.setPipeline(sampleDetector);
                 FtcDashboard.getInstance().startCameraStream(camera, 100.0);
+//                camera.getGainControl().setGain(Constants.CAMERA_GAIN);
 //                camera.pauseViewport(); // have it paused by default.
             }
 
             @Override
-            public void onError(int i) { }
+            public void onError(int i) {
+            }
+
         });
     }
 
     @Override
     public void periodic() {
-
         if(!isAuto) {
 
             root.getTelemetry().addData("extendState", extendState.toString());
             root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
             root.getTelemetry().addData("linkageState", linkageState.toString());
-            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation != -70.0 && !clawState) {
-                double rotationValue = sampleDetector.sampleRotation;
-                var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
-                if (inputValue < 0) inputValue += 1;
-                wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
-                root.getTelemetry().addData("Theta --", rotationValue);
-                root.getTelemetry().addData("Rotation", inputValue);
+            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation.get() != -70.0 && !clawState) {
+                visionWristRotation();
             }
         }
+    }
+    public void visionWristRotation(){
+        double rotationValue = sampleDetector.sampleRotation.get();
+        var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
+        if (inputValue < 0) inputValue += 1;
+        wristServo.setPosition(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+        wristPos = inputValue;
+        root.getTelemetry().addData("Theta --", rotationValue);
+        root.getTelemetry().addData("Rotation", inputValue);
     }
 
     public WristPosition getWristPos() {
@@ -163,33 +181,61 @@ public class IntakeSystem extends SubsystemBase {
         return extendState;
     }
 
-    public IntakePosition getPivotPosition(){
+    public IntakePosition getPivotPosition() {
         return pivotPosition;
     }
 
-    public LinkagePosition getLinkagePos() { return linkageState; }
+    public LinkagePosition getLinkagePos() {
+        return linkageState;
+    }
 
-    public double getCentroidX() {return sampleDetector.centroid.x;}
+    /**
+     * @param desiredLength the desired length of the slides in inches (between zero and the maximum length, in this case 15 inches).
+     * @return a command
+     */
+    public double horizontalSlideExtensionConversion(double desiredLength) {
+        double adjustedLength = desiredLength + 3.92904;
+        Log.i("Vision", "Adjusted " + adjustedLength);
+        double angle = Math.acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH));
+        assert Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE : String.format("%f, %f",desiredLength, angle); //
+        double servoOutput = angleToLinkageServo(angle);
+        assert 0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET : String.format("%f, %f, %f",servoOutput, desiredLength, angle);
+        return servoOutput;
+    }
+
+    public double getHorizontalSlideExtension() {
+        double lowerBound = Constants.LINKAGE_HOME_ANGLE;
+        double angleIntervalWidth = (Constants.LINKAGE_TARGET_ANGLE - lowerBound);
+        double currentServoRatio = this.valueCache.linkagePosition / LEFT_LINKAGE_TARGET;
+        return (2 * Constants.LINKAGE_LENGTH * Math.cos(currentServoRatio * angleIntervalWidth + lowerBound)) - 3.92904;
+        // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
+    }
+
+    public double angleToLinkageServo(double angle) {
+        // 0.46 * (78 - 12) + 12
+        // s * (m_1 - m_0) + m_0 = a
+        // (a - m_0) / (m_1 - m_0)
+        return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE));
+    }
+
+    public double getCentroidX() {return sampleDetector.centroid.get().x;}
 
     public Command setLinkage(LinkagePosition pos) {
 
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
-                linkageState  = LinkagePosition.HOME;
+                setLinkage(LEFT_LINKAGE_HOME).schedule();
+                linkageState = LinkagePosition.HOME;
             });
 
             case FULL -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_TARGET);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_TARGET);
-                linkageState  = LinkagePosition.FULL;
+                setLinkage(LEFT_LINKAGE_TARGET).schedule();
+                linkageState = LinkagePosition.FULL;
             });
 
             case HALF -> new InstantCommand(() -> {
-                leftLinkageServo.setPosition(LEFT_LINKAGE_HALF);
-                rightLinkageServo.setPosition(RIGHT_LINKAGE_HALF);
-                linkageState  = LinkagePosition.HALF;
+                setLinkage(LEFT_LINKAGE_HALF).schedule();
+                linkageState = LinkagePosition.HALF;
             });
 
         };
@@ -197,16 +243,12 @@ public class IntakeSystem extends SubsystemBase {
     }
 
     public Command setLinkage(Double pos) {
-
-        if (pos >= 0.2) {
-            pos = 0.2;
-        }
-
-        var scaledPos = Math.sqrt(pos);
-
+        assert 0.0 <= pos && pos <= LEFT_LINKAGE_TARGET : pos;
+        Log.i("Linkage", pos.toString());
         return new InstantCommand(() -> {
-            leftLinkageServo.setPosition(scaledPos);
-            rightLinkageServo.setPosition(scaledPos);
+            valueCache.linkagePosition = pos;
+            leftLinkageServo.setPosition(pos);
+            rightLinkageServo.setPosition(pos);
         }
         );
     }
@@ -285,10 +327,11 @@ public class IntakeSystem extends SubsystemBase {
         return null;
     }
 
-    public Command setWrist(double pos){
+    public Command setWrist(double pos) {
         return new InstantCommand(() -> {
 
             wristPos += pos;
+
             wristPos %= 1.0;
             if(wristPos > 1.0){
                 wristPos = 1.0;
@@ -296,9 +339,9 @@ public class IntakeSystem extends SubsystemBase {
                 wristPos = 1.0;
             }
             wristServo.setPosition(wristPos);
-            if(wristPos == WRIST_TARGET) {
+            if (wristPos == WRIST_TARGET) {
                 wristState = WristPosition.TARGET;
-            } else if(wristPos == WRIST_ANGLE) {
+            } else if (wristPos == WRIST_ANGLE) {
                 wristState = WristPosition.ANGLE;
             } else {
                 wristState = WristPosition.HOME;
@@ -347,7 +390,8 @@ public class IntakeSystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     extendState = IntakePosition.TRANSFER;
-                    camera.stopStreaming();
+//                    camera.stopStreaming();
+                    sampleDetector.isEnabled.set(false);
                 }),
                 setWrist(WristPosition.HOME),
                 setLinkage(LinkagePosition.HOME),
@@ -362,20 +406,22 @@ public class IntakeSystem extends SubsystemBase {
                         new HashMap<>() {{
                             put(LinkagePosition.HOME,
                                     setLinkage(LinkagePosition.FULL)
+
                                             .andThen(hoverIntake()));
                             put(LinkagePosition.FULL,
                                     setLinkage(LinkagePosition.HOME)
                                             .andThen(moveToTransfer()));
                             put(LinkagePosition.HALF,
                                     setLinkage(LinkagePosition.HOME)
-                                    .andThen(moveToTransfer()));
+                                            .andThen(moveToTransfer()));
                         }},
                         this::getLinkagePos
                 ),
 
                 new InstantCommand(() -> {
-                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
-                    camera.setPipeline(sampleDetector);
+//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+//                    camera.setPipeline(sampleDetector);
+                    sampleDetector.isEnabled.set(true);
 //                    camera.resumeViewport();
                 })
 //                setLinkage(IntakePosition.TARGET),
@@ -406,9 +452,10 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
-    public Command hoverIntake(){
+    public Command hoverIntake() {
         return new SequentialCommandGroup(
-                        setStrike(IntakePosition.HOVER),
+
+                        setStrike(IntakePosition.TRANSFER),
                         new WaitCommand(150),
                         setPivot(IntakePosition.HOME),
                         new InstantCommand(() -> {
@@ -416,9 +463,10 @@ public class IntakeSystem extends SubsystemBase {
                             //extendState = IntakePosition.TARGET;
                         })
                 );
+
     }
 
-    public Command strikeIntake(){
+    public Command strikeIntake() {
         return new SequentialCommandGroup(
                 setPivot(IntakePosition.TARGET),
                 new WaitCommand(150),

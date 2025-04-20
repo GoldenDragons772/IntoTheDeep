@@ -173,10 +173,10 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      * Moves the entire arm assembly to the home position.
      */
     fun moveArmToHome(): Command =
-        setStrike(OuttakePosition.HOME)
+            setPivot(OuttakePosition.HOME)
+            .andThen(WaitCommand(250))
+            .andThen(setStrike(OuttakePosition.HOME))
             .andThen(wristHome())
-            .andThen(WaitCommand(800))
-            .andThen(setPivot(OuttakePosition.HOME))
             .andThen(InstantCommand({homeState = true}))
             //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
 

@@ -17,12 +17,13 @@ class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private va
         super.addCommands(
             SequentialCommandGroup(
                 InstantCommand({prevState = intakeSystem.linkagePos}),
-                intakeSystem.moveToHome(),
-                ConditionalCommand(WaitCommand(500), InstantCommand(), {prevState == IntakeSystem.LinkagePosition.FULL}),
-                ConditionalCommand(
+                intakeSystem.moveToHome(), // retract intake system
+                ConditionalCommand(WaitCommand(500), InstantCommand()) { prevState == IntakeSystem.LinkagePosition.FULL },
+                ConditionalCommand( // Move climb system down
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER_INVERTED),
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME)
                 ) { outtakeSystem.getSpecState() },
+                WaitCommand(100), // Move arm to spec grab position
                 outtakeSystem.toggleArmSpecInv()
             )
         )

@@ -35,10 +35,10 @@ public class ClimbSystem extends SubsystemBase {
 
     private final DcMotorEx climbMotor1, climbMotor2, climbMotor3;
 
-
     public static double targetPosition = ClimbState.HOME.position, lastError;
     public ClimbState position = ClimbState.HOME;
     private final ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime lastSlideChangeTimer = new ElapsedTime();
     //private int initialPosition = 0;
 
     public ClimbSystem(RootSystem root, boolean isAuto) {
@@ -50,8 +50,7 @@ public class ClimbSystem extends SubsystemBase {
         this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
         if(isAuto) {
-            climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            resetEncoder();
         }
 
         climbMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -66,6 +65,10 @@ public class ClimbSystem extends SubsystemBase {
 //
 //        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //    }
+    public void resetEncoder(){
+        climbMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     // Get the current position from the slide
     public double getSlidesPosition() {
@@ -76,6 +79,12 @@ public class ClimbSystem extends SubsystemBase {
     public void periodic() {
         double error = targetPosition - this.getSlidesPosition();
         double derivative = (error - lastError) / timer.seconds();
+//        if (derivative > 0.01) { // Value probably needs tuning
+//            lastSlideChangeTimer.reset();
+//        }
+//        if (lastSlideChangeTimer.milliseconds() > 150 && position == ClimbState.HOME){
+//            resetEncoder();
+//        }
 
         // sum everything up
         double PID_output = (PID_SLIDES.p * error) + (PID_SLIDES.d * derivative) + PID_SLIDES.f;
