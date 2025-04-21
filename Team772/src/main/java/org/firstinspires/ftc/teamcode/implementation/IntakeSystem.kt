@@ -3,10 +3,6 @@ package org.firstinspires.ftc.teamcode.implementation
 import android.util.Log
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
-import com.arcrobotics.ftclib.command.ConditionalCommand
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.SequentialCommandGroup
-import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.kotlin.extensions.util.clamp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.delay
@@ -213,8 +209,8 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
         return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE))
     }
 
-    fun setLinkageFunc(pos: LinkagePosition) {
-        when (pos) {
+    fun setLinkage(state: LinkagePosition) {
+        when (state) {
             LinkagePosition.HOME -> {
                 setLinkage(LEFT_LINKAGE_HOME)
                 linkageState = LinkagePosition.HOME
@@ -356,7 +352,7 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
     suspend fun moveToHome() {
         intakeState = IntakePosition.HOME
         setWrist(WristPosition.HOME)
-        setLinkageFunc(LinkagePosition.HOME)
+        setLinkage(LinkagePosition.HOME)
         setStrike(IntakePosition.HOME)
         setPivot(IntakePosition.HOME)
     }
@@ -366,7 +362,7 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
         //                    camera.stopStreaming();
         sampleDetector.isEnabled.set(false)
         setWrist(WristPosition.HOME)
-        setLinkageFunc(LinkagePosition.HOME)
+        setLinkage(LinkagePosition.HOME)
         setStrike(IntakePosition.TRANSFER)
         setPivot(IntakePosition.TRANSFER)
     }
@@ -374,17 +370,17 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
     suspend fun moveToTarget() {
         when (this.linkageState) {
             LinkagePosition.HOME -> {
-                setLinkageFunc(LinkagePosition.FULL)
+                setLinkage(LinkagePosition.FULL)
                 hoverIntake()
             }
 
             LinkagePosition.FULL -> {
-                setLinkageFunc(LinkagePosition.HOME)
+                setLinkage(LinkagePosition.HOME)
                 moveToTransfer()
             }
 
             LinkagePosition.HALF -> {
-                setLinkageFunc(LinkagePosition.HOME)
+                setLinkage(LinkagePosition.HOME)
                 moveToTransfer()
             }
         }

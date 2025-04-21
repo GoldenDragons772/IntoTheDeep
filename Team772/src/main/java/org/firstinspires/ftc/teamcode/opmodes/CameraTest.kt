@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.implementation.IntakePosition
-import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.LinkagePosition
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
@@ -27,7 +26,7 @@ class CameraTest : LinearOpMode() {
 
         runBlocking {
             root.intake.setClaw(IntakePosition.HOME)
-            root.intake.setLinkageFunc(LinkagePosition.FULL)
+            root.intake.setLinkage(LinkagePosition.FULL)
             root.intake.hoverIntake()
             root.intake.setPivot(IntakePosition.HOME)
         }

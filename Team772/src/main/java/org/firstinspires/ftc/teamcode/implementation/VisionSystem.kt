@@ -4,6 +4,7 @@ import android.util.Log
 import com.pedropathing.commands.FollowPath
 import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
+import org.firstinspires.ftc.teamcode.opmodes.PathDelegateCommand
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import kotlin.math.pow
@@ -14,41 +15,16 @@ class VisionSystem(private val root: RootSystem) {
     private var firstGo = true
     private var running = false
 
+    init {
+        Log.i("Grab Command", "Grab Command Init")
+
+//        sampleDetector = SampleDetection(root.telemetry, false)
+//        val webcamName = root.hw.get(WebcamName::class.java, "GDVision")
+//        root.intake.camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName)
+    }
+
     suspend fun periodic() {
         if (done || !running) return
-        try {
-            if (root.intake.sampleDetector.centroid.get() != null) {
-                // TODO: Move a little bit farther and then find the centroid
-                if (firstGo) {
-//                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
-//                        .schedule()
-                    firstGo = false
-                    return
-                }
-
-                foundSample = root.intake.sampleDetector.centroid.get()
-
-            } else {
-                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
-                root.telemetry.addData("linkageValue", linkageValue)
-                if (linkageValue < 0) { // TODO: get a better lower bound than 0
-                    // Move to the left and start searching again if nothing is found.
-                    root.intake.setLinkageFunc(LinkagePosition.FULL)
-                    FollowPath(
-                        root.follower,
-                        AlignTranslationalPath.alignLatitudinal(
-                            root.follower,
-                            root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED
-                        )
-                    )
-
-                } else {
-                    root.intake.setLinkage(linkageValue)
-                }
-            }
-        } catch (e: NullPointerException) {
-            Log.i("CAMERA", "ong dumbahh error") // I don't know why this line is necessary
-        }
         Log.i("Vision", root.intake.horizontalSlideExtension.toString())
         if (foundSample != null) {
             Log.i("Vision", "found sample")
@@ -84,32 +60,66 @@ class VisionSystem(private val root: RootSystem) {
             Log.i("VisionH", "$yDiff yDiff")
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
+
             root.intake.setLinkage(outputValue)
-            delay(500L)
-            root.intake::visionWristRotation
-            delay(250L)
+            delay(500)
+            root.intake.visionWristRotation()
+            delay(250)
 //                           ` .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
-            FollowPath(
-                root.follower,
-                AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff),
-                0.8
+            root.follower.followPath(
+                AlignTranslationalPath.alignLatitudinal(
+                    root.follower.pose,
+                    root.follower.pose.x - yDiff
+                ), 0.8, false
             )
             root.intake.strikeIntake()
-            delay(250L)
+            delay(250)
             root.intake.setClaw(IntakePosition.TARGET)
-            delay(250L)
+            delay(250)
             root.intake.hoverIntake()
-            Log.i("Grab Command", "Command Finished")
+
+            Log.i("Sample Auto", "Command Finished")
             done = true
+        }
+        try {
+            if (root.intake.sampleDetector.centroid.get() != null) {
+                // TODO: Move a little bit farther and then find the centroid
+                if (firstGo) {
+//                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
+//                        .schedule()
+                    firstGo = false
+                    return
+                }
+
+                foundSample = root.intake.sampleDetector.centroid.get()
+
+            } else {
+                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
+                root.telemetry.addData("linkageValue", linkageValue)
+                if (linkageValue < 0) { // TODO: get a better lower bound than 0
+                    // Move to the left and start searching again if nothing is found.
+                    root.intake.setLinkage(LinkagePosition.FULL)
+
+                    root.follower.followPath(
+                        AlignTranslationalPath.alignLatitudinal(
+                            root.follower.pose,
+                            root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED
+                        )
+                    )
+
+                    Log.i("Sample Auto", "Move to Translational.")
+                } else {
+                    root.intake.setLinkage(linkageValue)
+                }
+            }
+        } catch (e: NullPointerException) {
+            Log.i("CAMERA", "ong dumbahh error") // I don't know why this line is necessary
         }
     }
 
-    fun isFinished(): Boolean = done
-
-    /**
-     * input pixels to output inches
-     */
-    private fun corelation(x: Double): Double {
+    fun corelation(x: Double): Double { // input pixels to output inches
+//        return 0.842 * exp(x* 0.00594)
+//        return 0.0176 * x - 0.205;
         return 0.0817 + 0.0112 * x + 1.9 * (10.0).pow(-5) * x * x
     }
 }
