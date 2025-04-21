@@ -101,7 +101,7 @@ public class LocalizationTest extends OpMode {
         wristServo.setDirection(Servo.Direction.REVERSE);
         root.getIntake().setClaw(IntakeSystem.IntakePosition.HOME).schedule();
 
-        root.getIntake().setLinkage(IntakeSystem.LinkagePosition.FULL).schedule();
+        root.getIntake().setLinkageFunc(IntakeSystem.LinkagePosition.FULL).schedule();
         root.getIntake().hoverIntake().schedule();
         root.getIntake().setPivot(IntakeSystem.IntakePosition.HOME).schedule();
         root.getIntake().strikeIntake().schedule();

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager

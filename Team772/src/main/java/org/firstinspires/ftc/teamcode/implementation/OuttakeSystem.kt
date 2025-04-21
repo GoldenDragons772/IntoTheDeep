@@ -1,19 +1,25 @@
 package org.firstinspires.ftc.teamcode.implementation
 
-import com.arcrobotics.ftclib.command.Command
-import com.arcrobotics.ftclib.command.ConditionalCommand
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.SubsystemBase
-import com.arcrobotics.ftclib.command.WaitCommand
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.Servo
+import kotlinx.coroutines.delay
 
+enum class OuttakeState {
+    HOME,
+    TARGET,
+    SPEC_TARGET,
+    SPEC_INV,
+    TRANSFER_PREP,
+    TRANSFER,
+    SAFE,
+    PRELOAD
+}
 /**
  * Controls the outtake system and its related servos.
  * It does not control the climb system, which must be changed separately in order to actually climb.
  *
  */
-class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBase() {
+class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) {
 
     // Defines servos
     private val rstrikeServo: Servo = root.hw.get(Servo::class.java, "vRightStrikeServo")
@@ -29,207 +35,137 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
 
 
     // State Machine
-    var clawState = false
-    var wristState = false
-    var homeState = false
-    private var specState = false
+    private var isClawClosed = false
+    private var homeState = false
 
-    enum class OuttakePosition {
-        HOME,
-        TARGET,
-        SPEC_TARGET,
-        SPEC_INV,
-        TRANSFER_PREP,
-        TRANSFER,
-        SAFE,
-        PRELOAD
-    }
+
 
     init {
         rstrikeServo.direction = Servo.Direction.REVERSE
         clawServo.direction = Servo.Direction.FORWARD
         pivotServo.direction = Servo.Direction.REVERSE
 
-        rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
-        lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
-
-        pivotServo.position = Constants.PIVOT_SERVO_HOME
-        wristServo.position = Constants.WRIST_SERVO_HOME
-        clawServo.position = Constants.CLAW_SERVO_TARGET
-
-//        rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
-//        lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
-        // clawButton.mode = DigitalChannel.Mode.INPUT
-
-    }
-
-    fun getSpecState(): Boolean {
-        return homeState
-    }
-
-    fun setPivot(pos: OuttakePosition): InstantCommand {
-        return when (pos) {
-            OuttakePosition.HOME -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
-            OuttakePosition.TRANSFER_PREP -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER})
-            OuttakePosition.TRANSFER -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER })
-            OuttakePosition.TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
-            OuttakePosition.SPEC_TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
-            OuttakePosition.SPEC_INV -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC_INV})
-            OuttakePosition.SAFE -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SAFE })
-            OuttakePosition.PRELOAD -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_PRELOAD })
-        }
-
-    }
-
-    fun setStrike(pos: OuttakePosition): InstantCommand {
-
-        return when (pos) {
-            OuttakePosition.HOME -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
-                lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
-            })
-
-            OuttakePosition.TARGET -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
-            })
-
-            OuttakePosition.SPEC_TARGET -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC
-            })
-
-            OuttakePosition.TRANSFER_PREP -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER_PREP
-                lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER_PREP
-            })
-
-            OuttakePosition.TRANSFER -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER
-                lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER
-            })
-
-            OuttakePosition.SAFE -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
-            })
-
-            OuttakePosition.PRELOAD -> InstantCommand({
-                // do
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
-            })
-
-            OuttakePosition.SPEC_INV -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC_INV
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC_INV
-            })
-
-        }
+        setStrike(OuttakeState.HOME)
+        setPivot(OuttakeState.HOME)
+        setWrist(OuttakeState.HOME)
+        setClaw(false)
     }
 
     fun getClawButtonState() = clawButton.state
+    fun getSpecState(): Boolean = homeState
 
-    /**
-     * Moves the wrist servo to the home position.
-     */
-    fun wristHome(): InstantCommand {
-        return InstantCommand({
-            wristState = false
-            wristServo.position = Constants.WRIST_SERVO_HOME
-        })
+    fun setPivot(pos: OuttakeState) {
+        pivotServo.position = when (pos) {
+            OuttakeState.HOME -> Constants.PIVOT_SERVO_HOME
+            OuttakeState.TRANSFER_PREP -> Constants.PIVOT_SERVO_TRANSFER
+            OuttakeState.TRANSFER -> Constants.PIVOT_SERVO_TRANSFER
+            OuttakeState.TARGET -> Constants.PIVOT_SERVO_SCORE
+            OuttakeState.SPEC_TARGET -> Constants.PIVOT_SERVO_SPEC
+            OuttakeState.SPEC_INV -> Constants.PIVOT_SERVO_SPEC_INV
+            OuttakeState.SAFE -> Constants.PIVOT_SERVO_SAFE
+            OuttakeState.PRELOAD -> Constants.PIVOT_SERVO_PRELOAD
+        }
+
     }
 
-    /**
-     * Moves the wrist servo to the scoring position.
-     */
-    fun wristScore(): InstantCommand {
-        return InstantCommand({ wristServo.position = Constants.WRIST_SERVO_TARGET })
+    fun setStrike(state: OuttakeState) {
+        val pos = when (state) {
+            OuttakeState.HOME -> Constants.OUT_STRIKE_HOME
+            OuttakeState.TARGET -> Constants.OUT_STRIKE_SCORE
+            OuttakeState.SPEC_TARGET -> Constants.OUT_STRIKE_SPEC
+            OuttakeState.TRANSFER_PREP -> Constants.OUT_STRIKE_TRANSFER_PREP
+            OuttakeState.TRANSFER -> Constants.OUT_STRIKE_TRANSFER
+            OuttakeState.SAFE -> Constants.OUT_STRIKE_SAFE
+            OuttakeState.PRELOAD -> Constants.OUT_STRIKE_SAFE
+            OuttakeState.SPEC_INV -> Constants.OUT_STRIKE_SPEC_INV
+        }
+        rstrikeServo.position = pos
+        lstrikeServo.position = pos
     }
 
-    /**
-     * Opens the claw to score.
-     */
-    fun clawOpen(): InstantCommand {
-        return InstantCommand({
-            if (!clawState) return@InstantCommand
-            clawServo.position = Constants.CLAW_SERVO_TARGET
-            clawState = false
-        })
+    fun setWrist(state: OuttakeState) {
+        assert(state == OuttakeState.HOME || state == OuttakeState.TARGET) { "state must be one of TARGET or HOME" }
+        wristServo.position = when (state) {
+            OuttakeState.HOME -> Constants.WRIST_SERVO_HOME
+            OuttakeState.TARGET -> Constants.WRIST_SERVO_TARGET
+            else -> TODO()
+        }
     }
 
-    /**
-     * Closes the claw, with or without a specimen.
-     */
-    fun clawClose(): InstantCommand {
-        return InstantCommand({
-            if (clawState) return@InstantCommand
-            clawServo.position = Constants.CLAW_SERVO_HOME
-            clawState = true
-        })
+    fun setClaw(shouldClose: Boolean) {
+        if (!shouldClose) {
+            assert(isClawClosed) { "Claw is already open!" }
+            clawServo.position = Constants.CLAW_SERVO_TARGET // Open
+        } else {
+            assert(!isClawClosed) { "Claw is already closed!" }
+            clawServo.position = Constants.CLAW_SERVO_HOME // Close
+        }
+        isClawClosed = shouldClose
+
     }
 
     /**
      * Moves the entire arm assembly to the home position.
      */
-    fun moveArmToHome(): Command =
-            setPivot(OuttakePosition.HOME)
-            .andThen(WaitCommand(250))
-            .andThen(setStrike(OuttakePosition.HOME))
-            .andThen(wristHome())
-            .andThen(InstantCommand({homeState = true}))
-            //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
+    suspend fun moveArmToHome() {
+        setPivot(OuttakeState.HOME)
+        delay(250L)
+        setStrike(OuttakeState.HOME)
+        setWrist(OuttakeState.HOME)
+        homeState = true
+    }
 
     /**
      * Moves the entire arm to the scoring position.
      */
-    fun moveArmToScore(): Command =
-        setStrike(OuttakePosition.TARGET)
-            .andThen(setPivot(OuttakePosition.TARGET))
-            .andThen(wristHome())
-            .andThen(InstantCommand({ specState = false }))
+    suspend fun moveArmToScore() {
+        setStrike(OuttakeState.TARGET)
+        setPivot(OuttakeState.TARGET)
+        setWrist(OuttakeState.TARGET)
+    }
 
-    fun moveArmToScoreSpec(): Command =
-        setStrike(OuttakePosition.SPEC_TARGET)
-            .andThen(setPivot(OuttakePosition.SPEC_TARGET))
-            .andThen(wristScore())
-            .andThen(InstantCommand({ homeState = false }))
+    suspend fun moveArmToScoreSpec() {
+        setStrike(OuttakeState.SPEC_TARGET)
+        setPivot(OuttakeState.SPEC_TARGET)
+        setWrist(OuttakeState.TARGET)
+        homeState = false
+    }
 
-    fun moveArmToScoreSpecInv(): Command =
-        setStrike(OuttakePosition.SPEC_INV)
-            .andThen(WaitCommand(500))
-            .andThen(setPivot(OuttakePosition.SPEC_INV))
-            .andThen(wristHome())
-            .andThen(InstantCommand({ homeState = false}))
+    suspend fun moveArmToScoreSpecInv() {
+        setStrike(OuttakeState.SPEC_INV)
+        delay(500L)
+        setPivot(OuttakeState.SPEC_INV)
+        setWrist(OuttakeState.HOME)
+        homeState = false
+    }
 
-    fun moveArmToTransferPrep(): Command =
-        wristHome()
-            .andThen(setPivot(OuttakePosition.TRANSFER))
-            .andThen(setStrike(OuttakePosition.TRANSFER_PREP))
-            .andThen(InstantCommand({ specState = false}))
+    suspend fun moveArmToTransferPrep() {
+        setWrist(OuttakeState.HOME)
+        setPivot(OuttakeState.TRANSFER)
+        setStrike(OuttakeState.TRANSFER_PREP)
+    }
 
-    fun moveArmToTransfer(): Command =
-        wristHome()
-            .andThen(WaitCommand(200))
-            .andThen(setPivot(OuttakePosition.TRANSFER))
-            .andThen(WaitCommand(200))
-            .andThen(setStrike(OuttakePosition.TRANSFER))
-            .andThen(InstantCommand({ specState = false }))
+    suspend fun moveArmToTransfer() {
+        setWrist(OuttakeState.HOME)
+        delay(200L)
+        setPivot(OuttakeState.TRANSFER)
+        delay(200L)
+        setStrike(OuttakeState.TRANSFER)
+    }
 
     /**
      * Toggles the arm between the home position and the scoring position based on the saved arm state.
      */
-    fun toggleArm() = ConditionalCommand(moveArmToScore(), moveArmToTransfer()) { homeState }
+    suspend fun toggleArm() = if (homeState) moveArmToScore() else moveArmToTransfer()
 
     /**
      * Toggles the arm between the home position and the Specimen scoring position based on the saved arm state.
      */
-    fun toggleArmSpec() = ConditionalCommand(moveArmToScoreSpec(), moveArmToHome()) { homeState }
-
-    fun toggleArmSpecInv() = ConditionalCommand(moveArmToScoreSpecInv(), moveArmToHome()) { homeState }
+    suspend fun toggleArmSpec() = if (homeState) moveArmToScoreSpec() else moveArmToHome()
+    suspend fun toggleArmSpecInv() = if (homeState) moveArmToScoreSpecInv() else moveArmToHome()
 
     /**
      * Toggles the claw between the open (ready to score) position and the closed position.
      */
-    fun toggleClaw() = ConditionalCommand(clawOpen(), clawClose()) { clawState }
+    suspend fun toggleClaw() = setClaw(!isClawClosed)
 }

@@ -2,20 +2,9 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.arcrobotics.ftclib.command.*
 import com.pedropathing.commands.FollowPath
-import com.pedropathing.commands.HoldPoint
-import com.pedropathing.follower.Follower
-import com.qualcomm.hardware.ams.AMSColorSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import dev.frozenmilk.sinister.loading.Preload
 import org.firstinspires.ftc.teamcode.auto.BucketAutoPaths
-import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
-import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
-import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
-import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
-import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
-import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
-import kotlin.math.floor
+import org.firstinspires.ftc.teamcode.implementation.*
 
 @Autonomous(name = "Bucket Auto")
 class BucketAuto(): CommandOpMode() {
@@ -23,7 +12,7 @@ class BucketAuto(): CommandOpMode() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
 
-        val transferSampleCommand = TransferSampleCommand(root.intake, root.outtake, root.climb);
+        val transferSampleCommand = root.intake::transferSample
 
 
         root.follower.setStartingPose(BucketAutoPaths.startPose)
@@ -38,10 +27,10 @@ class BucketAuto(): CommandOpMode() {
             }),
             SequentialCommandGroup(
                 root.outtake.clawClose(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.PRELOAD),
+                root.outtake.setPivot(OuttakeState.PRELOAD),
 
-                root.intake.setPivot(IntakeSystem.IntakePosition.HOME),
-                root.intake.setStrike(IntakeSystem.IntakePosition.HOME),
+                root.intake.setPivot(IntakePosition.HOME),
+                root.intake.setStrike(IntakePosition.HOME),
 
                 root.intake.toggleHover(),
                 root.intake.moveToHome(),
@@ -52,7 +41,7 @@ class BucketAuto(): CommandOpMode() {
                 //Move the robot to the basket to score the preload.
                 ParallelCommandGroup(
                     FollowPath(root.follower, BucketAutoPaths.scorePreload(), true, 0.9),
-                    root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
+                    root.climb.setTargetPosition(ClimbState.HIGH_BASKET),
                     root.outtake.moveArmToScore(),
                 ),
 

@@ -1,27 +1,21 @@
-package org.firstinspires.ftc.teamcode.implementation.commands
+package org.firstinspires.ftc.teamcode.implementation
 
 import android.util.Log
 import com.pedropathing.commands.FollowPath
+import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
-import org.firstinspires.ftc.teamcode.implementation.Constants
-import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
-import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import kotlin.math.pow
 
-class GrabSampleCommand(private val root: RootSystem) {
+class VisionSystem(private val root: RootSystem) {
     private var foundSample: Point? = null
     private var done = false
     private var firstGo = true
-    init {
+    private var running = false
 
-        Log.i("Grab Command", "Grab Command Init")
-    }
-
-
-    suspend fun execute() {
-        if (done) return
+    suspend fun periodic() {
+        if (done || !running) return
         try {
             if (root.intake.sampleDetector.centroid.get() != null) {
                 // TODO: Move a little bit farther and then find the centroid
@@ -39,11 +33,17 @@ class GrabSampleCommand(private val root: RootSystem) {
                 root.telemetry.addData("linkageValue", linkageValue)
                 if (linkageValue < 0) { // TODO: get a better lower bound than 0
                     // Move to the left and start searching again if nothing is found.
-                    root.intake.setLinkageFunc(IntakeSystem.LinkagePosition.FULL).schedule()
-                    FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED)).schedule()
+                    root.intake.setLinkageFunc(LinkagePosition.FULL)
+                    FollowPath(
+                        root.follower,
+                        AlignTranslationalPath.alignLatitudinal(
+                            root.follower,
+                            root.follower.pose.y - Constants.VISION_LAT_SEARCH_SPEED
+                        )
+                    )
 
                 } else {
-                    root.intake.setLinkage(linkageValue).schedule()
+                    root.intake.setLinkage(linkageValue)
                 }
             }
         } catch (e: NullPointerException) {
@@ -62,7 +62,7 @@ class GrabSampleCommand(private val root: RootSystem) {
                 val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
                 foundSample = null
                 if (linkageValue > 0) {
-                    root.intake.setLinkage(linkageValue).schedule()
+                    root.intake.setLinkage(linkageValue)
                 }
                 return
             }
@@ -76,7 +76,7 @@ class GrabSampleCommand(private val root: RootSystem) {
                 root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - xDiff)
             // Throwing an error if the value is out of the range makes debugging easier than coercing the values
             // into an acceptable range because we see if the values are actually insane.
-            assert(outputValue in 0.0..IntakeSystem.LEFT_PIVOT_TARGET) { outputValue }
+            assert(outputValue in 0.0..IntakeSystem.PIVOT_TARGET) { outputValue }
 
             val yDiff = ((SampleDetection.SUBHEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
 //            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
@@ -85,27 +85,31 @@ class GrabSampleCommand(private val root: RootSystem) {
             Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
             root.intake.setLinkage(outputValue)
-                            .andThen(WaitCommand(500))
-                            .andThen(InstantCommand(root.intake::visionWristRotation)).andThen(WaitCommand(250))
+            delay(500L)
+            root.intake::visionWristRotation
+            delay(250L)
 //                           ` .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
-                            .andThen(FollowPath(root.follower, AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff), 0.8))
-                            .andThen(root.intake.strikeIntake())
-                            .andThen(WaitCommand(250))
-                            .andThen(root.intake.setClaw(IntakeSystem.IntakePosition.TARGET))
-                            .andThen(WaitCommand(250))
-                            .andThen(root.intake.hoverIntake()).schedule()
+            FollowPath(
+                root.follower,
+                AlignTranslationalPath.alignLatitudinal(root.follower, root.follower.pose.x - yDiff),
+                0.8
+            )
+            root.intake.strikeIntake()
+            delay(250L)
+            root.intake.setClaw(IntakePosition.TARGET)
+            delay(250L)
+            root.intake.hoverIntake()
             Log.i("Grab Command", "Command Finished")
             done = true
         }
     }
 
-    fun isFinished(): Boolean {
-        return done
-    }
+    fun isFinished(): Boolean = done
 
-    private fun corelation(x: Double): Double { // input pixels to output inches
-//        return 0.842 * exp(x* 0.00594)
-//        return 0.0176 * x - 0.205;
+    /**
+     * input pixels to output inches
+     */
+    private fun corelation(x: Double): Double {
         return 0.0817 + 0.0112 * x + 1.9 * (10.0).pow(-5) * x * x
     }
 }
