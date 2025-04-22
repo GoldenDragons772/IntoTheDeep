@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
 @TeleOp(name = "Duo TeleOp")
-class Duo: CommandOpMode() {
+class Duo : LinearOpMode() {
 
     private lateinit var driveManager: DriveManager
-
-    override fun initialize() {
-
+    override fun runOpMode() {
         val mapping = DriveManager.Mapping(
             gripMapping = gamepad2::x,
             lowclimbMapping = gamepad2::dpad_left,
@@ -29,16 +26,18 @@ class Duo: CommandOpMode() {
             climbDownMapping = gamepad1::left_bumper,
             moveIntakeMapping = gamepad2::left_trigger
         )
-        driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping, AllianceSelector.selectAlliance(gamepad1, telemetry))
-
-    }
-
-    /**
-     * Runs when the run button is pressed. Runs the main drive loop.
-     */
-    override fun run() {
-        super.run()
-        driveManager.update()
+        driveManager = DriveManager(
+            hardwareMap,
+            telemetry,
+            gamepad1,
+            gamepad2,
+            mapping,
+            AllianceSelector.selectAlliance(gamepad1, telemetry)
+        )
+        waitForStart()
+        while (!isStopRequested) {
+            driveManager.update()
+        }
     }
 
 }

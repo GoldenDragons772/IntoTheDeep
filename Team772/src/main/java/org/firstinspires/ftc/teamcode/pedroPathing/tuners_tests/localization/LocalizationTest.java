@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import kotlin.coroutines.EmptyCoroutineContext;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;
@@ -28,10 +29,10 @@ import com.pedropathing.util.Drawing;
 import java.util.Arrays;
 import java.util.List;
 
-import org.firstinspires.ftc.teamcode.implementation.IntakeSystem;
-import org.firstinspires.ftc.teamcode.implementation.RootSystem;
+import org.firstinspires.ftc.teamcode.implementation.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import kotlinx.coroutines.*;
 
 
 /**
@@ -99,12 +100,23 @@ public class LocalizationTest extends OpMode {
 
         wristServo = hardwareMap.get(Servo.class, "hSwivelServo");
         wristServo.setDirection(Servo.Direction.REVERSE);
-        root.getIntake().setClaw(IntakeSystem.IntakePosition.HOME).schedule();
+        root.getIntake().setClaw(ClawState.OPEN);
 
-        root.getIntake().setLinkage(IntakeSystem.LinkagePosition.FULL).schedule();
-        root.getIntake().hoverIntake().schedule();
-        root.getIntake().setPivot(IntakeSystem.IntakePosition.HOME).schedule();
-        root.getIntake().strikeIntake().schedule();
+        root.getIntake().getLinkage().set(LinkageState.FULL);
+        try {
+            BuildersKt.runBlocking(
+                    EmptyCoroutineContext.INSTANCE
+                    , (scope, continuation) -> {
+                        root.getIntake().hoverIntake(continuation);
+                        root.getIntake().setPivot(IntakeState.HOME);
+                        root.getIntake().strikeIntake(continuation);
+                        return null;
+                    }
+            );
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         poseUpdater.setPose(new Pose(8, 104, Math.toRadians(270)));
 

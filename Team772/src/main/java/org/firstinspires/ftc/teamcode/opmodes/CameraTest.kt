@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.runBlocking
+import org.firstinspires.ftc.teamcode.implementation.ClawState
 import org.firstinspires.ftc.teamcode.implementation.IntakeState
 import org.firstinspires.ftc.teamcode.implementation.LinkageState
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
@@ -24,8 +25,8 @@ class CameraTest : LinearOpMode() {
         wristServo.direction = Servo.Direction.REVERSE
 
         runBlocking {
-            root.intake.setClaw(IntakeState.HOME)
-            root.intake.setLinkage(LinkageState.FULL)
+            root.intake.setClaw(ClawState.OPEN)
+            root.intake.linkage.set(LinkageState.FULL)
             root.intake.hoverIntake()
             root.intake.setPivot(IntakeState.HOME)
         }

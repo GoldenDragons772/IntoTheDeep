@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.implementation
 import android.util.Log
 import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
+import org.firstinspires.ftc.teamcode.helpers.Util.blockPath
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import kotlin.math.pow
@@ -23,7 +24,7 @@ class VisionSystem(private val root: RootSystem) {
 
     suspend fun periodic() {
         if (done || !running) return
-        Log.i("Vision", root.intake.horizontalSlideExtension.toString())
+        Log.i("Vision", root.intake.linkage.extension.toString())
         if (foundSample != null) {
             Log.i("Vision", "found sample")
             // Claw is initially at an extreme x value, and when the position of the found sample is saved it needs to be able to move closer to the sample
@@ -33,46 +34,46 @@ class VisionSystem(private val root: RootSystem) {
             val xPosInches = corelation(SampleDetection.WIDTH - foundSample!!.x)
             val xDiff = Constants.CAMERA_BOTTOM_OFFSET - xPosInches // inches
             if (xDiff > Constants.VISION_MAX_HEIGHT || xDiff < 0) { // Discard if it's too high up the screen and keep looking for values further down
-                val linkageValue = root.intake.valueCache.linkagePos - Constants.VISION_LONG_SEARCH_SPEED
+                val linkageValue = root.intake.linkage.cachedPos - Constants.VISION_LONG_SEARCH_SPEED
                 foundSample = null
                 if (linkageValue > 0) {
-                    root.intake.setLinkage(linkageValue)
+                    root.intake.linkage.set(linkageValue)
                 }
                 return
             }
             // Convert the difference (inches) to an output (servo space) to be used with the horizontal slides.
 
             // horizontalSlideExtension seems to not be updating.
-            assert(root.intake.horizontalSlideExtension > 0) { root.intake.horizontalSlideExtension }
-            assert(root.intake.horizontalSlideExtension > xDiff) { "$xDiff $xPosInches" }
+            assert(root.intake.linkage.extension > 0) { root.intake.linkage.extension }
+            assert(root.intake.linkage.extension > xDiff) { "$xDiff $xPosInches" }
             Log.i("Vision", "$xDiff $xPosInches")
-            val outputValue =
-                root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - xDiff)
+//            val outputValue =
+//                root.intake.linkage.setLength(root.intake.linkage.extension - xDiff)
             // Throwing an error if the value is out of the range makes debugging easier than coercing the values
             // into an acceptable range because we see if the values are actually insane.
-            assert(outputValue in 0.0..IntakeSystem.PIVOT_TARGET) { outputValue }
+//            assert(outputValue in 0.0..IntakeSystem.PIVOT_TARGET) { outputValue }
 
             val yDiff = ((SampleDetection.SUBHEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
 //            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;
             Log.i("VisionH", root.follower.pose.heading.toString())
             Log.i("VisionH", "$yDiff yDiff")
-            Log.i("Vision", outputValue.toString())
+//            Log.i("Vision", outputValue.toString())
             // Set the linkage to the position, then perform the vision wrist stuff, then strike, grab, and hover again.
 
-            root.intake.setLinkage(outputValue)
+            root.intake.linkage.extension -= xDiff
             delay(500)
-            root.intake.visionWristRotation()
+            root.intake.wrist.visionWristRotation()
             delay(250)
 //                           ` .andThen(HoldPointCommand(root.follower, Pose(root.follower.pose.x, root.follower.pose.y - (yDiff)))).withTimeout(1000)
-            root.follower.followPath(
+            root.follower.blockPath(
                 AlignTranslationalPath.alignLatitudinal(
                     root.follower.pose,
                     root.follower.pose.x - yDiff
                 ), 0.8, false
-            )
+            ).join()
             root.intake.strikeIntake()
             delay(250)
-            root.intake.setClaw(IntakeState.TARGET)
+            root.intake.setClaw(ClawState.CLOSED)
             delay(250)
             root.intake.hoverIntake()
 
@@ -83,7 +84,7 @@ class VisionSystem(private val root: RootSystem) {
             if (root.intake.sampleDetector.centroid.get() != null) {
                 // TODO: Move a little bit farther and then find the centroid
                 if (firstGo) {
-//                    root.intake.setLinkage(root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - 0.5))
+//                    root.intake.linkage.set(root.intake.linkage.horizontalSlideExtensionConversion(root.intake.linkage.horizontalSlideExtension - 0.5))
 //                        .schedule()
                     firstGo = false
                     return
@@ -92,11 +93,11 @@ class VisionSystem(private val root: RootSystem) {
                 foundSample = root.intake.sampleDetector.centroid.get()
 
             } else {
-                val linkageValue = root.intake.valueCache.linkagePos - Constants.VISION_LONG_SEARCH_SPEED
+                val linkageValue = root.intake.linkage.cachedPos - Constants.VISION_LONG_SEARCH_SPEED
                 root.telemetry.addData("linkageValue", linkageValue)
                 if (linkageValue < 0) { // TODO: get a better lower bound than 0
                     // Move to the left and start searching again if nothing is found.
-                    root.intake.setLinkage(LinkageState.FULL)
+                    root.intake.linkage.set(LinkageState.FULL)
 
                     root.follower.followPath(
                         AlignTranslationalPath.alignLatitudinal(
@@ -107,7 +108,7 @@ class VisionSystem(private val root: RootSystem) {
 
                     Log.i("Sample Auto", "Move to Translational.")
                 } else {
-                    root.intake.setLinkage(linkageValue)
+                    root.intake.linkage.set(linkageValue)
                 }
             }
         } catch (e: NullPointerException) {

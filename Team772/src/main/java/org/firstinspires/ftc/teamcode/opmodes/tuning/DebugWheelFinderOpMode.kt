@@ -1,48 +1,28 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.tuning
 
-import com.arcrobotics.ftclib.hardware.motors.Motor
-import com.arcrobotics.ftclib.hardware.motors.MotorEx
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
+
 // ~ should always sort last alphabetically
 @TeleOp(name = "~DebugWheelFinder") // Disable for comps
 class DebugWheelFinderOpMode : LinearOpMode() {
     override fun runOpMode() {
-        val FLMotor = MotorEx(hardwareMap, "FLMotor")
-        val FRMotor = MotorEx(hardwareMap, "FRMotor")
-        val BLMotor = MotorEx(hardwareMap, "BLMotor")
-        val BRMotor = MotorEx(hardwareMap, "BRMotor")
-        FLMotor.setRunMode(Motor.RunMode.RawPower)
-        BLMotor.setRunMode(Motor.RunMode.RawPower)
-        FRMotor.setRunMode(Motor.RunMode.RawPower)
-        BRMotor.setRunMode(Motor.RunMode.RawPower)
-        while (!isStopRequested){
+        val FLMotor = hardwareMap.get(DcMotorEx::class.java, "FLMotor")
+        val FRMotor = hardwareMap.get(DcMotorEx::class.java, "FRMotor")
+        val BLMotor = hardwareMap.get(DcMotorEx::class.java, "BLMotor")
+        val BRMotor = hardwareMap.get(DcMotorEx::class.java, "BRMotor")
+        FLMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        BLMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        FRMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        BRMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        while (!isStopRequested) {
             val driveSpeed = gamepad1.left_trigger.toDouble()
-            if (gamepad1.dpad_up) {
-                FLMotor.set(driveSpeed)
-            }
-            else {
-                FLMotor.set(0.0)
-            }
-            if (gamepad1.dpad_right){
-                FRMotor.set(driveSpeed)
-            }
-            else {
-                FRMotor.set(0.0)
-            }
-            if (gamepad1.dpad_down){
-                BRMotor.set(driveSpeed)
-            }
-            else {
-                BRMotor.set(0.0)
-            }
-
-            if (gamepad1.dpad_left){
-                BLMotor.set(driveSpeed)
-            }
-            else {
-                BLMotor.set(0.0)
-            }
+            FLMotor.power = if (gamepad1.dpad_up) driveSpeed else 0.0
+            FRMotor.power = if (gamepad1.dpad_right) driveSpeed else 0.0
+            BLMotor.power = if (gamepad1.dpad_down) driveSpeed else 0.0
+            BRMotor.power = if (gamepad1.dpad_left) driveSpeed else 0.0
         }
     }
 }

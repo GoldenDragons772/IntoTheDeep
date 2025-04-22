@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
-import com.arcrobotics.ftclib.kotlin.extensions.util.clamp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
+import org.firstinspires.ftc.teamcode.helpers.Util.clamp
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.openftc.easyopencv.OpenCvCamera.AsyncCameraOpenListener
 import org.openftc.easyopencv.OpenCvCameraFactory
@@ -375,7 +375,8 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, is
 
     }
     inner class Linkage {
-        private var cachedPos = 0.0
+        var cachedPos = 0.0
+        private set
         internal var state: LinkageState = LinkageState.HOME
         private val leftLinkageServo: Servo = root.hw.get(Servo::class.java, "lLinkageServo")
         private val rightLinkageServo: Servo = root.hw.get(Servo::class.java, "rLinkageServo")
@@ -386,35 +387,8 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, is
         }
 
 
-        /**
-         * @param desiredLength the desired length of the slides in inches (between zero and the maximum length, in this case 15 inches).
-         * @return a command
-         */
-        @SuppressLint("DefaultLocale")
-        fun horizontalSlideExtensionConversion(desiredLength: Double): Double {
-            val adjustedLength = desiredLength + Constants.LINKAGE_OFFSET
-            Log.i("Vision", "Adjusted $adjustedLength")
-            val angle = acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH))
-            assert(Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE) {
-                String.format(
-                    "%f, %f",
-                    desiredLength,
-                    angle
-                )
-            }  //
-            val servoOutput = angleToLinkageServo(angle)
-            assert(0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET) {
-                String.format(
-                    "%f, %f, %f",
-                    servoOutput,
-                    desiredLength,
-                    angle
-                )
-            }
-            return servoOutput
-        }
 
-        val horizontalSlideExtension: Double
+        var extension: Double
             get() {
                 val lowerBound = Constants.LINKAGE_HOME_ANGLE
                 val angleIntervalWidth =
@@ -425,6 +399,28 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, is
                     currentServoRatio * angleIntervalWidth + lowerBound
                 )) - Constants.LINKAGE_OFFSET
                 // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
+            }
+            set(value){
+                val adjustedLength = value + Constants.LINKAGE_OFFSET
+                Log.i("Vision", "Adjusted $adjustedLength")
+                val angle = acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH))
+                assert(Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE) {
+                    String.format(
+                        "%f, %f",
+                        value,
+                        angle
+                    )
+                }  //
+                val servoOutput = angleToLinkageServo(angle)
+                assert(0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET) {
+                    String.format(
+                        "%f, %f, %f",
+                        servoOutput,
+                        value,
+                        angle
+                    )
+                }
+                this.set(servoOutput)
             }
 
         private fun angleToLinkageServo(angle: Double): Double {
