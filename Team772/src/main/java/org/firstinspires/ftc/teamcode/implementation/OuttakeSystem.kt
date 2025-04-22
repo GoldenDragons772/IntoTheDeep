@@ -35,7 +35,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) {
 
 
     // State Machine
-    private var isClawClosed = false
+    private var clawState = ClawState.OPEN
     private var homeState = false
 
 
@@ -48,7 +48,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) {
         setStrike(OuttakeState.HOME)
         setPivot(OuttakeState.HOME)
         setWrist(OuttakeState.HOME)
-        setClaw(false)
+        setClaw(ClawState.OPEN)
     }
 
     fun getClawButtonState() = clawButton.state
@@ -92,15 +92,15 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) {
         }
     }
 
-    fun setClaw(shouldClose: Boolean) {
-        if (!shouldClose) {
-            assert(isClawClosed) { "Claw is already open!" }
+    fun setClaw(state: ClawState) {
+        if (state == ClawState.OPEN) {
+            assert(clawState == ClawState.CLOSED) { "Claw is already open!" }
             clawServo.position = Constants.CLAW_SERVO_TARGET // Open
         } else {
-            assert(!isClawClosed) { "Claw is already closed!" }
+            assert(clawState == ClawState.OPEN) { "Claw is already closed!" }
             clawServo.position = Constants.CLAW_SERVO_HOME // Close
         }
-        isClawClosed = shouldClose
+        clawState = state
 
     }
 
@@ -167,5 +167,5 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) {
     /**
      * Toggles the claw between the open (ready to score) position and the closed position.
      */
-    suspend fun toggleClaw() = setClaw(!isClawClosed)
+    suspend fun toggleClaw() = if (clawState == ClawState.CLOSED) setClaw(ClawState.OPEN) else setClaw(ClawState.CLOSED)
 }

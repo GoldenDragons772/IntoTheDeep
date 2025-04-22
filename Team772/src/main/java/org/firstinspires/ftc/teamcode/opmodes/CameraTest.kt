@@ -5,10 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.runBlocking
-import org.firstinspires.ftc.teamcode.implementation.IntakePosition
-import org.firstinspires.ftc.teamcode.implementation.LinkagePosition
+import org.firstinspires.ftc.teamcode.implementation.IntakeState
+import org.firstinspires.ftc.teamcode.implementation.LinkageState
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
 
 // ~ should always sort last alphabetically
 @TeleOp(name = "~Camera Test")
@@ -25,15 +24,13 @@ class CameraTest : LinearOpMode() {
         wristServo.direction = Servo.Direction.REVERSE
 
         runBlocking {
-            root.intake.setClaw(IntakePosition.HOME)
-            root.intake.setLinkage(LinkagePosition.FULL)
+            root.intake.setClaw(IntakeState.HOME)
+            root.intake.setLinkage(LinkageState.FULL)
             root.intake.hoverIntake()
-            root.intake.setPivot(IntakePosition.HOME)
+            root.intake.setPivot(IntakeState.HOME)
         }
         waitForStart()
-        runBlocking {
-            GrabSampleCommand(root);
-        }
+        root.vision.enable()
 //        root.intake.toggleIntake().schedule()
         while (!isStopRequested) {
             root.update()

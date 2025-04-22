@@ -54,6 +54,10 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) {
         climbMotor2.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
+    fun set(value: ClimbState){
+        climbState = value
+        if (climbState != ClimbState.UNSHACKLED) targetPosition = climbState.position
+    }
     suspend fun periodic() {
         val error = targetPosition - this.slidesPosition
         val derivative = (error - lastError) / timer.seconds()

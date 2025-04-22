@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.implementation
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
@@ -16,28 +17,33 @@ import org.openftc.easyopencv.OpenCvWebcam
 import kotlin.math.acos
 import kotlin.math.cos
 
-enum class IntakePosition {
+enum class IntakeState {
     HOME,
     TARGET,
     TRANSFER,
     HOVER
 }
 
-enum class LinkagePosition {
+enum class LinkageState {
     HOME,
     FULL,
     HALF
 }
 
-enum class WristPosition {
+enum class WristState {
     HOME,
     TARGET,
     ANGLE,
     ANGLE_BUCKET
 }
 
+enum class ClawState {
+    OPEN,
+    CLOSED
+}
+
 @Config
-class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, private val isSpecAuto: Boolean) {
+class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, isSpecAuto: Boolean) {
     companion object {
         // Set Positions for Linkage
         @JvmField var LEFT_LINKAGE_HOME: Double = 0.0
@@ -70,52 +76,37 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
 
     }
 
-    private var pivotState: IntakePosition = IntakePosition.HOME
-    private var wristState: WristPosition = WristPosition.HOME
-    private var intakeState: IntakePosition = IntakePosition.HOME
-    private var linkageState: LinkagePosition = LinkagePosition.HOME
-    private var clawState: Boolean = false
+    private var pivotState: IntakeState = IntakeState.HOME
+    private var wristState: WristState = WristState.HOME
+    private var intakeState: IntakeState = IntakeState.HOME
+    private var clawState: ClawState = ClawState.OPEN
 
-    inner class ValueCache {
-        var wristPos: Double = 0.64
-        var linkagePosition: Double = 0.0
-    }
+    val linkage = Linkage()
+    val wrist = Wrist()
 
-
-    private val leftLinkageServo: Servo = root.hw.get(Servo::class.java, "lLinkageServo")
-    private val rightLinkageServo: Servo = root.hw.get(Servo::class.java, "rLinkageServo")
     private val leftStrikeServo: Servo = root.hw.get(Servo::class.java, "hLeftStrike")
     private val rightStrikeServo: Servo = root.hw.get(Servo::class.java, "hRightStrike")
     private val pivotServo: Servo = root.hw.get(Servo::class.java, "hPivot")
-    private val wristServo: Servo = root.hw.get(Servo::class.java, "hSwivelServo")
     private val clawServo: Servo = root.hw.get(Servo::class.java, "intakeClawServo")
 
     var camera: OpenCvWebcam
     var sampleDetector: SampleDetection
-    var valueCache: ValueCache = ValueCache()
 
 
     init {
-        rightLinkageServo.direction = Servo.Direction.REVERSE
-        rightStrikeServo.direction = Servo.Direction.REVERSE
-        wristServo.direction = Servo.Direction.REVERSE
 
-        rightLinkageServo.position = LEFT_LINKAGE_HOME
-        leftLinkageServo.position = LEFT_LINKAGE_HOME
+        linkage.set(LinkageState.HOME)
 
-        pivotServo.position = PIVOT_HOME
+        setPivot(IntakeState.HOME)
 
         if (!isAuto || !isSpecAuto) {
-            setLinkage(LEFT_LINKAGE_HOME)
-
 
             clawServo.position = CLAW_HOME
 
-            leftStrikeServo.position = STRIKE_PIVOT_HOME
-            rightStrikeServo.position = STRIKE_PIVOT_HOME
+            setStrike(IntakeState.HOME)
 
             pivotServo.position = PIVOT_HOME + 0.2
-            wristServo.position = WRIST_HOME
+            wrist.set(WristState.HOME)
         }
 
         val webcamName = root.hw.get(WebcamName::class.java, "GDVision")
@@ -128,15 +119,17 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
         camera.openCameraDeviceAsync(object : AsyncCameraOpenListener {
             override fun onOpened() {
                 Log.i("Camera", "Started streaming")
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG)
+                camera.startStreaming(
+                    SampleDetection.SUBWIDTH,
+                    SampleDetection.SUBHEIGHT,
+                    OpenCvCameraRotation.UPRIGHT,
+                    OpenCvWebcam.StreamFormat.MJPEG
+                )
                 camera.setPipeline(sampleDetector)
                 FtcDashboard.getInstance().startCameraStream(camera, 100.0)
-                //                camera.getGainControl().setGain(Constants.CAMERA_GAIN);
-//                camera.pauseViewport(); // have it paused by default.
             }
 
-            override fun onError(i: Int) {
-            }
+            override fun onError(i: Int) {}
         })
     }
 
@@ -144,243 +137,100 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
         if (!isAuto) {
             root.telemetry.addData("extendState", intakeState.toString())
             root.telemetry.addData("pivotPosition", pivotState.toString())
-            root.telemetry.addData("linkageState", linkageState.toString())
-            if (pivotState == IntakePosition.HOME || pivotState == IntakePosition.HOVER && sampleDetector.sampleRotation.get() != -70.0 && !clawState) {
-                visionWristRotation()
+            root.telemetry.addData("linkageState", linkage.state.toString())
+            if (pivotState == IntakeState.HOME || pivotState == IntakeState.HOVER && sampleDetector.sampleRotation.get() != -70.0 && clawState == ClawState.OPEN) {
+                wrist.visionWristRotation()
             }
         }
     }
 
-    fun visionWristRotation() {
-        val rotationValue = sampleDetector.sampleRotation.get()
-        var inputValue = ((rotationValue) / Math.PI + 0.5) % 1
-        if (inputValue < 0) inputValue += 1.0
-        wristServo.position =
-            inputValue * Constants.VISION_SERVO_MULTIPLIER
-        this.valueCache.wristPos = inputValue
-        root.telemetry.addData("Theta --", rotationValue)
-        root.telemetry.addData("Rotation", inputValue)
-    }
 
-    /**
-     * @param desiredLength the desired length of the slides in inches (between zero and the maximum length, in this case 15 inches).
-     * @return a command
-     */
-    fun horizontalSlideExtensionConversion(desiredLength: Double): Double {
-        val adjustedLength = desiredLength + 3.92904
-        Log.i("Vision", "Adjusted $adjustedLength")
-        val angle = acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH))
-        assert(Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE) {
-            String.format(
-                "%f, %f",
-                desiredLength,
-                angle
-            )
-        }  //
-        val servoOutput = angleToLinkageServo(angle)
-        assert(0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET) {
-            String.format(
-                "%f, %f, %f",
-                servoOutput,
-                desiredLength,
-                angle
-            )
-        }
-        return servoOutput
-    }
-
-    val horizontalSlideExtension: Double
-        get() {
-            val lowerBound = Constants.LINKAGE_HOME_ANGLE
-            val angleIntervalWidth =
-                (Constants.LINKAGE_TARGET_ANGLE - lowerBound)
-            val currentServoRatio =
-                valueCache.linkagePosition / LEFT_LINKAGE_TARGET
-            return (2 * Constants.LINKAGE_LENGTH * cos(
-                currentServoRatio * angleIntervalWidth + lowerBound
-            )) - 3.92904
-            // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
-        }
-
-    fun angleToLinkageServo(angle: Double): Double {
-        // 0.46 * (78 - 12) + 12
-        // s * (m_1 - m_0) + m_0 = a
-        // (a - m_0) / (m_1 - m_0)
-        return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE))
-    }
-
-    fun setLinkage(state: LinkagePosition) {
-        when (state) {
-            LinkagePosition.HOME -> {
-                setLinkage(LEFT_LINKAGE_HOME)
-                linkageState = LinkagePosition.HOME
-            }
-
-            LinkagePosition.FULL -> {
-                setLinkage(LEFT_LINKAGE_TARGET)
-                linkageState = LinkagePosition.FULL
-            }
-
-            LinkagePosition.HALF -> {
-                setLinkage(LEFT_LINKAGE_HALF)
-                linkageState = LinkagePosition.HALF
-            }
-        }
-    }
-
-    fun setLinkage(pos: Double) {
-        assert(pos in 0.0..LEFT_LINKAGE_TARGET) { pos }
-        Log.i("Linkage", pos.toString())
-        valueCache.linkagePosition = pos
-        leftLinkageServo.position = pos
-        rightLinkageServo.position = pos
-
-    }
-
-    fun setStrike(pos: IntakePosition): () -> Unit {
+    fun setStrike(pos: IntakeState): () -> Unit {
         return when (pos) {
-            IntakePosition.HOME -> { ->
+            IntakeState.HOME -> { ->
                 leftStrikeServo.position = STRIKE_PIVOT_HOME
                 rightStrikeServo.position = STRIKE_PIVOT_HOME
             }
 
-            IntakePosition.TARGET -> { ->
+            IntakeState.TARGET -> { ->
                 leftStrikeServo.position = STRIKE_PIVOT_TARGET
                 rightStrikeServo.position = STRIKE_PIVOT_TARGET
             }
 
-            IntakePosition.TRANSFER -> { ->
+            IntakeState.TRANSFER -> { ->
                 leftStrikeServo.position = STRIKE_PIVOT_TRANSFER
                 rightStrikeServo.position = STRIKE_PIVOT_TRANSFER
             }
 
-            IntakePosition.HOVER -> { ->
+            IntakeState.HOVER -> { ->
                 leftStrikeServo.position = STRIKE_PIVOT_TRANSFER
                 rightStrikeServo.position = STRIKE_PIVOT_TRANSFER
             }
         }
     }
-
-    fun setPivot(pos: IntakePosition): () -> Unit {
+    fun setPivot(pos: IntakeState): () -> Unit {
         return when (pos) {
-            IntakePosition.HOME -> { ->
+            IntakeState.HOME -> { ->
                 pivotServo.position = PIVOT_HOME
                 pivotState = pos
             }
 
-            IntakePosition.TARGET -> { ->
+            IntakeState.TARGET -> { ->
                 pivotServo.position = PIVOT_TARGET
                 pivotState = pos
             }
 
-            IntakePosition.TRANSFER -> { ->
+            IntakeState.TRANSFER -> { ->
                 pivotServo.position = PIVOT_TRANSFER
                 pivotState = pos
             }
 
-            IntakePosition.HOVER -> { ->
+            IntakeState.HOVER -> { ->
                 pivotServo.position = PIVOT_HOME
                 pivotState = pos
             }
         }
     }
-
-    fun setWrist(pos: WristPosition) {
-        when (pos) {
-            WristPosition.HOME -> {
-                wristServo.position = WRIST_HOME
-                wristState = WristPosition.HOME
-            }
-
-            WristPosition.TARGET -> {
-                wristState = WristPosition.TARGET
-                wristServo.position = WRIST_TARGET
-            }
-
-            WristPosition.ANGLE -> {
-                wristState = WristPosition.ANGLE
-                wristServo.position = WRIST_ANGLE
-            }
-
-            WristPosition.ANGLE_BUCKET -> {
-                wristState = WristPosition.ANGLE_BUCKET
-                wristServo.position = WRIST_ANGLE_BUCKET
-            }
-        }
-    }
-
-    fun incWrist(pos: Double) {
-        val newPos = ((valueCache.wristPos + pos) % 1.0).clamp(0.0, 1.0)
-        setWrist(newPos)
-        wristState = when (valueCache.wristPos) {
-            WRIST_TARGET -> WristPosition.TARGET
-            WRIST_ANGLE -> WristPosition.ANGLE
-            else -> WristPosition.HOME
-        }
-        Log.i("Intake", valueCache.wristPos.toString())
-    }
-
-    fun setWrist(pos: Double) {
-        wristServo.position = pos
-        valueCache.wristPos = pos
-    }
-
-    fun setClaw(pos: IntakePosition) {
-        when (pos) {
-            IntakePosition.HOME -> {
-                clawState = false
-                clawServo.position = CLAW_HOME
-            }
-
-            IntakePosition.TARGET -> {
-                clawState = true
-                clawServo.position = CLAW_TARGET
-            }
-
-            IntakePosition.TRANSFER -> {
-                clawState = false
-                clawServo.position = CLAW_STROKE
-            }
-
-            IntakePosition.HOVER -> {
-                clawState = false
-                clawServo.position = CLAW_HOME
-            }
+    fun setClaw(state: ClawState) {
+        clawState = state
+        clawServo.position = when (state){
+            ClawState.CLOSED -> CLAW_TARGET
+            ClawState.OPEN -> CLAW_HOME
         }
     }
 
     suspend fun moveToHome() {
-        intakeState = IntakePosition.HOME
-        setWrist(WristPosition.HOME)
-        setLinkage(LinkagePosition.HOME)
-        setStrike(IntakePosition.HOME)
-        setPivot(IntakePosition.HOME)
+        intakeState = IntakeState.HOME
+        wrist.set(WristState.HOME)
+        linkage.set(LinkageState.HOME)
+        setStrike(IntakeState.HOME)
+        setPivot(IntakeState.HOME)
     }
 
     suspend fun moveToTransfer() {
-        intakeState = IntakePosition.TRANSFER
+        intakeState = IntakeState.TRANSFER
         //                    camera.stopStreaming();
         sampleDetector.isEnabled.set(false)
-        setWrist(WristPosition.HOME)
-        setLinkage(LinkagePosition.HOME)
-        setStrike(IntakePosition.TRANSFER)
-        setPivot(IntakePosition.TRANSFER)
+        wrist.set(WristState.HOME)
+        linkage.set(LinkageState.HOME)
+        setStrike(IntakeState.TRANSFER)
+        setPivot(IntakeState.TRANSFER)
     }
 
     suspend fun moveToTarget() {
-        when (this.linkageState) {
-            LinkagePosition.HOME -> {
-                setLinkage(LinkagePosition.FULL)
+        when (this.linkage.state) {
+            LinkageState.HOME -> {
+                linkage.set(LinkageState.FULL)
                 hoverIntake()
             }
 
-            LinkagePosition.FULL -> {
-                setLinkage(LinkagePosition.HOME)
+            LinkageState.FULL -> {
+                linkage.set(LinkageState.HOME)
                 moveToTransfer()
             }
 
-            LinkagePosition.HALF -> {
-                setLinkage(LinkagePosition.HOME)
+            LinkageState.HALF -> {
+                linkage.set(LinkageState.HOME)
                 moveToTransfer()
             }
         }
@@ -394,44 +244,43 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
 
     suspend fun toggleHover() {
         when (this.pivotState) {
-            IntakePosition.HOVER -> strikeIntake()
-            IntakePosition.TARGET -> hoverIntake()
-            IntakePosition.HOME -> TODO()
-            IntakePosition.TRANSFER -> TODO()
+            IntakeState.HOVER -> strikeIntake()
+            IntakeState.TARGET -> hoverIntake()
+            IntakeState.HOME -> TODO()
+            IntakeState.TRANSFER -> TODO()
         }
     }
 
     suspend fun hoverIntake() {
-        setStrike(IntakePosition.TRANSFER)
+        setStrike(IntakeState.TRANSFER)
         delay(150)
-        setPivot(IntakePosition.HOME)
-        pivotState = IntakePosition.HOVER
+        setPivot(IntakeState.HOME)
+        pivotState = IntakeState.HOVER
     }
 
     suspend fun strikeIntake() {
-        setPivot(IntakePosition.TARGET)
+        setPivot(IntakeState.TARGET)
         delay(150)
-        setStrike(IntakePosition.TARGET)
-        pivotState = IntakePosition.TARGET
+        setStrike(IntakeState.TARGET)
+        pivotState = IntakeState.TARGET
     }
 
     fun toggleClaw() {
-        if (clawState) setClaw(IntakePosition.HOME) else setClaw(IntakePosition.TARGET)
-        clawState = !clawState
+        if (clawState == ClawState.CLOSED) setClaw(ClawState.OPEN) else setClaw(ClawState.CLOSED)
     }
 
     fun toggleWrist() {
         when (this.wristState) {
-            WristPosition.HOME -> setWrist(WristPosition.TARGET)
-            WristPosition.ANGLE -> setWrist(WristPosition.HOME) //Each state must trigger the next one
-            WristPosition.TARGET -> setWrist(WristPosition.ANGLE)
-            WristPosition.ANGLE_BUCKET -> TODO()
+            WristState.HOME -> wrist.set(WristState.TARGET)
+            WristState.ANGLE -> wrist.set(WristState.HOME) //Each state must trigger the next one
+            WristState.TARGET -> wrist.set(WristState.ANGLE)
+            WristState.ANGLE_BUCKET -> TODO()
         }
     }
 
     suspend fun transferSample() {
         root.climb.climbState = ClimbState.HOME
-        root.outtake.setClaw(false)
+        root.outtake.setClaw(ClawState.OPEN)
         this.moveToTransfer()
         delay(200L)
         root.outtake.moveArmToTransfer()
@@ -440,29 +289,178 @@ class IntakeSystem(private val root: RootSystem, private val isAuto: Boolean, pr
                 delay(10) // busywaiting, but whatever
             }
         }
-        root.outtake.setClaw(true)
+        root.outtake.setClaw(ClawState.CLOSED)
         delay(500L)
-        this.setClaw(IntakePosition.HOME)
+        this.setClaw(ClawState.OPEN)
         root.outtake.moveArmToScore()
     }
 
     suspend fun toggleIntake() {
-        root.outtake.setClaw(false)
+        root.outtake.setClaw(ClawState.OPEN)
         root.outtake.moveArmToTransferPrep()
         when (this.intakeState) {
-            IntakePosition.HOME -> this.moveToTarget()
-            IntakePosition.TRANSFER -> this.moveToTarget()
-            IntakePosition.TARGET -> this.moveToTransfer()
-            IntakePosition.HOVER -> TODO()
+            IntakeState.HOME -> this.moveToTarget()
+            IntakeState.TRANSFER -> this.moveToTarget()
+            IntakeState.TARGET -> this.moveToTransfer()
+            IntakeState.HOVER -> TODO()
         }
     }
 
     suspend fun specimenCommandInverted() {
         this.moveToHome() // retract intake system
-        if (this.linkageState == LinkagePosition.FULL) delay(500)
-        root.climb.climbState = if (root.outtake.getSpecState()) {ClimbState.HIGH_CHAMBER_INVERTED} else ClimbState.HOME
+        if (this.linkage.state == LinkageState.FULL) delay(500)
+        root.climb.climbState = if (root.outtake.getSpecState()) {
+            ClimbState.HIGH_CHAMBER_INVERTED
+        } else ClimbState.HOME
         delay(100L) // Move arm to spec grab position
         root.outtake.toggleArmSpecInv()
     }
 
+    inner class Wrist {
+        private val wristServo: Servo = root.hw.get(Servo::class.java, "hSwivelServo")
+        internal var cachedPos: Double = 0.64
+        init {
+            wristServo.direction = Servo.Direction.REVERSE
+        }
+
+        fun visionWristRotation() {
+            val rotationValue = sampleDetector.sampleRotation.get()
+            var inputValue = ((rotationValue) / Math.PI + 0.5) % 1
+            if (inputValue < 0) inputValue += 1.0
+            wristServo.position =
+                inputValue * Constants.VISION_SERVO_MULTIPLIER
+            cachedPos = inputValue
+            root.telemetry.addData("Theta --", rotationValue)
+            root.telemetry.addData("Rotation", inputValue)
+        }
+        fun set(pos: WristState) {
+            when (pos) {
+                WristState.HOME -> {
+                    wristServo.position = WRIST_HOME
+                    wristState = WristState.HOME
+                }
+
+                WristState.TARGET -> {
+                    wristState = WristState.TARGET
+                    wristServo.position = WRIST_TARGET
+                }
+
+                WristState.ANGLE -> {
+                    wristState = WristState.ANGLE
+                    wristServo.position = WRIST_ANGLE
+                }
+
+                WristState.ANGLE_BUCKET -> {
+                    wristState = WristState.ANGLE_BUCKET
+                    wristServo.position = WRIST_ANGLE_BUCKET
+                }
+            }
+        }
+
+        fun incWrist(pos: Double) {
+            val newPos = ((cachedPos + pos) % 1.0).clamp(0.0, 1.0)
+            set(newPos)
+            wristState = when (cachedPos) {
+                WRIST_TARGET -> WristState.TARGET
+                WRIST_ANGLE -> WristState.ANGLE
+                else -> WristState.HOME
+            }
+            Log.i("Intake", cachedPos.toString())
+        }
+
+        fun set(pos: Double) {
+            wristServo.position = pos
+            cachedPos = pos
+        }
+
+    }
+    inner class Linkage {
+        private var cachedPos = 0.0
+        internal var state: LinkageState = LinkageState.HOME
+        private val leftLinkageServo: Servo = root.hw.get(Servo::class.java, "lLinkageServo")
+        private val rightLinkageServo: Servo = root.hw.get(Servo::class.java, "rLinkageServo")
+
+        init {
+            rightLinkageServo.direction = Servo.Direction.REVERSE
+            rightStrikeServo.direction = Servo.Direction.REVERSE
+        }
+
+
+        /**
+         * @param desiredLength the desired length of the slides in inches (between zero and the maximum length, in this case 15 inches).
+         * @return a command
+         */
+        @SuppressLint("DefaultLocale")
+        fun horizontalSlideExtensionConversion(desiredLength: Double): Double {
+            val adjustedLength = desiredLength + Constants.LINKAGE_OFFSET
+            Log.i("Vision", "Adjusted $adjustedLength")
+            val angle = acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH))
+            assert(Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE) {
+                String.format(
+                    "%f, %f",
+                    desiredLength,
+                    angle
+                )
+            }  //
+            val servoOutput = angleToLinkageServo(angle)
+            assert(0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET) {
+                String.format(
+                    "%f, %f, %f",
+                    servoOutput,
+                    desiredLength,
+                    angle
+                )
+            }
+            return servoOutput
+        }
+
+        val horizontalSlideExtension: Double
+            get() {
+                val lowerBound = Constants.LINKAGE_HOME_ANGLE
+                val angleIntervalWidth =
+                    (Constants.LINKAGE_TARGET_ANGLE - lowerBound)
+                val currentServoRatio =
+                    cachedPos / LEFT_LINKAGE_TARGET
+                return (2 * Constants.LINKAGE_LENGTH * cos(
+                    currentServoRatio * angleIntervalWidth + lowerBound
+                )) - Constants.LINKAGE_OFFSET
+                // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
+            }
+
+        private fun angleToLinkageServo(angle: Double): Double {
+            // 0.46 * (78 - 12) + 12
+            // s * (m_1 - m_0) + m_0 = a
+            // (a - m_0) / (m_1 - m_0)
+            return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE))
+        }
+
+        fun set(newState: LinkageState) {
+            when (newState) {
+                LinkageState.HOME -> {
+                    set(LEFT_LINKAGE_HOME)
+                    this.state = LinkageState.HOME
+                }
+
+                LinkageState.FULL -> {
+                    set(LEFT_LINKAGE_TARGET)
+                    this.state = LinkageState.FULL
+                }
+
+                LinkageState.HALF -> {
+                    set(LEFT_LINKAGE_HALF)
+                    this.state = LinkageState.HALF
+                }
+            }
+        }
+
+        fun set(pos: Double) {
+            assert(pos in 0.0..LEFT_LINKAGE_TARGET) { pos }
+            Log.i("Linkage", pos.toString())
+            cachedPos = pos
+            leftLinkageServo.position = pos
+            rightLinkageServo.position = pos
+
+        }
+
+    }
 }

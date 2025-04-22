@@ -7,12 +7,12 @@ import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.implementation.ClimbState
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import kotlin.reflect.KProperty1
+import kotlin.reflect.KProperty
 
 /**
  * Must a property that provides a float or boolean.
  */
-typealias Pressable = KProperty1<Gamepad, Any>
+typealias Pressable = KProperty<Any>
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -63,14 +63,14 @@ class DriveManager(
         }
     }
 
-    private fun isPressed(map: Pair<Pressable, UInt>): Boolean {
-        val value = map.first.get(getGamepad(map.second))
+    private fun isPressed(map: Pressable): Boolean {
+        val value = map.call()
         if (value is Float) return value > 0.0
         return value as Boolean
     }
 
     private fun registerBinding(
-        mapping: Pair<Pressable, UInt>,
+        mapping: Pressable,
         type: Binding.Type = Binding.Type.PRESSED,
         func: () -> Unit,
     ) {
@@ -103,8 +103,8 @@ class DriveManager(
         registerBinding(mapping.gripMapping) { root.intake.toggleClaw() }
         registerBinding(mapping.climbToHangSpec) { root.climb.climbState = ClimbState.HIGH_CHAMBER }
         registerBinding(mapping.clawMapping) { root.intake.toggleClaw() }
-        registerBinding(mapping.wristMappingLeft, Binding.Type.HELD) { root.intake.incWrist(-0.2) }
-        registerBinding(mapping.wristMappingRight, Binding.Type.HELD) { root.intake.incWrist(0.2) }
+        registerBinding(mapping.wristMappingLeft, Binding.Type.HELD) { root.intake.wrist.incWrist(-0.2) }
+        registerBinding(mapping.wristMappingRight, Binding.Type.HELD) { root.intake.wrist.incWrist(0.2) }
         if (mapping.moveIntakeMapping != null) {
             registerBinding(mapping.moveIntakeMapping)
             { suspend { root.intake.toggleHover() } }
@@ -115,21 +115,21 @@ class DriveManager(
     /**
      * Definition of possible mappings. Using this instead of a dictionary/hashmap allows for code completion.
      */
-    inner class Mapping(
-        val lowclimbMapping: Pair<Pressable, UInt>,
-        val highclimbMapping: Pair<Pressable, UInt>,
-        val unClimbMapping: Pair<Pressable, UInt>,
-        val aimMapping: Pair<Pressable, UInt>,
-        val gripMapping: Pair<Pressable, UInt>,
-        val transferMapping: Pair<Pressable, UInt>,
-        val climbToHangSpec: Pair<Pressable, UInt>,
-        val clawMapping: Pair<Pressable, UInt>,
-        val wristMappingLeft: Pair<Pressable, UInt>,
-        val wristMappingRight: Pair<Pressable, UInt>,
-        val hangSpecMapping: Pair<Pressable, UInt>,
-        val climbUpMapping: Pair<Pressable, UInt>,
-        val climbDownMapping: Pair<Pressable, UInt>,
-        val moveIntakeMapping: Pair<Pressable, UInt>?
+    class Mapping(
+        val lowclimbMapping: Pressable,
+        val highclimbMapping: Pressable,
+        val unClimbMapping: Pressable,
+        val aimMapping: Pressable,
+        val gripMapping: Pressable,
+        val transferMapping: Pressable,
+        val climbToHangSpec: Pressable,
+        val clawMapping: Pressable,
+        val wristMappingLeft: Pressable,
+        val wristMappingRight: Pressable,
+        val hangSpecMapping: Pressable,
+        val climbUpMapping: Pressable,
+        val climbDownMapping: Pressable,
+        val moveIntakeMapping: Pressable?
     )
 
     class Binding(val shouldRun: () -> Boolean, val toRun: () -> Unit, val type: Type) {

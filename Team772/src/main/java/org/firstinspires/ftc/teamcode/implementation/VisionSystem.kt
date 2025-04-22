@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.implementation
 
 import android.util.Log
-import com.pedropathing.commands.FollowPath
 import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
-import org.firstinspires.ftc.teamcode.opmodes.PathDelegateCommand
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
 import org.opencv.core.Point
 import kotlin.math.pow
@@ -35,7 +33,7 @@ class VisionSystem(private val root: RootSystem) {
             val xPosInches = corelation(SampleDetection.WIDTH - foundSample!!.x)
             val xDiff = Constants.CAMERA_BOTTOM_OFFSET - xPosInches // inches
             if (xDiff > Constants.VISION_MAX_HEIGHT || xDiff < 0) { // Discard if it's too high up the screen and keep looking for values further down
-                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
+                val linkageValue = root.intake.valueCache.linkagePos - Constants.VISION_LONG_SEARCH_SPEED
                 foundSample = null
                 if (linkageValue > 0) {
                     root.intake.setLinkage(linkageValue)
@@ -74,7 +72,7 @@ class VisionSystem(private val root: RootSystem) {
             )
             root.intake.strikeIntake()
             delay(250)
-            root.intake.setClaw(IntakePosition.TARGET)
+            root.intake.setClaw(IntakeState.TARGET)
             delay(250)
             root.intake.hoverIntake()
 
@@ -94,11 +92,11 @@ class VisionSystem(private val root: RootSystem) {
                 foundSample = root.intake.sampleDetector.centroid.get()
 
             } else {
-                val linkageValue = root.intake.valueCache.linkagePosition - Constants.VISION_LONG_SEARCH_SPEED
+                val linkageValue = root.intake.valueCache.linkagePos - Constants.VISION_LONG_SEARCH_SPEED
                 root.telemetry.addData("linkageValue", linkageValue)
                 if (linkageValue < 0) { // TODO: get a better lower bound than 0
                     // Move to the left and start searching again if nothing is found.
-                    root.intake.setLinkage(LinkagePosition.FULL)
+                    root.intake.setLinkage(LinkageState.FULL)
 
                     root.follower.followPath(
                         AlignTranslationalPath.alignLatitudinal(
@@ -121,5 +119,13 @@ class VisionSystem(private val root: RootSystem) {
 //        return 0.842 * exp(x* 0.00594)
 //        return 0.0176 * x - 0.205;
         return 0.0817 + 0.0112 * x + 1.9 * (10.0).pow(-5) * x * x
+    }
+    fun enable() {
+        this.running = true
+        this.done = false
+    }
+    fun disable(){
+        this.running = false
+        this.done = true
     }
 }

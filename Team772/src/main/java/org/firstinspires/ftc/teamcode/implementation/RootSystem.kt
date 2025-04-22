@@ -32,6 +32,8 @@ class RootSystem(
     val outtake = OuttakeSystem(this, isAuto)
     val climb = ClimbSystem(this, isAuto)
     val intake = IntakeSystem(this, isAuto, isSpecAuto)
+    val vision = VisionSystem(this)
+
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
     var driveScale = Triple(1.0,1.0,0.8)
