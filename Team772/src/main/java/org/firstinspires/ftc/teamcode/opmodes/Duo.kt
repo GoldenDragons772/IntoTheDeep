@@ -1,44 +1,43 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
 @TeleOp(name = "Duo TeleOp")
-class Duo: CommandOpMode() {
+class Duo : LinearOpMode() {
 
     private lateinit var driveManager: DriveManager
-
-    override fun initialize() {
-
+    override fun runOpMode() {
         val mapping = DriveManager.Mapping(
-            gripMapping = Pair(GamepadKeys.Button.X, 2),
-            lowclimbMapping = Pair(GamepadKeys.Button.DPAD_LEFT, 2),
-            unClimbMapping = Pair(GamepadKeys.Button.DPAD_DOWN, 2),
-            highclimbMapping = Pair(GamepadKeys.Button.DPAD_UP, 2),
-            climbToHangSpec = Pair(GamepadKeys.Button.DPAD_RIGHT, 2),
-            aimMapping = Pair(GamepadKeys.Button.Y, 2),
-            wristMappingLeft = Pair(GamepadKeys.Button.LEFT_BUMPER, 2),
-            wristMappingRight = Pair(GamepadKeys.Button.RIGHT_BUMPER, 2),
-            clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 2),
-            hangSpecMapping = Pair(GamepadKeys.Button.B, 2),
-            transferMapping = Pair(GamepadKeys.Button.A, 2),
-            climbUpMapping = Pair(GamepadKeys.Button.RIGHT_BUMPER, 1),
-            climbDownMapping = Pair(GamepadKeys.Button.LEFT_BUMPER, 1),
-            moveIntakeMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 2)
+            gripMapping = gamepad2::x,
+            lowclimbMapping = gamepad2::dpad_left,
+            unClimbMapping = gamepad2::dpad_down,
+            highclimbMapping = gamepad2::dpad_up,
+            climbToHangSpec = gamepad2::dpad_right,
+            aimMapping = gamepad2::y,
+            wristMappingLeft = gamepad2::left_bumper,
+            wristMappingRight = gamepad2::right_bumper,
+            clawMapping = gamepad2::right_trigger,
+            hangSpecMapping = gamepad2::b,
+            transferMapping = gamepad2::a,
+            climbUpMapping = gamepad1::right_bumper,
+            climbDownMapping = gamepad1::left_bumper,
+            moveIntakeMapping = gamepad2::left_trigger
         )
-        driveManager = DriveManager(hardwareMap, telemetry, gamepad1, gamepad2, mapping, AllianceSelector.selectAlliance(gamepad1, telemetry))
-
-    }
-
-    /**
-     * Runs when the run button is pressed. Runs the main drive loop.
-     */
-    override fun run() {
-        super.run()
-        driveManager.update()
+        driveManager = DriveManager(
+            hardwareMap,
+            telemetry,
+            gamepad1,
+            gamepad2,
+            mapping,
+            AllianceSelector.selectAlliance(gamepad1, telemetry)
+        )
+        waitForStart()
+        while (!isStopRequested) {
+            driveManager.update()
+        }
     }
 
 }

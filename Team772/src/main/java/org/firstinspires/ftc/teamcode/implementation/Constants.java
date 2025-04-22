@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.implementation;
 
 import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
+import org.jetbrains.annotations.NotNull;
 
 @Config
 public class Constants {
@@ -28,13 +29,15 @@ public class Constants {
     public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LEFT_LINKAGE_TARGET;
 //    public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH; // Doesn't work because it's not a linear transformation
     public static double INCHES_PER_CAMERA_Y = 7.0 / SampleDetection.SUBHEIGHT;
-    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
-    public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
     public static double VISION_LONG_SEARCH_SPEED = 0.006;
     public static double VISION_LAT_SEARCH_SPEED = 3; // inches
     public static double VISION_MAX_HEIGHT = 50; // inches -- maximum height from the bottom of the screen to find samples in. (arbitrarily large for now)
-    public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
     public static double VISION_SERVO_MULTIPLIER = 0.66;
+
+    public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
+    public static double LINKAGE_OFFSET = 3.92904;
+    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
+    public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
 
     // Pivot Positions (Joint 2)
     public static double PIVOT_SERVO_HOME = 0.55;
@@ -48,20 +51,13 @@ public class Constants {
     /**
      * Values for stage 1 of the outtake
      */
-    public static double OUT_STRIKE_R_HOME = 0.77;
-    public static double OUT_STRIKE_L_HOME = 0.77;
-    public static double OUT_STRIKE_R_SCORE = 0.2;
-    public static double OUT_STRIKE_L_SCORE = 0.2;
-    public static double OUT_STRIKE_L_TRANSFER_PREP = 0.42;
-    public static double OUT_STRIKE_R_TRANSFER_PREP = 0.42;
-    public static double OUT_STRIKE_R_TRANSFER = 0.55;
-    public static double OUT_STRIKE_L_TRANSFER = 0.55;
-    public static double OUT_STRIKE_R_SPEC = 0.06;
-    public static double OUT_STRIKE_L_SPEC = 0.06;
-    public static double OUT_STRIKE_R_SPEC_INV = 0.0;
-    public static double OUT_STRIKE_L_SPEC_INV = 0.0;
-    public static double OUT_STRIKE_R_SAFE = 0.8;
-    public static double OUT_STRIKE_L_SAFE = 0.8;
+    public static double OUT_STRIKE_HOME = 0.77;
+    public static double OUT_STRIKE_SCORE = 0.2;
+    public static double OUT_STRIKE_TRANSFER_PREP = 0.42;
+    public static double OUT_STRIKE_TRANSFER = 0.55;
+    public static double OUT_STRIKE_SPEC = 0.06;
+    public static double OUT_STRIKE_SPEC_INV = 0.0;
+    public static double OUT_STRIKE_SAFE = 0.8;
 
 
     /**

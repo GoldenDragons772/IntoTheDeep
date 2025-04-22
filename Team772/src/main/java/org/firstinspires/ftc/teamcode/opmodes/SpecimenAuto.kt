@@ -1,145 +1,151 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.ParallelCommandGroup
-import com.arcrobotics.ftclib.command.ParallelRaceGroup
-import com.arcrobotics.ftclib.command.RunCommand
-import com.arcrobotics.ftclib.command.SequentialCommandGroup
-import com.arcrobotics.ftclib.command.WaitCommand
-import com.arcrobotics.ftclib.command.WaitUntilCommand
-import com.pedropathing.commands.FollowPath
-import com.pedropathing.commands.HoldPoint
 import com.pedropathing.localization.Pose
-import com.pedropathing.pathgen.Point
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.*
 import org.firstinspires.ftc.teamcode.auto.SpecimenAutoPaths
-import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
-import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
-import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecWallCommand
-import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenCommand
+import org.firstinspires.ftc.teamcode.helpers.Util.blockPath
+import org.firstinspires.ftc.teamcode.helpers.Util.interruptOn
+import org.firstinspires.ftc.teamcode.helpers.Util.timeout
+import org.firstinspires.ftc.teamcode.implementation.*
 
 @Autonomous(name = "Specimen Auto")
-class SpecimenAuto : CommandOpMode() {
+class SpecimenAuto : LinearOpMode() {
 
 
-
-    override fun initialize() {
+    override fun runOpMode() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = true)
         root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
-        val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
+        val specimenCommand = suspend {
+            root.climb.climbState = ClimbState.HIGH_CHAMBER
+            root.outtake.moveArmToScoreSpec()
+        }
 
 //        // reset encoders only once during auto.
 //        root.climb.resetEncoders()
         //The actual auto code
-        schedule(
-            root.outtake.clawClose(),
-            root.outtake.setPivot(OuttakeSystem.OuttakePosition.PRELOAD),
+        root.outtake.setClaw(ClawState.OPEN)
+        root.outtake.setPivot(OuttakeState.PRELOAD)
 
-            WaitUntilCommand(this::opModeIsActive),
-            RunCommand({
-                root.update()
-                if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)
-            }),
-            SequentialCommandGroup(
-                //Preload
-                root.outtake.setStrike(OuttakeSystem.OuttakePosition.HOME),
-                root.outtake.clawClose(),
-                specimenCommand, // score position
-                FollowPath(root.follower, SpecimenAutoPaths.preload(), true, 0.9)
-                .andThen(
-                    WaitCommand(250),
-                    root.outtake.toggleClaw(),
-                    WaitCommand(150),
-                    root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE)
-                ),
+        waitForStart()
+        runBlocking {
+            launch {
+                while (opModeIsActive()) {
+                    root.update()
+                    if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)
+                }
+            }
+            //Preload
+            root.outtake.setStrike(OuttakeState.HOME)
+            root.outtake.setClaw(ClawState.CLOSED)
+            specimenCommand() // score position
 
-                ParallelCommandGroup(
-                    //Knock the Specimens
-                    WaitCommand(800).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    ),
-                    FollowPath(root.follower, SpecimenAutoPaths.knockSpecsIntoZone(), true, 1.0).andThen(
-                        FollowPath(root.follower, SpecimenAutoPaths.grab1(), true, 0.9),
-                        FollowPath(root.follower, SpecimenAutoPaths.lineGrab1(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500)
-                    ),
-                ), //WaitUntilCommand { root.outtake.getClawButtonState() },
-                //Spec 2
-                root.outtake.toggleClaw(),
-                //WaitCommand(200),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.9),
-                    WaitCommand(600).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab2(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
+            root.follower.blockPath(SpecimenAutoPaths.preload(), 0.9, true)
+            delay(250)
+            root.outtake.toggleClaw()
+            delay(150)
+            root.outtake.setPivot(OuttakeState.SAFE)
+
+            //Knock the Specimens
+            delay(800)
+
+            root.climb.set(ClimbState.HOME)
+            root.outtake.moveArmToHome()
+            root.intake.moveToHome()
+            root.follower.blockPath(SpecimenAutoPaths.knockSpecsIntoZone(), 1.0, true).join()
+
+            root.follower.blockPath(SpecimenAutoPaths.grab1(), 0.9, true).join()
+            withTimeout(1500) {
+                return@withTimeout root.follower.blockPath(SpecimenAutoPaths.lineGrab1(), 0.6, false)
+            }.interruptOn { root.outtake.getClawButtonState() }
+            //Spec 2
+            root.outtake.toggleClaw()
+            //WaitCommand(200),
+            specimenCommand()
+            root.follower.blockPath(SpecimenAutoPaths.spec1(), 0.9, true).join()
+            delay(150)
+            root.outtake.toggleClaw()
+            root.outtake.setPivot(OuttakeState.SAFE)
+            mutableListOf(
+                blockPath(root.follower, SpecimenAutoPaths.grab2(), 0.9, true),
+                launch {
+                    delay(600L)
+                    root.climb.set(ClimbState.HOME)
+                    root.outtake.moveArmToHome()
+                    root.intake.moveToHome()
+                }
+            ).joinAll()
+            root.follower.blockPath(
+                SpecimenAutoPaths.lineGrab2(),
+                0.6,
+                false
+            ).timeout(1500L)
+                .interruptOn { root.outtake.getClawButtonState() }.join()
 //                // spec3
-                root.outtake.toggleClaw(),
-                //WaitCommand(200),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec2(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.9),
-                    WaitCommand(600).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab3(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
+            root.outtake.toggleClaw()
+            //WaitCommand(200),
+            specimenCommand()
+            root.follower.blockPath(SpecimenAutoPaths.spec2(), 0.9, true).join()
+            delay(150)
+            root.outtake.toggleClaw()
+            root.outtake.setPivot(OuttakeState.SAFE)
+            mutableListOf(
+                root.follower.blockPath(SpecimenAutoPaths.grab3(), 0.9, true),
+                launch {
+                    delay(600)
+                    root.climb.set(ClimbState.HOME)
+                    root.outtake.moveArmToHome()
+                    root.intake.moveToHome()
+                }
+            ).joinAll()
+            root.follower.blockPath(
+                SpecimenAutoPaths.lineGrab3(),
+                0.6,
+                false,
+            ).timeout(1500).interruptOn { root.outtake.getClawButtonState() }.join()
 //                // spec4
-                root.outtake.toggleClaw(),
-                //WaitCommand(200),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec3(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+            root.outtake.toggleClaw()
+            specimenCommand()
 
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.grab4(), true, 0.8),
-                    WaitCommand(600).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
-                FollowPath(root.follower, SpecimenAutoPaths.lineGrab4(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
-//                // spec5
-                root.outtake.toggleClaw(),
-                //WaitCommand(200),
-                specimenCommand,
-                FollowPath(root.follower, SpecimenAutoPaths.spec4(), true, 0.9),
+            root.follower.blockPath(SpecimenAutoPaths.spec3(), 0.9, true).join()
+            delay(150)
+            root.outtake.toggleClaw()
+            root.outtake.setPivot(OuttakeState.SAFE)
 
-                WaitCommand(150),
-                root.outtake.toggleClaw(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
-//                FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0),
+            mutableListOf(
+                root.follower.blockPath(SpecimenAutoPaths.grab4(), 0.8, true),
+                launch {
+                    delay(600)
+                    root.climb.set(ClimbState.HOME)
+                    root.outtake.moveArmToHome()
+                    root.intake.moveToHome()
+                }
+            ).joinAll()
+            root.follower.blockPath(
+                SpecimenAutoPaths.lineGrab4(),
+                0.6,
+                false,
+            ).interruptOn { root.outtake.getClawButtonState() }.timeout(1500).join()
+            // spec5
+            root.outtake.toggleClaw()
+            specimenCommand()
+            root.follower.blockPath(SpecimenAutoPaths.spec4(), 0.9, true).join()
+            delay(150)
+            root.outtake.toggleClaw()
+            root.outtake.setPivot(OuttakeState.SAFE)
 
-                ParallelCommandGroup(
-                    FollowPath(root.follower, SpecimenAutoPaths.park(), true, 1.0),
-                    WaitCommand(600).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
+            mutableListOf(
+                root.follower.blockPath(SpecimenAutoPaths.park(), 1.0, true),
+                launch {
+                    delay(600)
+                    root.climb.set(ClimbState.HOME)
+                    root.outtake.moveArmToHome()
+                    root.intake.moveToHome()
+                }
             )
-        )
+        }
     }
+
 }
