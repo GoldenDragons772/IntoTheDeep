@@ -47,6 +47,8 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
         lastVoltage = voltage
         voltage = voltageSensor.voltage
 
+        telemetry.addData("Voltage", voltage)
+
         follower.update() // Used for teleop therefore must be updated in all cases.
         if (follower.isBusy) follower.telemetryDebug(telemetry) // calls telemetry.update()
         else telemetry.update()
