@@ -8,6 +8,11 @@ import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 
+/**
+ * Command to score the specimen in inverted position by retracting the intake system,
+ * toggling the outtake arm, and setting the climb system to high chamber or home position based on the outtake state.
+ * This command is used in the tele-op mode primarily to set the servos in specimen scoring or picking position.
+ */
 class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
     init {

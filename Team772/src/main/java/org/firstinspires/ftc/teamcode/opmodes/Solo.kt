@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
+/**
+ * Tele-Op mode for the Solo robot.
+ *
+ * This mode allows a single driver to control the robot's movements and actions.
+ * primarily used for practice and testing.
+ */
 @TeleOp(name = "Solo TeleOp")
 class Solo: CommandOpMode() {
 

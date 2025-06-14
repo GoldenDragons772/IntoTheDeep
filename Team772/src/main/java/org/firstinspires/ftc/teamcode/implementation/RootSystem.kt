@@ -54,6 +54,12 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
         else telemetry.update()
     }
 
+    /**
+     * normal teleop mecanum drive.
+     * @param x The x movement vector
+     * @param y The y movement vector
+     * @param theta The rotation vector
+     */
     fun teleOpDrive(x: Double, y: Double, theta: Double) {
         val xSquared = x.pow(2) * (x).sign
         val ySquared = y.pow(2) * y.sign
@@ -61,6 +67,12 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
+    /**
+     * Scaled teleop drive, used for more precise control.
+     * @param x The x movement vector
+     * @param y The y movement vector
+     * @param theta The rotation vector
+     */
     fun teleOpDriveScaled(x: Double, y: Double, theta: Double) {
         val xSquared = (x.pow(2) * (x).sign)  * 0.3
         val ySquared = (y.pow(2) * y.sign) * 0.3
@@ -68,6 +80,11 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
         this.follower.setTeleOpMovementVectors(-ySquared, xSquared, thSquared )
     }
 
+    /**
+     * Returns the voltage multiplier based on the current voltage.
+     * This is used to scale the robot's speed based on battery voltage.
+     * The multiplier is calculated using a low-pass filter to smooth out voltage fluctuations.
+     */
     fun getVoltageMultiplier(): Double {
         val alpha = 0.8
         return (Constants.NOMINAL_BATTERY_VOLTAGE / (alpha * voltage + (1 - alpha) * lastVoltage)).clamp(0.0, 1.0)

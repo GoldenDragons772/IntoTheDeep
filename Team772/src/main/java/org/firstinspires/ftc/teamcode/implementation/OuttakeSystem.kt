@@ -34,6 +34,10 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
     var homeState = false
     private var specState = false
 
+    /**
+     * Represents the different positions the outtake system can be in.
+     * Each position corresponds to a specific servo position.
+     */
     enum class OuttakePosition {
         HOME,
         TARGET,
@@ -45,6 +49,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         PRELOAD
     }
 
+    // initialize the servos with initial positions.
     init {
         rstrikeServo.direction = Servo.Direction.REVERSE
         clawServo.direction = Servo.Direction.FORWARD
@@ -63,10 +68,19 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
 
     }
 
+    /**
+     * Returns the current state of the outtake system.
+     * @return true if the outtake system is in the home position, false otherwise.
+     */
     fun getSpecState(): Boolean {
         return homeState
     }
 
+    /**
+     * Sets the state of the outtake system to the specified position.
+     * @param pos The desired position of the outtake system.
+     * @return An InstantCommand that sets the pivot servo to the specified position.
+     */
     fun setPivot(pos: OuttakePosition): InstantCommand {
         return when (pos) {
             OuttakePosition.HOME -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
@@ -81,6 +95,11 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
 
     }
 
+    /**
+     * Sets the strike servos to the specified position.
+     * @param pos The desired position of the strike servos.
+     * @return An InstantCommand that sets the positions of the right and left strike servos.
+     */
     fun setStrike(pos: OuttakePosition): InstantCommand {
 
         return when (pos) {
@@ -128,6 +147,10 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         }
     }
 
+    /**
+     * Returns the current state of the claw button.
+     * @return The state of the claw button.
+     */
     fun getClawButtonState() = clawButton.state
 
     /**
@@ -189,12 +212,20 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             .andThen(wristHome())
             .andThen(InstantCommand({ specState = false }))
 
+    /**
+     * Moves the arm to the Specimen scoring position.
+     * This is used for scoring specimens in the Specimen Auto.
+     */
     fun moveArmToScoreSpec(): Command =
         setStrike(OuttakePosition.SPEC_TARGET)
             .andThen(setPivot(OuttakePosition.SPEC_TARGET))
             .andThen(wristScore())
             .andThen(InstantCommand({ homeState = false }))
 
+    /**
+     * Moves the arm to the Specimen scoring position with inverted strike servos.
+     * This is used for scoring specimens during Tele-op with inverted strike servos.
+     */
     fun moveArmToScoreSpecInv(): Command =
         setStrike(OuttakePosition.SPEC_INV)
             .andThen(WaitCommand(500))
@@ -202,12 +233,20 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             .andThen(wristHome())
             .andThen(InstantCommand({ homeState = false}))
 
+    /**
+     * Moves the arm to the transfer preparation position.
+     * This is used for preparing the arm for transferring specimens.
+     */
     fun moveArmToTransferPrep(): Command =
         wristHome()
             .andThen(setPivot(OuttakePosition.TRANSFER))
             .andThen(setStrike(OuttakePosition.TRANSFER_PREP))
             .andThen(InstantCommand({ specState = false}))
 
+    /**
+     * Moves the arm to the transfer position.
+     * This is used for transferring specimens.
+     */
     fun moveArmToTransfer(): Command =
         wristHome()
             .andThen(WaitCommand(200))
@@ -226,6 +265,10 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      */
     fun toggleArmSpec() = ConditionalCommand(moveArmToScoreSpec(), moveArmToHome()) { homeState }
 
+    /**
+     * Toggles the arm between the home position and the Specimen scoring position with inverted strike servos.
+     * This is used for scoring specimens during Tele-op with inverted strike servos.
+     */
     fun toggleArmSpecInv() = ConditionalCommand(moveArmToScoreSpecInv(), moveArmToHome()) { homeState }
 
     /**

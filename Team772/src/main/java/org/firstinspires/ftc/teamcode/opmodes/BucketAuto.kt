@@ -17,6 +17,12 @@ import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeComman
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 import kotlin.math.floor
 
+/** * Autonomous OpMode for the Bucket auto routine.
+ * This OpMode uses the RootSystem to control the robot's systems and follows a predefined path to score samples.
+ * It includes commands for transferring samples, scoring, and moving the robot to various positions.
+ * The auto currently scores three samples
+ */
+//TODO: Add submersible sample scoring and transfer commands.
 @Autonomous(name = "Bucket Auto")
 class BucketAuto(): CommandOpMode() {
     override fun initialize() {

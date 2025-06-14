@@ -8,6 +8,11 @@ import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 
+/**
+ * Command to transfer a sample by moving the intake system to transfer position,
+ * opening the outtake claw, and moving the outtake arm to transfer position.
+ * This command is used in both teleop and auto modes to prepare the robot for sample transfer.
+ */
 class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
 
     init {

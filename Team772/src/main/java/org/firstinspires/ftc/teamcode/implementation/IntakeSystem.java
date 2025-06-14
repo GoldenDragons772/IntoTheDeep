@@ -15,6 +15,11 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.HashMap;
 
+/**
+ * IntakeSystem is a subsystem that manages the intake mechanism of the robot.
+ * It controls the servos for linkage, strike, pivot, wrist, and claw, and provides methods to set their positions.
+ * The system also integrates with a camera for sample detection.
+ */
 @Config
 public class IntakeSystem extends SubsystemBase {
 
@@ -42,13 +47,21 @@ public class IntakeSystem extends SubsystemBase {
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
     public IntakePosition pivotPosition = IntakePosition.HOME;
-  
+
+    /**
+     * ValueCache is a class that holds the current linkage position.
+     * It is used to store the linkage position for later use, such as in periodic updates.
+     */
     public class ValueCache {
         public double linkagePosition;
     }
     //Boolean to keep track of if were in auto.
     boolean isAuto;
 
+    /**
+     * Enum representing the different positions of the intake system.
+     * Each position corresponds to a specific servo position for the intake mechanism.
+     */
     public enum IntakePosition {
         HOME,
         TARGET,
@@ -56,12 +69,20 @@ public class IntakeSystem extends SubsystemBase {
         HOVER
     }
 
+    /**
+     * Enum representing the different positions of the linkage system.
+     * Each position corresponds to a specific servo position for the linkage mechanism.
+     */
     public enum LinkagePosition {
         HOME,
         FULL,
         HALF
     }
 
+    /**
+     * Enum representing the different positions of the wrist servo.
+     * Each position corresponds to a specific servo position for the wrist mechanism.
+     */
     public enum WristPosition {
         HOME,
         TARGET,
@@ -80,7 +101,13 @@ public class IntakeSystem extends SubsystemBase {
     public ValueCache valueCache;
     private double lastRotation = 0;
 
-
+    /**
+     * Constructor for the IntakeSystem class.
+     * Initializes the servos and camera, and sets their initial positions.
+     * @param root The root system that contains hardware and telemetry.
+     * @param isAuto Indicates if the system is in autonomous mode.
+     * @param isSpecAuto Indicates if the subsystem needs to be specimen auto mode.
+     */
     public IntakeSystem(RootSystem root, boolean isAuto, boolean isSpecAuto) {
         // Linkage Servo
         this.root = root;
@@ -163,7 +190,11 @@ public class IntakeSystem extends SubsystemBase {
             }
         }
     }
-    public void visionWristRotation(){
+
+    /** Uses the vision system to set the wrist servo position based on the detected sample rotation.
+     * This method calculates the servo position based on the sample rotation and updates the wrist servo accordingly.
+     */
+    public void visionWristRotation() {
         double rotationValue = sampleDetector.sampleRotation.get();
         var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
         if (inputValue < 0) inputValue += 1;
@@ -173,18 +204,34 @@ public class IntakeSystem extends SubsystemBase {
         root.getTelemetry().addData("Rotation", inputValue);
     }
 
+    /** Gets the current wrist position.
+     * This method returns the current state of the wrist system, which can be HOME, TARGET, ANGLE, or ANGLE_BUCKET.
+     * @return The current wrist position as a WristPosition enum.
+     */
     public WristPosition getWristPos() {
         return wristState;
     }
 
+    /** Gets the current intake position.
+     * This method returns the current state of the intake system, which can be HOME, TARGET, TRANSFER, or HOVER.
+     * @return The current intake position as an IntakePosition enum.
+     */
     public IntakePosition getIntakePos() {
         return extendState;
     }
 
+    /** Gets the current pivot position.
+     * This method returns the current state of the pivot system, which can be HOME, TARGET, TRANSFER, or HOVER.
+     * @return The current pivot position as an IntakePosition enum.
+     */
     public IntakePosition getPivotPosition() {
         return pivotPosition;
     }
 
+    /** Gets the current linkage position.
+     * This method returns the current state of the linkage system, which can be HOME, FULL, or HALF.
+     * @return The current linkage position as a LinkagePosition enum.
+     */
     public LinkagePosition getLinkagePos() {
         return linkageState;
     }
@@ -203,6 +250,10 @@ public class IntakeSystem extends SubsystemBase {
         return servoOutput;
     }
 
+    /** Calculates the horizontal slide extension based on the current linkage position.
+     * This method computes the extension of the horizontal slide using the current linkage position and defined constants.
+     * @return The calculated horizontal slide extension in inches.
+     */
     public double getHorizontalSlideExtension() {
         double lowerBound = Constants.LINKAGE_HOME_ANGLE;
         double angleIntervalWidth = (Constants.LINKAGE_TARGET_ANGLE - lowerBound);
@@ -211,6 +262,11 @@ public class IntakeSystem extends SubsystemBase {
         // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
     }
 
+    /** Converts an angle in radians to a servo position for the linkage.
+     * This method calculates the servo position based on the angle and the defined constants for the linkage.
+     * @param angle The angle in radians to convert to a servo position.
+     * @return The calculated servo position for the linkage.
+     */
     public double angleToLinkageServo(double angle) {
         // 0.46 * (78 - 12) + 12
         // s * (m_1 - m_0) + m_0 = a
@@ -220,6 +276,11 @@ public class IntakeSystem extends SubsystemBase {
 
     public double getCentroidX() {return sampleDetector.centroid.get().x;}
 
+    /** Sets the linkage servo position based on the specified LinkagePosition.
+     * This method uses an InstantCommand to set both the left and right linkage servos to the specified position.
+     * @param pos The desired linkage position, which can be HOME, FULL, or HALF.
+     * @return A command that sets the linkage servo position.
+     */
     public Command setLinkage(LinkagePosition pos) {
 
         return switch (pos) {
@@ -242,6 +303,11 @@ public class IntakeSystem extends SubsystemBase {
 
     }
 
+    /** Sets the linkage servo position to a specific value.
+     * This method uses an InstantCommand to set both the left and right linkage servos to the specified position.
+     * @param pos The desired linkage position, which should be between 0.0 and LEFT_LINKAGE_TARGET.
+     * @return A command that sets the linkage servo position.
+     */
     public Command setLinkage(Double pos) {
         assert 0.0 <= pos && pos <= LEFT_LINKAGE_TARGET : pos;
         Log.i("Linkage", pos.toString());
@@ -253,6 +319,11 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** Sets the strike servo position based on the specified IntakePosition.
+     * This method uses an InstantCommand to set the strike servo to a specific position.
+     * @param pos The desired strike position, which can be HOME, TARGET, TRANSFER, or HOVER.
+     * @return A command that sets the strike servo position.
+     */
     public Command setStrike(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
@@ -275,6 +346,11 @@ public class IntakeSystem extends SubsystemBase {
 
     }
 
+    /** Sets the pivot servo position based on the specified IntakePosition.
+     * This method uses an InstantCommand to set the pivot servo to a specific position.
+     * @param pos The desired pivot position, which can be HOME, TARGET, TRANSFER, or HOVER.
+     * @return A command that sets the pivot servo position.
+     */
     public Command setPivot(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
@@ -296,6 +372,11 @@ public class IntakeSystem extends SubsystemBase {
         };
     }
 
+    /** Sets the wrist servo position based on the specified WristPosition.
+     * This method uses an InstantCommand to set the wrist servo to a specific position.
+     * @param pos The desired wrist position, which can be HOME, TARGET, ANGLE, or ANGLE_BUCKET.
+     * @return A command that sets the wrist servo position.
+     */
     public Command setWrist(WristPosition pos) {
         switch (pos) {
             case HOME -> {
@@ -327,6 +408,11 @@ public class IntakeSystem extends SubsystemBase {
         return null;
     }
 
+    /** Sets the wrist servo position based on the specified position.
+     * This method uses an InstantCommand to set the wrist servo to a specific position.
+     * @param pos The desired wrist position, which can be a positive or negative value.
+     * @return A command that sets the wrist servo position.
+     */
     public Command setWrist(double pos) {
         return new InstantCommand(() -> {
 
@@ -350,6 +436,11 @@ public class IntakeSystem extends SubsystemBase {
         });
     }
 
+    /** Sets the claw servo position based on the specified position.
+     * This method uses an InstantCommand to set the claw servo to either the home or target position.
+     * @param pos The desired claw position, which can be HOME, TARGET, TRANSFER, or HOVER.
+     * @return A command that sets the claw servo position.
+     */
     public Command setClaw(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
@@ -374,6 +465,11 @@ public class IntakeSystem extends SubsystemBase {
         };
     }
 
+    /** Moves the intake system to the home position.
+     * This method sets the pivot, linkage, strike, and wrist positions to their home values.
+     * It also resets the extend state to HOME.
+     * @return A command that moves the intake system to the home position.
+     */
     public Command moveToHome() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
@@ -386,6 +482,11 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** Moves the intake system to the transfer position.
+     * This method sets the pivot, linkage, strike, and wrist positions to their transfer values.
+     * It also disables the sample detector and stops the camera streaming.
+     * @return A command that moves the intake system to the transfer position.
+     */
     public Command moveToTransfer() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
@@ -400,6 +501,11 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** Moves the intake system to the target position for picking up samples.
+     * This method sets the pivot, linkage, strike, and wrist positions to their target values.
+     * It also enables the sample detector for sample detection.
+     * @return A command that moves the intake system to the target position.
+     */
     public Command moveToTarget() {
         return new SequentialCommandGroup(
                 new SelectCommand(
@@ -419,18 +525,15 @@ public class IntakeSystem extends SubsystemBase {
                 ),
 
                 new InstantCommand(() -> {
-//                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
-//                    camera.setPipeline(sampleDetector);
                     sampleDetector.isEnabled.set(true);
-//                    camera.resumeViewport();
                 })
-//                setLinkage(IntakePosition.TARGET),
-//                setClaw(IntakePosition.HOME),
-//                setStrike(IntakePosition.TARGET),
-//                setPivot(IntakePosition.TARGET)
         );
     }
 
+    /** Toggles the intake system between home and target positions.
+     * This method uses a SelectCommand to switch between the two intake positions based on the current state.
+     * @return A command that toggles the intake system position.
+     */
     public Command toggleIntake() {
         return new SelectCommand(
                 new HashMap<>() {{
@@ -442,6 +545,10 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** Toggles the intake system between hover and target positions.
+     * This method uses a SelectCommand to switch between the two intake positions based on the current state.
+     * @return A command that toggles the intake system position.
+     */
     public Command toggleHover() {
         return new SelectCommand(
                 new HashMap<>() {{
@@ -452,6 +559,10 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** * Moves the intake system to the hover position.
+     * This method sets the pivot, linkage, strike, and wrist positions to their hover values.
+     * @return A command that moves the intake system to the hover position.
+     */
     public Command hoverIntake() {
         return new SequentialCommandGroup(
 
@@ -466,6 +577,10 @@ public class IntakeSystem extends SubsystemBase {
 
     }
 
+    /** * Moves the intake system to the target position for picking up samples.
+     * This method sets the pivot, linkage, strike, and wrist positions to their target values.
+     * @return A command that moves the intake system to the target position.
+     */
     public Command strikeIntake() {
         return new SequentialCommandGroup(
                 setPivot(IntakePosition.TARGET),
@@ -478,6 +593,10 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** * Toggles the claw servo position between two states: HOME and TARGET.
+     * This method uses a ConditionalCommand to switch between the two claw positions based on the current state.
+     * @return A command that toggles the claw servo position.
+     */
     public ConditionalCommand toggleClaw() {
         return new ConditionalCommand(
                 setClaw(IntakePosition.HOME),
@@ -489,6 +608,10 @@ public class IntakeSystem extends SubsystemBase {
         );
     }
 
+    /** * Toggles the wrist servo position between three states: HOME, TARGET, and ANGLE.
+     * This method uses a SelectCommand to switch between the different wrist positions based on the current state.
+     * @return A command that toggles the wrist servo position.
+     */
     public Command toggleWrist() {
         return new SelectCommand(
                 new HashMap<>() {{
@@ -500,14 +623,21 @@ public class IntakeSystem extends SubsystemBase {
         );//.andThen(new InstantCommand({{Log.i("IntakeSystem", wristState.toString())}}));
     }
 
+    /** * Increment the wrist servo position to the left.
+     * This method is used to adjust the wrist position in a negative direction.
+     * @return A command that sets the wrist servo position to the left.
+     */
     public Command incrementWristLeft() {
 //        return setWrist(WRIST_INC);
         return setWrist(-0.02);
     }
 
+    /** * Increment the wrist servo position to the right.
+     * This method is used to adjust the wrist position in a positive direction.
+     * @return A command that sets the wrist servo position to the right.
+     */
     public Command incrementWristRight() {
 //        return setWrist(-WRIST_INC);
         return setWrist(0.02);
     }
-
 }

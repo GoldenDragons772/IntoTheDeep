@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
+/**
+ * Tele-Op mode for the Duo robot.
+ *
+ * This mode splits the controls between two people to control the robot reliably.
+ * This mode is primarily used during competitions and practice.
+ */
 @TeleOp(name = "Duo TeleOp")
 class Duo: CommandOpMode() {
 

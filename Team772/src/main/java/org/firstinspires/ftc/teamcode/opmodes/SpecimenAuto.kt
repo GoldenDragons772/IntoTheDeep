@@ -20,11 +20,16 @@ import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecWallCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenCommand
 
+/**
+ * Autonomous OpMode for scoring specimens in the FTC competition.
+ * This OpMode initializes the robot systems, sets the starting pose,
+ * and schedules a series of commands to score specimens.
+ *
+ * At its current state can score 5 specimens and park in the observation zone.
+ */
+// TODO: Implement vison to score more than 5 specs. (big dreams)
 @Autonomous(name = "Specimen Auto")
 class SpecimenAuto : CommandOpMode() {
-
-
-
     override fun initialize() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = true)
