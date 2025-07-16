@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.implementation.commands
 
+import android.util.Log
 import com.arcrobotics.ftclib.command.ConditionalCommand
 import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
@@ -21,6 +22,7 @@ class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private va
 
         super.addCommands(
             SequentialCommandGroup(
+                InstantCommand({Log.i("CMDS", this.javaClass.name + "\n" + intakeSystem.stateString() + "\n" + outtakeSystem.stateString() + "\n" + climbSystem.stateString())}),
                 InstantCommand({prevState = intakeSystem.linkagePos}),
                 intakeSystem.moveToHome(), // retract intake system
                 ConditionalCommand(WaitCommand(500), InstantCommand()) { prevState == IntakeSystem.LinkagePosition.FULL },

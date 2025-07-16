@@ -9,6 +9,7 @@ import com.pedropathing.commands.FollowPath
 import org.firstinspires.ftc.teamcode.auto.AlignTranslationalPath
 import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
+import org.firstinspires.ftc.teamcode.implementation.IntakeSystem.BOTH_PIVOT_TARGET
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.opmodes.PathDelegateCommand
 import org.firstinspires.ftc.teamcode.vision.SampleDetection
@@ -59,7 +60,7 @@ class GrabSampleCommand(private val root: RootSystem) : Command {
                 root.intake.horizontalSlideExtensionConversion(root.intake.horizontalSlideExtension - xDiff)
             // Throwing an error if the value is out of the range makes debugging easier than coercing the values
             // into an acceptable range because we see if the values are actually insane.
-            assert(outputValue in 0.0..IntakeSystem.LEFT_PIVOT_TARGET) { outputValue }
+            assert(outputValue in 0.0..BOTH_PIVOT_TARGET) { outputValue }
 
             val yDiff = ((SampleDetection.SUBHEIGHT / 2) - foundSample!!.y) * Constants.INCHES_PER_CAMERA_Y
 //            val sign = if (root.follower.pose.heading in Math.PI..2 * Math.PI) -1 else 1;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.implementation.commands
 
-import com.arcrobotics.ftclib.command.ParallelRaceGroup
+import android.util.Log
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
@@ -17,6 +18,7 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
 
     init {
         addCommands(
+            InstantCommand({Log.i("CMDS", this.javaClass.name + "\n"+  intakeSystem.stateString() + "\n" + outtakeSystem.stateString())}),
             climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME),
             //intakeSystem.setClaw(IntakeSystem.IntakePosition.TARGET),
             outtakeSystem.clawOpen(),

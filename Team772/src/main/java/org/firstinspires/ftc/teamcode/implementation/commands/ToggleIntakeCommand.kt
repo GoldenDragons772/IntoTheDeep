@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.implementation.commands
 
+import android.util.Log
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
@@ -13,6 +15,7 @@ class ToggleIntakeCommand(private val intakeSystem: IntakeSystem, private val ou
     init {
         super.addCommands(
             SequentialCommandGroup(
+                InstantCommand({Log.i("CMDS", this.javaClass.name + "\n"+  intakeSystem.stateString() + "\n" + outtakeSystem.stateString())}),
                 outtakeSystem.clawOpen(),
                 outtakeSystem.moveArmToTransferPrep(),
                 intakeSystem.toggleIntake()

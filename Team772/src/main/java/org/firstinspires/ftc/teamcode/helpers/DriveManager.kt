@@ -83,22 +83,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
 
 
     /**
-     * Binds a function to the trigger and runs the function (repeatedly) if the trigger is pushed more than the threshold.
-     * Note that this is more akin to setHeldBinding than the other setPressedBinding
-     */
-    private fun setHeldTriggerBinding(
-        map: Pair<GamepadKeys.Trigger, Int>, function: InstantCommand, onRelease: InstantCommand
-    ) {
-        var isDown = getGamepad(map.second).getTrigger(map.first) > 0.5
-        var lastIsDown = isDown
-        CommandScheduler.getInstance().schedule(RepeatCommand(InstantCommand({
-            isDown = getGamepad(map.second).getTrigger(map.first) > 0.5
-            if (isDown) function.schedule() else if (lastIsDown) onRelease.schedule()
-            lastIsDown = isDown
-        })))
-    }
-
-    /**
      * Honestly I'm not really sure what I did but it should do an action when the function is pressed.
      * @param map This is the controller binding you want to pass in.
      * @param function This is what will happen when the trigger is pressed.
@@ -111,27 +95,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
             if (!lastIsDown && isDown) function.schedule()// If was just down and is now up, schedule function.
             lastIsDown = isDown
         })))
-    }
-
-    /**
-     * This function reads the value of the trigger and sends it into the function
-     * @param map The controller binding being passed in
-     * @param function The function that will run when activated
-     */
-    private fun triggerReader(map: Pair<GamepadKeys.Trigger, Int>, function: (Double) -> Command) {
-        //if(triggerPos > 0.2) {
-        CommandScheduler.getInstance().schedule(
-            RepeatCommand(
-                InstantCommand({
-                    //Get the position of the trigger.
-                    var triggerPos = getGamepad(map.second).getTrigger(map.first)
-                    //if(triggerPos > 0.2) {
-                    function(triggerPos).schedule() //invoke the function that was originally referenced by passing in the position of the trigger.
-                    //}
-                })
-            )
-        )
-        //}
     }
 
     /**
@@ -171,14 +134,6 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
                 root.intake.toggleHover()
             )
         }
-
-//        setPressedTriggerBinding(
-//            mapping.moveIntakeMapping,
-//            ConditionalCommand(
-//                root.intake.setPivot(IntakeSystem.IntakePosition.TRANSFER),
-//                root.intake.setPivot(IntakeSystem.IntakePosition.TARGET)
-//            ) { return@ConditionalCommand root.intake.pivotPosition == IntakeSystem.IntakePosition.TARGET }
-//        )
 
     }
 

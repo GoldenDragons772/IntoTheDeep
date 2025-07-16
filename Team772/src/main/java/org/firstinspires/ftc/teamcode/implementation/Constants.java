@@ -41,27 +41,22 @@ public class Constants {
     public static double PIVOT_SERVO_SCORE = 0.6;
     public static double PIVOT_SERVO_SPEC = 0.9;
     public static double PIVOT_SERVO_SPEC_INV = 0.55;
-    public static double PIVOT_SERVO_TRANSFER = 1.0;
+    public static double PIVOT_SERVO_TRANSFER = 0.2;
     public static double PIVOT_SERVO_SAFE = 0.65;
     public static double PIVOT_SERVO_PRELOAD = 0.0;
 
     /**
      * Values for stage 1 of the outtake
      */
-    public static double OUT_STRIKE_R_HOME = 0.77;
-    public static double OUT_STRIKE_L_HOME = 0.77;
-    public static double OUT_STRIKE_R_SCORE = 0.2;
-    public static double OUT_STRIKE_L_SCORE = 0.2;
-    public static double OUT_STRIKE_L_TRANSFER_PREP = 0.42;
-    public static double OUT_STRIKE_R_TRANSFER_PREP = 0.42;
-    public static double OUT_STRIKE_R_TRANSFER = 0.55;
-    public static double OUT_STRIKE_L_TRANSFER = 0.55;
-    public static double OUT_STRIKE_R_SPEC = 0.06;
-    public static double OUT_STRIKE_L_SPEC = 0.06;
-    public static double OUT_STRIKE_R_SPEC_INV = 0.0;
-    public static double OUT_STRIKE_L_SPEC_INV = 0.0;
-    public static double OUT_STRIKE_R_SAFE = 0.8;
-    public static double OUT_STRIKE_L_SAFE = 0.8;
+
+    public static double OUT_STRIKE_HOME = 0.77;
+    public static double OUT_STRIKE_SCORE = 0.2;
+    public static double OUT_STRIKE_TRANSFER_PREP = 0.42;
+    public static double OUT_STRIKE_TRANSFER = 0.58;
+    public static double OUT_STRIKE_SPEC = 0.06;
+    public static double OUT_STRIKE_SPEC_INV = 0.0;
+    public static double OUT_STRIKE_SAFE = 0.8;
+
 
 
     /**

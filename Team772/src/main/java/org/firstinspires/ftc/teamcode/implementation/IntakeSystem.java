@@ -7,7 +7,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.helpers.LogState;
 import org.firstinspires.ftc.teamcode.vision.SampleDetection;
+import org.jetbrains.annotations.NotNull;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -21,20 +23,20 @@ import java.util.HashMap;
  * The system also integrates with a camera for sample detection.
  */
 @Config
-public class IntakeSystem extends SubsystemBase {
+public class IntakeSystem extends SubsystemBase implements LogState {
 
     // Set Positions for Linkage
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.84;
+    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.84;
     // Set Positions for Strike Servos
-    public static double LEFT_PIVOT_HOME = 0.35, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
-    public static double RIGHT_PIVOT_HOME = 0.35, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
+    private static double LEFT_PIVOT_HOME = BOTH_PIVOT_HOME, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
+    private static double RIGHT_PIVOT_HOME = BOTH_PIVOT_HOME, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
-    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.29, PIVOT_TRANSFER = 1.0;
+    public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.29, PIVOT_TRANSFER = 0.9;
 
     // Set Positions for Wrist
     public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.5, WRIST_INC = 0.4;
@@ -47,6 +49,12 @@ public class IntakeSystem extends SubsystemBase {
     static LinkagePosition linkageState = LinkagePosition.HOME;
     static boolean clawState = false;
     public IntakePosition pivotPosition = IntakePosition.HOME;
+
+    @Override
+    @NotNull
+    public String stateString() {
+        return String.format("INTAKE SYSTEM Extend: %s Linkage %s Claw %s Pivot %s", extendState.name(), linkageState.name(), clawState, pivotPosition.name());
+    }
 
     /**
      * ValueCache is a class that holds the current linkage position.
@@ -144,8 +152,8 @@ public class IntakeSystem extends SubsystemBase {
 
             clawServo.setPosition(CLAW_HOME);
 
-            leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
-            rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
+            leftStrikeServo.setPosition(BOTH_PIVOT_HOME);
+            rightStrikeServo.setPosition(BOTH_PIVOT_HOME);
 
             pivotServo.setPosition(PIVOT_HOME + 0.2);
             wristServo.setPosition(WRIST_HOME);
@@ -327,19 +335,15 @@ public class IntakeSystem extends SubsystemBase {
     public Command setStrike(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(LEFT_PIVOT_HOME);
+                leftStrikeServo.setPosition(BOTH_PIVOT_HOME);
                 rightStrikeServo.setPosition(RIGHT_PIVOT_HOME);
             });
             case TARGET -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(LEFT_PIVOT_TARGET);
-                rightStrikeServo.setPosition(RIGHT_PIVOT_TARGET);
+                leftStrikeServo.setPosition(BOTH_PIVOT_TARGET);
+                rightStrikeServo.setPosition(BOTH_PIVOT_TARGET);
             });
-            case TRANSFER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
-                rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
-            });
-            case HOVER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(LEFT_PIVOT_TRANSFER);
+            case TRANSFER, HOVER -> new InstantCommand(() -> {
+                leftStrikeServo.setPosition(BOTH_PIVOT_TRANSFER);
                 rightStrikeServo.setPosition(RIGHT_PIVOT_TRANSFER);
             });
         };

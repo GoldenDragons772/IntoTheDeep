@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.helpers.LogState;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -18,8 +20,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * The system uses PID control to adjust the motor power based on the current position of the climb slides.
  */
 @Config
-public class ClimbSystem extends SubsystemBase {
+public class ClimbSystem extends SubsystemBase implements LogState {
     private final RootSystem root;
+
+    @Override
+    @NotNull
+    public String stateString() {
+        return String.format("CLIMBSYSTEM TargetPosition: %s Position: %s", targetPosition, position.name());
+    }
 
     /**
      * Enum representing the different states of the climb system.

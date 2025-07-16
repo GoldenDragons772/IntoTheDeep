@@ -2,20 +2,13 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.arcrobotics.ftclib.command.*
 import com.pedropathing.commands.FollowPath
-import com.pedropathing.commands.HoldPoint
-import com.pedropathing.follower.Follower
-import com.qualcomm.hardware.ams.AMSColorSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import dev.frozenmilk.sinister.loading.Preload
 import org.firstinspires.ftc.teamcode.auto.BucketAutoPaths
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
-import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
-import kotlin.math.floor
 
 /** * Autonomous OpMode for the Bucket auto routine.
  * This OpMode uses the RootSystem to control the robot's systems and follows a predefined path to score samples.

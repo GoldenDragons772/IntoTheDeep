@@ -7,13 +7,14 @@ import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.teamcode.helpers.LogState
 
 /**
  * Controls the outtake system and its related servos.
  * It does not control the climb system, which must be changed separately in order to actually climb.
  *
  */
-class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBase() {
+class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBase(), LogState {
 
     // Defines servos
     private val rstrikeServo: Servo = root.hw.get(Servo::class.java, "vRightStrikeServo")
@@ -55,15 +56,15 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         clawServo.direction = Servo.Direction.FORWARD
         pivotServo.direction = Servo.Direction.REVERSE
 
-        rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
-        lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
+        rstrikeServo.position = Constants.OUT_STRIKE_HOME
+        lstrikeServo.position = Constants.OUT_STRIKE_HOME
 
         pivotServo.position = Constants.PIVOT_SERVO_HOME
         wristServo.position = Constants.WRIST_SERVO_HOME
         clawServo.position = Constants.CLAW_SERVO_TARGET
 
-//        rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
-//        lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+//        rstrikeServo.position = Constants.OUT_STRIKE_SCORE
+//        lstrikeServo.position = Constants.OUT_STRIKE_SCORE
         // clawButton.mode = DigitalChannel.Mode.INPUT
 
     }
@@ -84,11 +85,11 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
     fun setPivot(pos: OuttakePosition): InstantCommand {
         return when (pos) {
             OuttakePosition.HOME -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_HOME })
-            OuttakePosition.TRANSFER_PREP -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER})
+            OuttakePosition.TRANSFER_PREP -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER })
             OuttakePosition.TRANSFER -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_TRANSFER })
             OuttakePosition.TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SCORE })
             OuttakePosition.SPEC_TARGET -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC })
-            OuttakePosition.SPEC_INV -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC_INV})
+            OuttakePosition.SPEC_INV -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SPEC_INV })
             OuttakePosition.SAFE -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_SAFE })
             OuttakePosition.PRELOAD -> InstantCommand({ pivotServo.position = Constants.PIVOT_SERVO_PRELOAD })
         }
@@ -104,44 +105,44 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
 
         return when (pos) {
             OuttakePosition.HOME -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_HOME
-                lstrikeServo.position = Constants.OUT_STRIKE_L_HOME
+                rstrikeServo.position = Constants.OUT_STRIKE_HOME
+                lstrikeServo.position = Constants.OUT_STRIKE_HOME
             })
 
             OuttakePosition.TARGET -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SCORE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SCORE
+                rstrikeServo.position = Constants.OUT_STRIKE_SCORE
+                lstrikeServo.position = Constants.OUT_STRIKE_SCORE
             })
 
             OuttakePosition.SPEC_TARGET -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC
+                rstrikeServo.position = Constants.OUT_STRIKE_SPEC
+                lstrikeServo.position = Constants.OUT_STRIKE_SPEC
             })
 
             OuttakePosition.TRANSFER_PREP -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER_PREP
-                lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER_PREP
+                rstrikeServo.position = Constants.OUT_STRIKE_TRANSFER_PREP
+                lstrikeServo.position = Constants.OUT_STRIKE_TRANSFER_PREP
             })
 
             OuttakePosition.TRANSFER -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_TRANSFER
-                lstrikeServo.position = Constants.OUT_STRIKE_L_TRANSFER
+                rstrikeServo.position = Constants.OUT_STRIKE_TRANSFER
+                lstrikeServo.position = Constants.OUT_STRIKE_TRANSFER
             })
 
             OuttakePosition.SAFE -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
+                rstrikeServo.position = Constants.OUT_STRIKE_SAFE
+                lstrikeServo.position = Constants.OUT_STRIKE_SAFE
             })
 
             OuttakePosition.PRELOAD -> InstantCommand({
                 // do
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SAFE
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SAFE
+                rstrikeServo.position = Constants.OUT_STRIKE_SAFE
+                lstrikeServo.position = Constants.OUT_STRIKE_SAFE
             })
 
             OuttakePosition.SPEC_INV -> InstantCommand({
-                rstrikeServo.position = Constants.OUT_STRIKE_R_SPEC_INV
-                lstrikeServo.position = Constants.OUT_STRIKE_L_SPEC_INV
+                rstrikeServo.position = Constants.OUT_STRIKE_SPEC_INV
+                lstrikeServo.position = Constants.OUT_STRIKE_SPEC_INV
             })
 
         }
@@ -196,12 +197,12 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      * Moves the entire arm assembly to the home position.
      */
     fun moveArmToHome(): Command =
-            setPivot(OuttakePosition.HOME)
+        setPivot(OuttakePosition.HOME)
             .andThen(WaitCommand(250))
             .andThen(setStrike(OuttakePosition.HOME))
             .andThen(wristHome())
-            .andThen(InstantCommand({homeState = true}))
-            //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
+            .andThen(InstantCommand({ homeState = true }))
+    //.andThen(PerpetualCommand(ConditionalCommand(clawClose(), clawOpen()) { getClawButtonState() }))
 
     /**
      * Moves the entire arm to the scoring position.
@@ -231,7 +232,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
             .andThen(WaitCommand(500))
             .andThen(setPivot(OuttakePosition.SPEC_INV))
             .andThen(wristHome())
-            .andThen(InstantCommand({ homeState = false}))
+            .andThen(InstantCommand({ homeState = false }))
 
     /**
      * Moves the arm to the transfer preparation position.
@@ -241,7 +242,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         wristHome()
             .andThen(setPivot(OuttakePosition.TRANSFER))
             .andThen(setStrike(OuttakePosition.TRANSFER_PREP))
-            .andThen(InstantCommand({ specState = false}))
+            .andThen(InstantCommand({ specState = false }))
 
     /**
      * Moves the arm to the transfer position.
@@ -275,4 +276,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      * Toggles the claw between the open (ready to score) position and the closed position.
      */
     fun toggleClaw() = ConditionalCommand(clawOpen(), clawClose()) { clawState }
+    override fun stateString(): String {
+        return "OUTTAKE SYSTEM Claw: $clawState Home: $homeState Wrist: $wristState Spec: $specState"
+    }
 }
