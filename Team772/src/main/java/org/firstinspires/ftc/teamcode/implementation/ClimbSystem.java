@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
-import android.util.Log;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -49,7 +48,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
     }
 
     // PID coefficients for the climb slides.
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.05);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.5);
 
     // Motors for the climbing mechanism.
     private final DcMotorEx climbMotor1, climbMotor2, climbMotor3;

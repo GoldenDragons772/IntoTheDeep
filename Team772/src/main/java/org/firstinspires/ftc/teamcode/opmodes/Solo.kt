@@ -34,8 +34,8 @@ class Solo : CommandOpMode() {
             clawMapping = Pair(GamepadKeys.Trigger.RIGHT_TRIGGER, 1),
             hangSpecMapping = Pair(GamepadKeys.Button.B, 1), // Circle
             transferMapping = Pair(GamepadKeys.Button.A, 1), // Cross
-            climbUpMapping = Pair(GamepadKeys.Button.A, 2), // Cross
-            climbDownMapping = Pair(GamepadKeys.Button.B, 2), // Circle
+            climbUpMapping = Pair(GamepadKeys.Button.LEFT_STICK_BUTTON, 1), // Cross
+            climbDownMapping = Pair(GamepadKeys.Button.RIGHT_STICK_BUTTON, 1), // Circle
             moveIntakeMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
         driveManager = DriveManager(
