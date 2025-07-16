@@ -435,7 +435,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         return null;
     }
     public Command setWrist(double pos) {
-        assert 0.0 < pos && pos < 1.0;
+        assert 0.0 <= pos && pos <= 1.0;
         return new InstantCommand(() -> {
             wristPos = pos;
             Log.i("CMDS", "setWrist(" + pos + ")\n" + this.stateString());
