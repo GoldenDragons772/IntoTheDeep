@@ -41,7 +41,7 @@ public class Constants {
     public static double PIVOT_SERVO_SCORE = 0.6;
     public static double PIVOT_SERVO_SPEC = 0.9;
     public static double PIVOT_SERVO_SPEC_INV = 0.55;
-    public static double PIVOT_SERVO_TRANSFER = 0.2;
+    public static double PIVOT_SERVO_TRANSFER = 0.15;
     public static double PIVOT_SERVO_SAFE = 0.65;
     public static double PIVOT_SERVO_PRELOAD = 0.0;
 

@@ -29,7 +29,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.7, BOTH_PIVOT_HOVER = 0.84;
+    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.78, BOTH_PIVOT_HOVER = 0.84;
     // Set Positions for Strike Servos
     private static double LEFT_PIVOT_HOME = BOTH_PIVOT_HOME, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
     private static double RIGHT_PIVOT_HOME = BOTH_PIVOT_HOME, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
