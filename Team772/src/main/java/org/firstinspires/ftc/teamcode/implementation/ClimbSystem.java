@@ -48,7 +48,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
     }
 
     // PID coefficients for the climb slides.
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.5);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.1);
 
     // Motors for the climbing mechanism.
     private final DcMotorEx climbMotor1, climbMotor2, climbMotor3;
@@ -107,11 +107,8 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         root.getTelemetry().addData("Slide Position", this.getSlidesPosition());
 
         //Make sure to stop PIDing when we're home
-        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
-            climbMotor1.setPower(0);
-            climbMotor2.setPower(0);
-            climbMotor3.setPower(0);
-        }else if (position == null){
+//        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
+        if (position == null){
             //Don't pid
         }
         else{
