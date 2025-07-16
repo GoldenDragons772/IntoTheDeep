@@ -29,7 +29,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.84;
+    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.7, BOTH_PIVOT_HOVER = 0.84;
     // Set Positions for Strike Servos
     private static double LEFT_PIVOT_HOME = BOTH_PIVOT_HOME, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
     private static double RIGHT_PIVOT_HOME = BOTH_PIVOT_HOME, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
@@ -365,9 +365,13 @@ public class IntakeSystem extends SubsystemBase implements LogState {
                 leftStrikeServo.setPosition(BOTH_PIVOT_TARGET);
                 rightStrikeServo.setPosition(BOTH_PIVOT_TARGET);
             });
-            case TRANSFER, HOVER -> new InstantCommand(() -> {
+            case TRANSFER -> new InstantCommand(() -> {
                 leftStrikeServo.setPosition(BOTH_PIVOT_TRANSFER);
                 rightStrikeServo.setPosition(BOTH_PIVOT_TRANSFER);
+            });
+            case HOVER -> new InstantCommand(() -> {
+                leftStrikeServo.setPosition(BOTH_PIVOT_HOVER);
+                rightStrikeServo.setPosition(BOTH_PIVOT_HOVER);
             });
         };
 
@@ -430,17 +434,25 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
         return null;
     }
+    public Command setWrist(double pos) {
+        assert 0.0 < pos && pos < 1.0;
+        return new InstantCommand(() -> {
+            wristPos = pos;
+            Log.i("CMDS", "setWrist(" + pos + ")\n" + this.stateString());
+            this.wristServo.setPosition(wristPos);
+        });
+    }
 
     /**
-     * Sets the wrist servo position based on the specified position.
+     * Sets the wrist servo position BASED ON THE SPECIFIED POSITION.
      * This method uses an InstantCommand to set the wrist servo to a specific position.
      *
      * @param pos The desired wrist position, which can be a positive or negative value.
      * @return A command that sets the wrist servo position.
      */
-    public Command setWrist(double pos) {
+    public Command incWrist(double pos) {
         return new InstantCommand(() -> {
-            Log.i("CMDS", "setWrist(" + pos + ")\n" + this.stateString());
+            Log.i("CMDS", "incWrist(" + pos + ")\n" + this.stateString());
 
             wristPos += pos;
 
@@ -603,7 +615,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         return new SequentialCommandGroup(
                 new InstantCommand(() ->{
                     Log.i("CMDS", "hoverIntake()\n" + this.stateString());}),
-                setStrike(IntakePosition.TRANSFER),
+                setStrike(IntakePosition.HOVER),
                 new WaitCommand(150),
                 setPivot(IntakePosition.HOME),
                 new InstantCommand(() -> {
@@ -676,7 +688,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public Command incrementWristLeft() {
 //        return setWrist(WRIST_INC);
-        return setWrist(-0.02);
+        return incWrist(-0.02);
     }
 
     /**
@@ -687,6 +699,6 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public Command incrementWristRight() {
 //        return setWrist(-WRIST_INC);
-        return setWrist(0.02);
+        return incWrist(0.02);
     }
 }
