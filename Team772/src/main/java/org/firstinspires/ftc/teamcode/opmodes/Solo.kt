@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.helpers.DriveManager
  * primarily used for practice and testing.
  */
 @TeleOp(name = "Solo TeleOp")
-class Solo: CommandOpMode() {
+class Solo : CommandOpMode() {
 
     private lateinit var driveManager: DriveManager
 
@@ -36,9 +36,16 @@ class Solo: CommandOpMode() {
             transferMapping = Pair(GamepadKeys.Button.A, 1), // Cross
             climbUpMapping = Pair(GamepadKeys.Button.A, 2), // Cross
             climbDownMapping = Pair(GamepadKeys.Button.B, 2), // Circle
-            moveIntakeMapping = null
+            moveIntakeMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
-        driveManager = DriveManager(hardwareMap,telemetry, gamepad1, gamepad2, mapping,AllianceSelector.selectAlliance(gamepad1, telemetry))
+        driveManager = DriveManager(
+            hardwareMap,
+            telemetry,
+            gamepad1,
+            gamepad2,
+            mapping,
+            AllianceSelector.selectAlliance(gamepad1, telemetry)
+        )
     }
 
 

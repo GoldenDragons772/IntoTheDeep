@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.helpers
 
+import android.util.Log
 import com.arcrobotics.ftclib.command.*
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
@@ -7,13 +8,11 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
-import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommandInverted
-import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 import org.firstinspires.ftc.teamcode.implementation.commands.ToggleIntakeCommand
+import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
 
 /**
  * Manages driving and button mappings for TeleOps.
@@ -129,6 +128,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setHeldBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
         setHeldBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
         if (mapping.moveIntakeMapping != null) {
+            Log.i("ROBO Init", "Initialized with moveIntake.")
             setPressedTriggerBinding(
                 mapping.moveIntakeMapping,
                 root.intake.toggleHover()
