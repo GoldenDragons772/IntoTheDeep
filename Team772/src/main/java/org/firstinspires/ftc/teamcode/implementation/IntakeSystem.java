@@ -26,20 +26,18 @@ import java.util.HashMap;
 public class IntakeSystem extends SubsystemBase implements LogState {
 
     // Set Positions for Linkage
-    public static double LEFT_LINKAGE_HOME = 0, LEFT_LINKAGE_TARGET = 0.42, LEFT_LINKAGE_HALF = 0.23;
+    public static double LINKAGE_HOME = 0, LINKAGE_TARGET = 0.42, LINKAGE_HALF = 0.23;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double BOTH_PIVOT_HOME = 0.35, BOTH_PIVOT_TARGET = 0.93, BOTH_PIVOT_TRANSFER = 0.78, BOTH_PIVOT_HOVER = 0.84;
     // Set Positions for Strike Servos
-    private static double LEFT_PIVOT_HOME = BOTH_PIVOT_HOME, LEFT_PIVOT_TARGET = BOTH_PIVOT_TARGET, LEFT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER; // best code practice for sure
-    private static double RIGHT_PIVOT_HOME = BOTH_PIVOT_HOME, RIGHT_PIVOT_TARGET = BOTH_PIVOT_TARGET, RIGHT_PIVOT_TRANSFER = BOTH_PIVOT_TRANSFER;
+    public static double STRIKE_HOME = 0.35, STRIKE_TARGET = 0.931, STRIKE_TRANSFER = 0.78, STRIKE_HOVER = 0.84;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
     public static double PIVOT_HOME = 0.5, PIVOT_TARGET = 0.29, PIVOT_TRANSFER = 0.9;
 
     // Set Positions for Wrist
-    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.5, WRIST_INC = 0.4;
+    public static double WRIST_HOME = 0.35, WRIST_TARGET = 1.0, WRIST_ANGLE = 0.85, wristPos = 0.64, WRIST_ANGLE_BUCKET = 0.5, WRIST_INC = 0.02;
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.73, CLAW_STROKE = 0.5;
@@ -58,7 +56,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
     /**
      * ValueCache is a class that holds the current linkage position.
-     * It is used to store the linkage position for later use, such as in periodic updates.
+     * It is used to store the linkage position for later use, e.g., in periodic updates.
      */
     public class ValueCache {
         public double linkagePosition;
@@ -142,23 +140,26 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        rightLinkageServo.setPosition(LEFT_LINKAGE_HOME);
-        leftLinkageServo.setPosition(LEFT_LINKAGE_HOME);
+        rightLinkageServo.setPosition(LINKAGE_HOME);
+        leftLinkageServo.setPosition(LINKAGE_HOME);
 
         pivotServo.setPosition(PIVOT_HOME);
 
         if (!isAuto || !isSpecAuto) {
+            this.moveToHome().schedule();
 
-            setLinkage(LEFT_LINKAGE_HOME);
+/*
+            setLinkage(LINKAGE_HOME);
 
 
             clawServo.setPosition(CLAW_HOME);
 
-            leftStrikeServo.setPosition(BOTH_PIVOT_HOME);
-            rightStrikeServo.setPosition(BOTH_PIVOT_HOME);
+            leftStrikeServo.setPosition(STRIKE_HOME);
+            rightStrikeServo.setPosition(STRIKE_HOME);
 
             pivotServo.setPosition(PIVOT_HOME + 0.2);
             setWrist(WristPosition.HOME);
+*/
         }
 
         this.isAuto = isAuto;
@@ -207,12 +208,18 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public void visionWristRotation() {
         double rotationValue = sampleDetector.sampleRotation.get();
-        var inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
+        double inputValue = ((rotationValue) / Math.PI + 0.5) % 1;
         if (inputValue < 0) inputValue += 1;
-        setWrist(inputValue * Constants.VISION_SERVO_MULTIPLIER);
+        setWrist(inputValue * Constants.VISION_SERVO_MULTIPLIER).schedule();
         wristPos = inputValue;
         root.getTelemetry().addData("Theta --", rotationValue);
         root.getTelemetry().addData("Rotation", inputValue);
+    }
+
+    public Command setWristRotation(Double rot) {
+        double inputValue = (rot / Math.PI + 0.5) % 1;
+        if (inputValue < 0) inputValue += 1;
+        return setWrist(inputValue * Constants.VISION_SERVO_MULTIPLIER);
     }
 
     /**
@@ -256,6 +263,21 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     }
 
     /**
+     * Sets the linkage extension in from the centroid of the robot (the point about which it rotates without moving).
+     * Theoretically allows for picking up a sample based on its distance from the center of the robot.
+     * DOES NOT UPDATE THE LINKAGE STATE!
+     * Accounts for strike offset
+     */
+    public Command setLinkageExtension(double inches) {
+        // +Z distance from the robot (Facing)
+        double centroid_distance = 7.0; // must be measured manually
+        double strike_offset = 4.3;
+        double length = inches - centroid_distance - strike_offset;
+        double adjustedLength = horizontalSlideExtensionConversion(length);
+        return setLinkage(adjustedLength);
+    }
+
+    /**
      * @param desiredLength the desired length of the slides in inches (between zero and the maximum length, in this case 15 inches).
      * @return a command
      */
@@ -265,7 +287,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         double angle = Math.acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH));
         assert Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE : String.format("%f, %f", desiredLength, angle); //
         double servoOutput = angleToLinkageServo(angle);
-        assert 0.0 < servoOutput && servoOutput < LEFT_LINKAGE_TARGET : String.format("%f, %f, %f", servoOutput, desiredLength, angle);
+        assert 0.0 < servoOutput && servoOutput < LINKAGE_TARGET : String.format("%f, %f, %f", servoOutput, desiredLength, angle);
         return servoOutput;
     }
 
@@ -278,7 +300,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public double getHorizontalSlideExtension() {
         double lowerBound = Constants.LINKAGE_HOME_ANGLE;
         double angleIntervalWidth = (Constants.LINKAGE_TARGET_ANGLE - lowerBound);
-        double currentServoRatio = this.valueCache.linkagePosition / LEFT_LINKAGE_TARGET;
+        double currentServoRatio = this.valueCache.linkagePosition / LINKAGE_TARGET;
         return (2 * Constants.LINKAGE_LENGTH * Math.cos(currentServoRatio * angleIntervalWidth + lowerBound)) - 3.92904;
         // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
     }
@@ -294,7 +316,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         // 0.46 * (78 - 12) + 12
         // s * (m_1 - m_0) + m_0 = a
         // (a - m_0) / (m_1 - m_0)
-        return LEFT_LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE));
+        return LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE));
     }
 
     public double getCentroidX() {
@@ -312,17 +334,17 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
-                setLinkage(LEFT_LINKAGE_HOME).schedule();
+                setLinkage(LINKAGE_HOME).schedule();
                 linkageState = LinkagePosition.HOME;
             });
 
             case FULL -> new InstantCommand(() -> {
-                setLinkage(LEFT_LINKAGE_TARGET).schedule();
+                setLinkage(LINKAGE_TARGET).schedule();
                 linkageState = LinkagePosition.FULL;
             });
 
             case HALF -> new InstantCommand(() -> {
-                setLinkage(LEFT_LINKAGE_HALF).schedule();
+                setLinkage(LINKAGE_HALF).schedule();
                 linkageState = LinkagePosition.HALF;
             });
 
@@ -338,7 +360,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      * @return A command that sets the linkage servo position.
      */
     public Command setLinkage(Double pos) {
-        assert 0.0 <= pos && pos <= LEFT_LINKAGE_TARGET : pos;
+        assert 0.0 <= pos && pos <= LINKAGE_TARGET : pos;
         Log.i("Linkage", pos.toString());
         return new InstantCommand(() -> {
             valueCache.linkagePosition = pos;
@@ -358,20 +380,20 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public Command setStrike(IntakePosition pos) {
         return switch (pos) {
             case HOME -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(BOTH_PIVOT_HOME);
-                rightStrikeServo.setPosition(BOTH_PIVOT_HOME);
+                leftStrikeServo.setPosition(STRIKE_HOME);
+                rightStrikeServo.setPosition(STRIKE_HOME);
             });
             case TARGET -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(BOTH_PIVOT_TARGET);
-                rightStrikeServo.setPosition(BOTH_PIVOT_TARGET);
+                leftStrikeServo.setPosition(STRIKE_TARGET);
+                rightStrikeServo.setPosition(STRIKE_TARGET);
             });
             case TRANSFER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(BOTH_PIVOT_TRANSFER);
-                rightStrikeServo.setPosition(BOTH_PIVOT_TRANSFER);
+                leftStrikeServo.setPosition(STRIKE_TRANSFER);
+                rightStrikeServo.setPosition(STRIKE_TRANSFER);
             });
             case HOVER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(BOTH_PIVOT_HOVER);
-                rightStrikeServo.setPosition(BOTH_PIVOT_HOVER);
+                leftStrikeServo.setPosition(STRIKE_HOVER);
+                rightStrikeServo.setPosition(STRIKE_HOVER);
             });
         };
 
@@ -434,6 +456,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
         return null;
     }
+
     public Command setWrist(double pos) {
         assert 0.0 <= pos && pos <= 1.0;
         return new InstantCommand(() -> {
@@ -444,7 +467,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     }
 
     /**
-     * Sets the wrist servo position BASED ON THE SPECIFIED POSITION.
+     * Sets the wrist servo position BASED ON THE CURRENT POSITION
      * This method uses an InstantCommand to set the wrist servo to a specific position.
      *
      * @param pos The desired wrist position, which can be a positive or negative value.
@@ -477,6 +500,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     /**
      * Sets the claw servo position based on the specified position.
      * This method uses an InstantCommand to set the claw servo to either the home or target position.
+     * TARGET is closed, HOME is open
      *
      * @param pos The desired claw position, which can be HOME, TARGET, TRANSFER, or HOVER.
      * @return A command that sets the claw servo position.
@@ -552,6 +576,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         return new SequentialCommandGroup(
                 new SelectCommand(
                         new HashMap<>() {{
+                            // BUG: this selector is redundant because the subsequent commands override the linkage orders.
                             put(LinkagePosition.HOME,
                                     setLinkage(LinkagePosition.FULL)
 
@@ -613,10 +638,11 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public Command hoverIntake() {
         return new SequentialCommandGroup(
-                new InstantCommand(() ->{
-                    Log.i("CMDS", "hoverIntake()\n" + this.stateString());}),
+                new InstantCommand(() -> {
+                    Log.i("CMDS", "hoverIntake()\n" + this.stateString());
+                }),
                 setStrike(IntakePosition.HOVER),
-                new WaitCommand(150),
+                new WaitCommand(50),
                 setPivot(IntakePosition.HOME),
                 new InstantCommand(() -> {
                     pivotPosition = IntakePosition.HOVER;
@@ -634,15 +660,12 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public Command strikeIntake() {
         return new SequentialCommandGroup(
-                new InstantCommand(() ->{
-                    Log.i("CMDS", "strikeIntake()\n" + this.stateString());}),
-                setPivot(IntakePosition.TARGET),
-                new WaitCommand(150),
-                setStrike(IntakePosition.TARGET),
                 new InstantCommand(() -> {
-                    pivotPosition = IntakePosition.TARGET;
-                    //extendState = IntakePosition.TARGET;
-                })
+                    Log.i("CMDS", "strikeIntake()\n" + this.stateString());
+                }),
+                setPivot(IntakePosition.TARGET),
+                new WaitCommand(50),
+                setStrike(IntakePosition.TARGET)
         );
     }
 
@@ -687,8 +710,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      * @return A command that sets the wrist servo position to the left.
      */
     public Command incrementWristLeft() {
-//        return setWrist(WRIST_INC);
-        return incWrist(-0.02);
+        return incWrist(-WRIST_INC);
     }
 
     /**
@@ -698,7 +720,6 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      * @return A command that sets the wrist servo position to the right.
      */
     public Command incrementWristRight() {
-//        return setWrist(-WRIST_INC);
-        return incWrist(0.02);
+        return incWrist(WRIST_INC);
     }
 }

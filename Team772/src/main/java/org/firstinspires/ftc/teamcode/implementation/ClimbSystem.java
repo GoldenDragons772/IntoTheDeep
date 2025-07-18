@@ -59,6 +59,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
 
     // Timer for tracking elapsed time during PID calculations.
     private final ElapsedTime timer = new ElapsedTime();
+    public static boolean ENABLED = true;
 
     public ClimbSystem(RootSystem root, boolean isAuto) {
         this.root = root;
@@ -66,7 +67,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         this.climbMotor2 = root.getHw().get(DcMotorEx.class, "climbMotorDown");
         this.climbMotor3 = root.getHw().get(DcMotorEx.class, "climbMotor3");
 
-        if(isAuto) {
+        if (isAuto) {
             resetEncoder();
         }
 
@@ -75,7 +76,8 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         climbMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    /** Resets the encoder of climbMotor2 and sets it to run without an encoder.
+    /**
+     * Resets the encoder of climbMotor2 and sets it to run without an encoder.
      * This is typically used to reset the position of the climb slides.
      */
     public void resetEncoder() {
@@ -83,8 +85,10 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         climbMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    /** Gets the current position of the climb slides in degrees.
+    /**
+     * Gets the current position of the climb slides in degrees.
      * The position is calculated based on the encoder value of climbMotor2.
+     *
      * @return The current position of the climb slides in degrees.
      */
     public double getSlidesPosition() {
@@ -108,10 +112,9 @@ public class ClimbSystem extends SubsystemBase implements LogState {
 
         //Make sure to stop PIDing when we're home
 //        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
-        if (position == null){
+        if (position == null) {
             //Don't pid
-        }
-        else{
+        } else if (ENABLED) {
             climbMotor1.setPower(PID_output);
             climbMotor2.setPower(PID_output);
             climbMotor3.setPower(PID_output);
@@ -121,7 +124,9 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         timer.reset();
     }
 
-    /** Sets the target position for the climb motors.
+    /**
+     * Sets the target position for the climb motors.
+     *
      * @param climbState The desired climb state to set the target position to.
      * @return A command that sets the target position of the climb motors.
      */
@@ -132,16 +137,20 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         });
     }
 
-    /** Sends the climb motors to a specific speed, ignoring the position.
+    /**
+     * Sends the climb motors to a specific speed, ignoring the position.
+     *
      * @param speed The speed to set the motors to.
      * @return A command that sets the motors to the specified speed.
      */
-    public Command sendRawMotors(double speed){
+    public Command sendRawMotors(double speed) {
         return new InstantCommand(() -> {
             position = null;
-            climbMotor1.setPower(speed);
-            climbMotor2.setPower(speed);
-            climbMotor3.setPower(speed);
+            if (ENABLED) {
+                climbMotor1.setPower(speed);
+                climbMotor2.setPower(speed);
+                climbMotor3.setPower(speed);
+            }
         });
     }
 }

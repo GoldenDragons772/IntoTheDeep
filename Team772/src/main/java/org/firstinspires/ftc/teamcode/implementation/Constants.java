@@ -6,8 +6,6 @@ import org.firstinspires.ftc.teamcode.vision.SampleDetection;
 @Config
 public class Constants {
 
-
-    public static int CAMERA_GAIN = 50;
     public static double NOMINAL_BATTERY_VOLTAGE = 13.5;
 
 
@@ -25,7 +23,7 @@ public class Constants {
     public static double GOOFY_AHH_SERVO_OFFSET = 0.66;
     public static double GOOFY_AHH_CAMERA_HST = 0.5; // horizontal space transformation
     public static double CAMERA_BOTTOM_OFFSET = 4.3; // inches
-    public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LEFT_LINKAGE_TARGET;
+    public static double INCHES_PER_LINKAGE = 15.0 / IntakeSystem.LINKAGE_TARGET;
 //    public static double INCHES_PER_CAMERA_X = 24.0 / SampleDetection.WIDTH; // Doesn't work because it's not a linear transformation
     public static double INCHES_PER_CAMERA_Y = 7.0 / SampleDetection.SUBHEIGHT;
     public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
@@ -58,25 +56,11 @@ public class Constants {
     public static double OUT_STRIKE_SAFE = 0.8;
 
 
-
-    /**
-     * Values for stage 2 of the outtake. Change for tuning.
-     */
-    public static double SWING_SERVO_TARGET = 0.0;
-    public static double SWING_SERVO_HOME = 0.95;
-    public static double SWING_SERVO_INIT = 0.75;
-
     /**
      * Wrist Positions
      */
     public static double WRIST_SERVO_HOME = 0.65;
     public static double WRIST_SERVO_TARGET = 0.0;
-
-    /**
-     * Claw Positions.
-     */
-    public static double UNGRIPPY = 0.3;
-    public static double GRIPPY = 0.8;
 
     /**
      * Vision

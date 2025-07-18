@@ -1,24 +1,19 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.ParallelCommandGroup
-import com.arcrobotics.ftclib.command.ParallelRaceGroup
 import com.arcrobotics.ftclib.command.RunCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.arcrobotics.ftclib.command.WaitCommand
 import com.arcrobotics.ftclib.command.WaitUntilCommand
 import com.pedropathing.commands.FollowPath
-import com.pedropathing.commands.HoldPoint
 import com.pedropathing.localization.Pose
-import com.pedropathing.pathgen.Point
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.auto.SpecimenAutoPaths
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
-import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecWallCommand
-import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenCommand
+import org.firstinspires.ftc.teamcode.implementation.commands.AutoScoreSpecimenCommand
 
 /**
  * Autonomous OpMode for scoring specimens in the FTC competition.
@@ -27,14 +22,14 @@ import org.firstinspires.ftc.teamcode.implementation.commands.AutoSpecimenComman
  *
  * At its current state can score 5 specimens and park in the observation zone.
  */
-// TODO: Implement vison to score more than 5 specs. (big dreams)
+// TODO: Implement vision to score more than 5 specs. (big dreams)
 @Autonomous(name = "Specimen Auto")
 class SpecimenAuto : CommandOpMode() {
     override fun initialize() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = true)
         root.follower.setStartingPose(Pose(8.50, 66.500, Math.toRadians(180.0)))
-        val specimenCommand = AutoSpecimenCommand(root.intake, root.outtake, root.climb)
+        val specimenCommand = AutoScoreSpecimenCommand(root.intake, root.outtake, root.climb)
 
 //        // reset encoders only once during auto.
 //        root.climb.resetEncoders()
@@ -80,7 +75,10 @@ class SpecimenAuto : CommandOpMode() {
                 FollowPath(root.follower, SpecimenAutoPaths.spec1(), true, 0.9),
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
+                // finished scoring
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                // Start next
+
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab2(), true, 0.9),
                     WaitCommand(600).andThen(
@@ -90,14 +88,15 @@ class SpecimenAuto : CommandOpMode() {
                     )
                 ),
                 FollowPath(root.follower, SpecimenAutoPaths.lineGrab2(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
-//                // spec3
-                root.outtake.toggleClaw(),
+                root.outtake.toggleClaw(), // Claw close
                 //WaitCommand(200),
                 specimenCommand,
                 FollowPath(root.follower, SpecimenAutoPaths.spec2(), true, 0.9),
                 WaitCommand(150),
                 root.outtake.toggleClaw(),
                 root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+
+                // finish
                 ParallelCommandGroup(
                     FollowPath(root.follower, SpecimenAutoPaths.grab3(), true, 0.9),
                     WaitCommand(600).andThen(

@@ -145,7 +145,7 @@ class BucketAuto(): CommandOpMode() {
                 ),
 
                 //Get in scanning position.
-                root.intake.setLinkage(IntakeSystem.LEFT_LINKAGE_TARGET - 0.02)
+                root.intake.setLinkage(IntakeSystem.LINKAGE_TARGET - 0.02)
                     .andThen(root.intake.hoverIntake()),
 //                root.intake.hoverIntake(),
                 root.intake.setWrist(IntakeSystem.WristPosition.TARGET),
