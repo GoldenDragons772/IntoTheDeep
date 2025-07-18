@@ -59,7 +59,7 @@ public class Constants {
     /**
      * Wrist Positions
      */
-    public static double WRIST_SERVO_HOME = 0.65;
+    public static double WRIST_SERVO_HOME = 0.685;
     public static double WRIST_SERVO_TARGET = 0.0;
 
     /**
