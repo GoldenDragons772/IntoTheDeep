@@ -85,8 +85,11 @@ class CRIAutonomous : CommandOpMode() {
         // these are in closures/lambdas instead of functions so that they can capture their environments
         val preload = {
             // Stash in zone
-            SequentialCommandGroup()
+            SequentialCommandGroup(
+
+            )
         }
+
 
         val moveToSample = { samplePos: Pose, offset: Double ->
             root.update()
@@ -154,21 +157,8 @@ class CRIAutonomous : CommandOpMode() {
 
         val score = {
             SequentialCommandGroup(
-                ParallelCommandGroup(
-                    FollowPath(root.follower, CRIAutoPath.grab2(), true, 0.9),
-                    WaitCommand(600).andThen(
-                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME),
-                        root.outtake.moveArmToHome(),
-                        root.intake.moveToHome(),
-                    )
-                ),
-                FollowPath(root.follower, CRIAutoPath.lineToPlayer(), false, 0.6).interruptOn { root.outtake.getClawButtonState() }.withTimeout(1500),
-                root.outtake.clawClose(), // Claw close
-                AutoScoreSpecimenCommand(root.intake, root.outtake, root.climb),
-                FollowPath(root.follower, CRIAutoPath.spec2(), true, 0.9),
-                WaitCommand(150),
-                root.outtake.clawOpen(),
-                root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+                FollowPath(root.follower, CRIAutoPath.playerToSub().build()),
+                FollowPath(root.follower, CRIAutoPath.subToPlayer().build()),
             )
         }
 
@@ -221,7 +211,6 @@ class CRIAutonomous : CommandOpMode() {
             SequentialCommandGroup(
                 //Preload
                 win(),
-
                 // DEBUG RETURNER -- REMOVE FOR COMP!!
                 WaitCommand(25000),
                 InstantCommand({
