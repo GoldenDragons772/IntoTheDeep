@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
+import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.SpecimenCommandInverted
@@ -112,12 +113,13 @@ class DriveManager(
         setPressedBinding(mapping.lowclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.LOW_BASKET))
         setPressedBinding(mapping.highclimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET))
         setPressedBinding(mapping.unClimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME))
-        setPressedBinding(mapping.climbUpMapping, root.climb.sendRawMotors(1.0))
-        setPressedBinding(mapping.climbDownMapping, root.climb.sendRawMotors(-1.0))
+        setPressedBinding(mapping.climbUpMapping, root.climb.overrideClimbController(1.0))
+        setPressedBinding(mapping.climbDownMapping, root.climb.overrideClimbController(-1.0))
         setPressedBinding(
             mapping.hangLowSpecMapping,
             SpecimenCommandInverted(root.intake, root.outtake, root.climb, ClimbSystem.ClimbState.LOW_CHAMBER)
         )
+
 
         setPressedBinding(
             mapping.hangSpecMapping,
@@ -140,6 +142,13 @@ class DriveManager(
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setHeldBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
         setHeldBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
+        if (mapping.incrementClimbSystem != null){
+            Log.i("ROBO Init", "Initialized with moveIntake.")
+            setPressedBinding(
+                mapping.incrementClimbSystem,
+                root.climb.setTargetPosition(root.climb.slidesPosition + Constants.MANUAL_CLIMB_INCREMENT)
+            )
+        }
         if (mapping.moveIntakeMapping != null) {
             Log.i("ROBO Init", "Initialized with moveIntake.")
             setPressedTriggerBinding(
@@ -168,6 +177,7 @@ class DriveManager(
         val climbUpMapping: Pair<GamepadKeys.Button, Int>,
         val climbDownMapping: Pair<GamepadKeys.Button, Int>,
         val hangLowSpecMapping: Pair<GamepadKeys.Button, Int>,
+        val incrementClimbSystem: Pair<GamepadKeys.Button, Int>?,
         val moveIntakeMapping: Pair<GamepadKeys.Trigger, Int>?
     )
 }

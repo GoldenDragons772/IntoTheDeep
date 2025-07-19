@@ -18,7 +18,7 @@ class SpecimenCommandInverted(
     private val intakeSystem: IntakeSystem,
     private val outtakeSystem: OuttakeSystem,
     private val climbSystem: ClimbSystem,
-    private val targetClimbPosition: ClimbSystem.ClimbState
+    targetClimbPosition: ClimbSystem.ClimbState
 ) : SequentialCommandGroup() {
 
     init {

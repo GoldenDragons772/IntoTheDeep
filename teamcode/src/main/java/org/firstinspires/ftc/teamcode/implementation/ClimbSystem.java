@@ -120,11 +120,11 @@ public class ClimbSystem extends SubsystemBase implements LogState {
 
 //        Make sure to stop PIDing when we're home
         if (position == ClimbState.HOME && this.getSlidesPosition() < 75) {
-           setRawMotors(0);
+            setMotorPower(0);
         } else if (position == null) {
             //Don't pid
         } else if (ENABLED) {
-            setRawMotors(PID_output);
+            setMotorPower(PID_output);
         }
 
         lastError = error;
@@ -138,13 +138,15 @@ public class ClimbSystem extends SubsystemBase implements LogState {
      * @return A command that sets the target position of the climb motors.
      */
     public Command setTargetPosition(ClimbState climbState) {
-        return new InstantCommand(() -> {
-            this.position = climbState;
-            targetPosition = climbState.position;
-        });
+        return setTargetPosition(climbState.position).andThen(new InstantCommand(() -> this.position = climbState));
     }
 
-    private void setRawMotors(double speed){
+    public Command setTargetPosition(double climbPosition) {
+        return new InstantCommand(() -> targetPosition = climbPosition);
+    }
+
+
+    private void setMotorPower(double speed) {
         if (ENABLED) {
             climbMotor1.setPower(speed);
             climbMotor2.setPower(speed);
@@ -158,10 +160,10 @@ public class ClimbSystem extends SubsystemBase implements LogState {
      * @param speed The speed to set the motors to.
      * @return A command that sets the motors to the specified speed.
      */
-    public Command sendRawMotors(double speed) {
+    public Command overrideClimbController(double speed) {
         return new InstantCommand(() -> {
             position = null;
-            setRawMotors(speed);
+            setMotorPower(speed);
         });
     }
 }

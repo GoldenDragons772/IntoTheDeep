@@ -30,6 +30,9 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public static double RIGHT_LINKAGE_HOME = 0.00;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
+    public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
+    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
+    public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
     // Set Positions for Strike Servos
     public static double STRIKE_HOME = 0.35, STRIKE_TARGET = 0.931, STRIKE_TRANSFER = 0.78, STRIKE_HOVER = 0.84;
 
@@ -285,8 +288,8 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public double horizontalSlideExtensionConversion(double desiredLength) {
         double adjustedLength = desiredLength + 3.92904;
         Log.i("Vision", "Adjusted " + adjustedLength);
-        double angle = Math.acos(adjustedLength / (2 * Constants.LINKAGE_LENGTH));
-        assert Constants.LINKAGE_TARGET_ANGLE < angle && angle < Constants.LINKAGE_HOME_ANGLE : String.format("%f, %f", desiredLength, angle); //
+        double angle = Math.acos(adjustedLength / (2 * LINKAGE_LENGTH));
+        assert LINKAGE_TARGET_ANGLE < angle && angle < LINKAGE_HOME_ANGLE : String.format("%f, %f", desiredLength, angle); //
         double servoOutput = angleToLinkageServo(angle);
         assert 0.0 < servoOutput && servoOutput < LINKAGE_TARGET : String.format("%f, %f, %f", servoOutput, desiredLength, angle);
         return servoOutput;
@@ -299,10 +302,10 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      * @return The calculated horizontal slide extension in inches.
      */
     public double getHorizontalSlideExtension() {
-        double lowerBound = Constants.LINKAGE_HOME_ANGLE;
-        double angleIntervalWidth = (Constants.LINKAGE_TARGET_ANGLE - lowerBound);
+        double lowerBound = LINKAGE_HOME_ANGLE;
+        double angleIntervalWidth = (LINKAGE_TARGET_ANGLE - lowerBound);
         double currentServoRatio = this.valueCache.linkagePosition / LINKAGE_TARGET;
-        return (2 * Constants.LINKAGE_LENGTH * Math.cos(currentServoRatio * angleIntervalWidth + lowerBound)) - 3.92904;
+        return (2 * LINKAGE_LENGTH * Math.cos(currentServoRatio * angleIntervalWidth + lowerBound)) - 3.92904;
         // 2l*cos((1-current/max) * (max_angle - min_angle) + min_angle)
     }
 
@@ -317,7 +320,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         // 0.46 * (78 - 12) + 12
         // s * (m_1 - m_0) + m_0 = a
         // (a - m_0) / (m_1 - m_0)
-        return LINKAGE_TARGET * ((angle - Constants.LINKAGE_HOME_ANGLE) / (Constants.LINKAGE_TARGET_ANGLE - Constants.LINKAGE_HOME_ANGLE));
+        return LINKAGE_TARGET * ((angle - LINKAGE_HOME_ANGLE) / (LINKAGE_TARGET_ANGLE - LINKAGE_HOME_ANGLE));
     }
 
     public double getCentroidX() {
