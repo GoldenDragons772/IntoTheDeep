@@ -136,14 +136,14 @@ class DriveManager(
                     .andThen(root.outtake.setPivot(OuttakeSystem.OuttakePosition.TRANSFER)),
                 root.outtake.toggleClaw()
             )
-            { !root.outtake.homeState && root.climb.position == ClimbSystem.ClimbState.HIGH_CHAMBER })
+            { !root.outtake.homeState && root.climb.state == ClimbSystem.ClimbState.HIGH_CHAMBER })
         setPressedBinding(mapping.climbToHangSpec, root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER))
         // Claw Commands
         setPressedTriggerBinding(mapping.clawMapping, root.intake.toggleClaw())
         setHeldBinding(mapping.wristMappingLeft, root.intake.incrementWristLeft())
         setHeldBinding(mapping.wristMappingRight, root.intake.incrementWristRight())
         if (mapping.incrementClimbSystem != null){
-            Log.i("ROBO Init", "Initialized with moveIntake.")
+            Log.i("ROBO Init", "Initialized with incrementClimbSystem.")
             setPressedBinding(
                 mapping.incrementClimbSystem,
                 root.climb.setTargetPosition(root.climb.slidesPosition + Constants.MANUAL_CLIMB_INCREMENT)

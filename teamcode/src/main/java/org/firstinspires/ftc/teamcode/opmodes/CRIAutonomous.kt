@@ -119,7 +119,7 @@ class CRIAutonomous : CommandOpMode() {
                     WaitCommand(0), // TODO: determine empirically
                 )
         }
-        val pickupSample = { samplePos: Pose ->
+        val pickupSample = {
             SequentialCommandGroup(
                 root.intake.hoverIntake(),
                 WaitCommand(800),
@@ -169,15 +169,15 @@ class CRIAutonomous : CommandOpMode() {
             val cmds = mutableListOf<() -> Command>(
                 // Drop preload
                 { moveToSample(CRIAutoPath.sample1, -6.0) },
-                { pickupSample(CRIAutoPath.sample1) },
+                pickupSample,
                 dispenseSample,
 
                 { moveToSample(CRIAutoPath.sample2, 0.0) },
-                { pickupSample(CRIAutoPath.sample2) },
+                pickupSample,
                 dispenseSample,
 
                 { moveToSample(CRIAutoPath.sample3, 4.0) },
-                { pickupSample(CRIAutoPath.sample3) },
+                pickupSample,
                 dispenseSample,
                 // ~19 s
                 score,
@@ -201,8 +201,7 @@ class CRIAutonomous : CommandOpMode() {
                         root.outtake.clawClose(),
             */
 
-            root.outtake.setStrike(OuttakeSystem.OuttakePosition.TARGET),
-            root.outtake.setPivot(OuttakeSystem.OuttakePosition.SAFE),
+            root.outtake.moveArmToHome(),
             root.intake.moveToHome(),
             root.intake.setClaw(IntakeSystem.IntakePosition.HOME),
 

@@ -200,7 +200,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
             root.getTelemetry().addData("extendState", extendState.toString());
             root.getTelemetry().addData("pivotPosition", pivotPosition.toString());
             root.getTelemetry().addData("linkageState", linkageState.toString());
-            if (pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation.get() != -70.0 && !clawState) {
+            if ((pivotPosition == IntakePosition.HOME || pivotPosition == IntakePosition.HOVER && sampleDetector.sampleRotation.get() != -70.0 && !clawState) && linkageState == LinkagePosition.FULL) {
                 visionWristRotation();
             }
         }
