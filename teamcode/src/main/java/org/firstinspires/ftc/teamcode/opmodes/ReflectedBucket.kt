@@ -1,0 +1,189 @@
+package org.firstinspires.ftc.teamcode.opmodes
+
+import com.arcrobotics.ftclib.command.*
+import com.pedropathing.commands.FollowPath
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import org.firstinspires.ftc.teamcode.auto.ReflectedBucketAutoPaths as BucketAutoPaths
+import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
+import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
+import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
+import org.firstinspires.ftc.teamcode.implementation.RootSystem
+import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleCommand
+
+/** * Autonomous OpMode for the Bucket auto routine.
+ * This OpMode uses the RootSystem to control the robot's systems and follows a predefined path to score samples.
+ * It includes commands for transferring samples, scoring, and moving the robot to various positions.
+ * The auto currently scores three samples
+ */
+//TODO: Add submersible sample scoring and transfer commands.
+@Autonomous(name = "Reflected Bucket")
+class ReflectedBucket(): CommandOpMode() {
+    override fun initialize() {
+
+        val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
+
+        val transferSampleCommand = TransferSampleCommand(root.intake, root.outtake, root.climb);
+
+
+        root.follower.setStartingPose(BucketAutoPaths.startPose)
+
+        root.intake.moveToHome()
+
+        //The actual auto code
+        schedule(
+            RunCommand({
+                root.update()
+                if (root.follower.isBusy) root.follower.telemetryDebug(telemetry)
+            }),
+            SequentialCommandGroup(
+                root.outtake.clawClose(),
+                root.outtake.setPivot(OuttakeSystem.OuttakePosition.PRELOAD),
+
+                root.intake.setPivot(IntakeSystem.IntakePosition.HOME),
+                root.intake.setStrike(IntakeSystem.IntakePosition.HOME),
+
+                root.intake.toggleHover(),
+                root.intake.moveToHome(),
+
+
+                // preload
+
+                //Move the robot to the basket to score the preload.
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.scorePreload(), true, 0.9),
+                    root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
+                    root.outtake.moveArmToScore(),
+                ),
+
+                //Let go of the sample
+                WaitCommand(250),
+                root.outtake.toggleClaw(),
+
+                // Pickup sample 1
+
+                //Drive to the first sample while setting the outtake to transfer.
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.sample1(), true, 0.9),
+                    root.outtake.moveArmToTransferPrep(),
+                    WaitCommand(500).andThen(
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
+                    ),
+                ),
+
+                //Get in scanning position.
+                root.intake.moveToTarget(),
+                root.intake.hoverIntake(),
+                root.intake.setWrist(IntakeSystem.WristPosition.HOME),
+                WaitCommand(200),
+
+                //Strike the intake down and close the claw
+                root.intake.strikeIntake(),
+                WaitCommand(300),
+                root.intake.setClaw(IntakeSystem.IntakePosition.TARGET),
+                WaitCommand(300),
+
+                //Transfer the sample and start moving the climb to score.
+                transferSampleCommand,
+                root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
+
+                WaitCommand(300),
+
+                //Move the robot to score.
+                FollowPath(root.follower, BucketAutoPaths.score1(), true, 0.9),
+                WaitCommand(200),
+
+                //Let go of the sample
+                root.outtake.clawOpen(),
+                WaitCommand(400),
+
+                // pickup sample 2
+
+                //Drive to the second sample while setting the outtake to transfer.
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.sample2(), true, 0.9),
+                    root.outtake.moveArmToTransferPrep(),
+                    WaitCommand(800).andThen(
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
+                    ),
+                ),
+
+                //Get in scanning position.
+                root.intake.moveToTarget(),
+                root.intake.hoverIntake(),
+                root.intake.setWrist(IntakeSystem.WristPosition.HOME),
+                WaitCommand(200),
+
+                //Strike the intake down and close the claw
+                root.intake.strikeIntake(),
+                WaitCommand(300),
+                root.intake.toggleClaw(),
+                WaitCommand(500),
+
+                //Transfer the sample and start moving the climb to score.
+                transferSampleCommand,
+                root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
+
+                //WaitCommand(500),
+
+                //Move the robot to score.
+                FollowPath(root.follower, BucketAutoPaths.score2(), true, 0.6),
+                WaitCommand(200),
+
+                //Let go of the sample
+                root.outtake.clawOpen(),
+                WaitCommand(600),
+
+                // pickup sample 3
+
+                //Drive to the third sample while setting the outtake to transfer.
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.sample3(), false, 0.9),
+                    root.outtake.moveArmToTransferPrep(),
+                    WaitCommand(1000).andThen(
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
+                    ),
+                ),
+
+                //Get in scanning position.
+                root.intake.setLinkage(IntakeSystem.LINKAGE_TARGET - 0.02)
+                    .andThen(root.intake.hoverIntake()),
+//                root.intake.hoverIntake(),
+                root.intake.setWrist(IntakeSystem.WristPosition.TARGET),
+                WaitCommand(600),
+
+                //Strike the intake down and close the claw
+                root.intake.strikeIntake(),
+                FollowPath(root.follower, BucketAutoPaths.sample3Align(), 0.7),
+                WaitCommand(300),
+                root.intake.toggleClaw(),
+                WaitCommand(500),
+
+                //Transfer the sample and start moving the climb to score.
+                transferSampleCommand,
+                root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
+
+                //WaitCommand(500),
+
+                //Move the robot to score.
+                FollowPath(root.follower, BucketAutoPaths.score3(), true, 0.9),
+                WaitCommand(200),
+
+                //Let go of the sample.
+                root.outtake.clawOpen(),
+                WaitCommand(400),
+//
+
+                //Move to the sub while getting the outtake ready for transfer.
+                ParallelCommandGroup(
+                    FollowPath(root.follower, BucketAutoPaths.goToSub(), true, 0.9),
+                    root.intake.moveToHome(),
+                    WaitCommand(2000).andThen(root.outtake.toggleArmSpec()),
+                    WaitCommand(1500).andThen(
+                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
+                    ),
+                ),
+
+            )
+        )
+    }
+}
