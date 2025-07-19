@@ -48,7 +48,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
     }
 
     // PID coefficients for the climb slides.
-    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.1);
+    public static PIDFCoefficients PID_SLIDES = new PIDFCoefficients(0.007, 0.00, 0.0001, 0.05);
 
     // Motors for the climbing mechanism.
     private final DcMotorEx climbMotor1, climbMotor2, climbMotor3;

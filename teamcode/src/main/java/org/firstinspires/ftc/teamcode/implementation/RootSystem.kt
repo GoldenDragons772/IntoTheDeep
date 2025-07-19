@@ -22,7 +22,6 @@ import kotlin.reflect.full.functions
 class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boolean, val isSpecAuto: Boolean, var isAllianceRed: Boolean = false) {
     init {
         CommandScheduler.getInstance().reset()
-        ClimbSystem.ENABLED = false
     }
     val telemetry = MultipleTelemetry(rawTelemetry, FtcDashboard.getInstance().telemetry)
 
