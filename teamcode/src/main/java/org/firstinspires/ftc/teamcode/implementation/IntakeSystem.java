@@ -27,6 +27,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
     // Set Positions for Linkage
     public static double LINKAGE_HOME = 0, LINKAGE_TARGET = 0.42, LINKAGE_HALF = 0.23;
+    public static double RIGHT_LINKAGE_HOME = 0.00;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
     // Set Positions for Strike Servos
@@ -140,7 +141,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         rightStrikeServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setDirection(Servo.Direction.REVERSE);
 
-        rightLinkageServo.setPosition(LINKAGE_HOME);
+        rightLinkageServo.setPosition(RIGHT_LINKAGE_HOME);
         leftLinkageServo.setPosition(LINKAGE_HOME);
 
         pivotServo.setPosition(PIVOT_HOME);
@@ -365,7 +366,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         return new InstantCommand(() -> {
             valueCache.linkagePosition = pos;
             leftLinkageServo.setPosition(pos);
-            rightLinkageServo.setPosition(pos);
+            rightLinkageServo.setPosition(pos + RIGHT_LINKAGE_HOME);
         }
         );
     }
@@ -664,7 +665,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
                     Log.i("CMDS", "strikeIntake()\n" + this.stateString());
                 }),
                 setPivot(IntakePosition.TARGET),
-                new WaitCommand(50),
+                new WaitCommand(150),
                 setStrike(IntakePosition.TARGET)
         );
     }

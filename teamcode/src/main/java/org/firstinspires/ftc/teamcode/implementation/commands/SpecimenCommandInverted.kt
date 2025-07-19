@@ -14,7 +14,12 @@ import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
  * toggling the outtake arm, and setting the climb system to high chamber or home position based on the outtake state.
  * This command is used in the tele-op mode primarily to set the servos in specimen scoring or picking position.
  */
-class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): SequentialCommandGroup() {
+class SpecimenCommandInverted(
+    private val intakeSystem: IntakeSystem,
+    private val outtakeSystem: OuttakeSystem,
+    private val climbSystem: ClimbSystem,
+    private val targetClimbPosition: ClimbSystem.ClimbState
+) : SequentialCommandGroup() {
 
     init {
 
@@ -22,12 +27,20 @@ class SpecimenCommandInverted(private val intakeSystem: IntakeSystem, private va
 
         super.addCommands(
             SequentialCommandGroup(
-                InstantCommand({Log.i("CMDS", this.javaClass.name + "\n" + intakeSystem.stateString() + "\n" + outtakeSystem.stateString() + "\n" + climbSystem.stateString())}),
-                InstantCommand({prevState = intakeSystem.linkagePos}),
+                InstantCommand({
+                    Log.i(
+                        "CMDS",
+                        this.javaClass.name + "\n" + intakeSystem.stateString() + "\n" + outtakeSystem.stateString() + "\n" + climbSystem.stateString()
+                    )
+                }),
+                InstantCommand({ prevState = intakeSystem.linkagePos }),
                 intakeSystem.moveToHome(), // retract intake system
-                ConditionalCommand(WaitCommand(500), InstantCommand()) { prevState == IntakeSystem.LinkagePosition.FULL },
+                ConditionalCommand(
+                    WaitCommand(500),
+                    InstantCommand()
+                ) { prevState == IntakeSystem.LinkagePosition.FULL },
                 ConditionalCommand( // Move climb system down
-                    climbSystem.setTargetPosition(ClimbSystem.ClimbState.HIGH_CHAMBER_INVERTED),
+                    climbSystem.setTargetPosition(targetClimbPosition),
                     climbSystem.setTargetPosition(ClimbSystem.ClimbState.HOME)
                 ) { outtakeSystem.getSpecState() },
                 WaitCommand(100), // Move arm to spec grab position

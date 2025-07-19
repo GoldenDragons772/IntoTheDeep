@@ -26,9 +26,9 @@ class TransferSampleCommand(private val intakeSystem: IntakeSystem, private val 
             intakeSystem.moveToTransfer(),
             WaitCommand(200),
             outtakeSystem.moveArmToTransfer(),
-            WaitUntilCommand{ outtakeSystem.getClawButtonState() }.withTimeout(800),
+            WaitUntilCommand{ outtakeSystem.getClawButtonState() }.withTimeout(400),
             outtakeSystem.clawClose(),
-            WaitCommand(500),
+            WaitCommand(200),
             intakeSystem.setClaw(IntakeSystem.IntakePosition.HOME),
             outtakeSystem.moveArmToScore()
         )

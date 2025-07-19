@@ -56,12 +56,14 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
         clawServo.direction = Servo.Direction.FORWARD
         pivotServo.direction = Servo.Direction.REVERSE
 
-        rstrikeServo.position = Constants.OUT_STRIKE_HOME
-        lstrikeServo.position = Constants.OUT_STRIKE_HOME
-
-        pivotServo.position = Constants.PIVOT_SERVO_HOME
-        wristServo.position = Constants.WRIST_SERVO_HOME
-        clawServo.position = Constants.CLAW_SERVO_TARGET
+//        rstrikeServo.position = Constants.OUT_STRIKE_HOME
+//        lstrikeServo.position = Constants.OUT_STRIKE_HOME
+//
+//        pivotServo.position = Constants.PIVOT_SERVO_HOME
+//        wristServo.position = Constants.WRIST_SERVO_HOME
+//        clawServo.position = Constants.CLAW_SERVO_TARGET
+        moveArmToTransferPrep().schedule()
+        clawOpen().schedule()
 
 //        rstrikeServo.position = Constants.OUT_STRIKE_SCORE
 //        lstrikeServo.position = Constants.OUT_STRIKE_SCORE
@@ -240,7 +242,7 @@ class OuttakeSystem(root: RootSystem, private val isAuto: Boolean) : SubsystemBa
      */
     fun moveArmToTransferPrep(): Command =
         wristHome()
-            .andThen(setPivot(OuttakePosition.TRANSFER))
+            .andThen(setPivot(OuttakePosition.TRANSFER_PREP))
             .andThen(setStrike(OuttakePosition.TRANSFER_PREP))
             .andThen(InstantCommand({ specState = false }))
 

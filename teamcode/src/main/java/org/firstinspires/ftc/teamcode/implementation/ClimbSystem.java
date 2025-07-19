@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.implementation;
 
+import android.util.Log;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -21,11 +22,18 @@ import org.jetbrains.annotations.NotNull;
 @Config
 public class ClimbSystem extends SubsystemBase implements LogState {
     private final RootSystem root;
+    public static int CLIMB_HOME = 0;
+    public static int CLIMB_LOW_CHAMBER = 100;
+    public static int CLIMB_HIGH_CHAMBER = 420;
+    public static int CLIMB_LOW_BASKET = 1100;
+    public static int CLIMB_HIGH_BASKET = 2200;
+    public static int CLIMB_HIGH_CHAMBER_INVERTED = 1350;
+
 
     @Override
     @NotNull
     public String stateString() {
-        return String.format("CLIMBSYSTEM TargetPosition: %s Position: %s", targetPosition, position.name());
+        return String.format("CLIMBSYSTEM TargetPosition: %s Position: %s slidesPosition: %s", targetPosition, position.name(), getSlidesPosition());
     }
 
     /**
@@ -33,12 +41,12 @@ public class ClimbSystem extends SubsystemBase implements LogState {
      * Each state corresponds to a specific target position for the climb slides.
      */
     public enum ClimbState {
-        HOME(0),
-        LOW_CHAMBER(100),
-        LOW_BASKET(1100),
-        HIGH_CHAMBER(420),
-        HIGH_CHAMBER_INVERTED(1350),
-        HIGH_BASKET(2200);
+        HOME(CLIMB_HOME),
+        LOW_CHAMBER(CLIMB_LOW_CHAMBER),
+        LOW_BASKET(CLIMB_LOW_BASKET),
+        HIGH_CHAMBER(CLIMB_HIGH_CHAMBER),
+        HIGH_CHAMBER_INVERTED(CLIMB_HIGH_CHAMBER_INVERTED),
+        HIGH_BASKET(CLIMB_HIGH_BASKET);
 
         public final double position;
 
@@ -95,7 +103,6 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         return (Math.max((climbMotor2.getCurrentPosition() * -1), 0) / 8192.0 * 360);
     }
 
-
     @Override
     public void periodic() {
         double error = targetPosition - this.getSlidesPosition();
@@ -109,15 +116,15 @@ public class ClimbSystem extends SubsystemBase implements LogState {
 //        Log.i("Climb", String.valueOf(position));
 
         root.getTelemetry().addData("Slide Position", this.getSlidesPosition());
+        Log.i("ClimbSystem", "Slide Position: " + stateString());
 
-        //Make sure to stop PIDing when we're home
-//        if(position == ClimbState.HOME && this.getSlidesPosition() < 75){
-        if (position == null) {
+//        Make sure to stop PIDing when we're home
+        if (position == ClimbState.HOME && this.getSlidesPosition() < 75) {
+           setRawMotors(0);
+        } else if (position == null) {
             //Don't pid
         } else if (ENABLED) {
-            climbMotor1.setPower(PID_output);
-            climbMotor2.setPower(PID_output);
-            climbMotor3.setPower(PID_output);
+            setRawMotors(PID_output);
         }
 
         lastError = error;
@@ -137,6 +144,14 @@ public class ClimbSystem extends SubsystemBase implements LogState {
         });
     }
 
+    private void setRawMotors(double speed){
+        if (ENABLED) {
+            climbMotor1.setPower(speed);
+            climbMotor2.setPower(speed);
+            climbMotor3.setPower(speed);
+        }
+    }
+
     /**
      * Sends the climb motors to a specific speed, ignoring the position.
      *
@@ -146,11 +161,7 @@ public class ClimbSystem extends SubsystemBase implements LogState {
     public Command sendRawMotors(double speed) {
         return new InstantCommand(() -> {
             position = null;
-            if (ENABLED) {
-                climbMotor1.setPower(speed);
-                climbMotor2.setPower(speed);
-                climbMotor3.setPower(speed);
-            }
+            setRawMotors(speed);
         });
     }
 }

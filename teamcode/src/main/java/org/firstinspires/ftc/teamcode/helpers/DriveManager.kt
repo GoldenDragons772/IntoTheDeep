@@ -17,7 +17,14 @@ import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleComm
 /**
  * Manages driving and button mappings for TeleOps.
  */
-class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gamepad, mapping: Mapping, isAllianceRed: Boolean) {
+class DriveManager(
+    hw: HardwareMap,
+    telemetry: Telemetry,
+    gp1: Gamepad,
+    gp2: Gamepad,
+    mapping: Mapping,
+    isAllianceRed: Boolean
+) {
     /**
      * Subsystems
      */
@@ -107,9 +114,15 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         setPressedBinding(mapping.unClimbMapping, root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME))
         setPressedBinding(mapping.climbUpMapping, root.climb.sendRawMotors(1.0))
         setPressedBinding(mapping.climbDownMapping, root.climb.sendRawMotors(-1.0))
+        setPressedBinding(
+            mapping.hangLowSpecMapping,
+            SpecimenCommandInverted(root.intake, root.outtake, root.climb, ClimbSystem.ClimbState.LOW_CHAMBER)
+        )
 
-
-        setPressedBinding(mapping.hangSpecMapping, SpecimenCommandInverted(root.intake, root.outtake, root.climb))
+        setPressedBinding(
+            mapping.hangSpecMapping,
+            SpecimenCommandInverted(root.intake, root.outtake, root.climb, ClimbSystem.ClimbState.HIGH_CHAMBER_INVERTED)
+        )
         setPressedBinding(mapping.aimMapping, ToggleIntakeCommand(root.intake, root.outtake))
         setPressedBinding(mapping.transferMapping, TransferSampleCommand(root.intake, root.outtake, root.climb))
         // Try to move to transfer position if some conditions are met
@@ -154,6 +167,7 @@ class DriveManager(hw: HardwareMap, telemetry: Telemetry, gp1: Gamepad, gp2: Gam
         val hangSpecMapping: Pair<GamepadKeys.Button, Int>,
         val climbUpMapping: Pair<GamepadKeys.Button, Int>,
         val climbDownMapping: Pair<GamepadKeys.Button, Int>,
+        val hangLowSpecMapping: Pair<GamepadKeys.Button, Int>,
         val moveIntakeMapping: Pair<GamepadKeys.Trigger, Int>?
     )
 }
