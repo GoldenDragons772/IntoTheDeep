@@ -48,7 +48,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.73, CLAW_STROKE = 0.5;
-    AnalogInput strikeEncoder;
+//    AnalogInput strikeEncoder;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
@@ -152,7 +152,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         leftLinkageServo.setPosition(LINKAGE_HOME);
 
         pivotServo.setPosition(PIVOT_HOME);
-        strikeEncoder = root.getHw().get(AnalogInput.class, "analogInput"); // TODO: fix this
+//        strikeEncoder = root.getHw().get(AnalogInput.class, "analogInput"); // TODO: fix this
 
         if (!isAuto || !isSpecAuto) {
             this.moveToHome().schedule();
@@ -226,6 +226,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         root.getTelemetry().addData("Rotation", inputValue);
     }
 
+/*
     public void tryDetectIntakeFailure() {
         // Won't work because modular arithmetic :pensive:
         Supplier<Double> pos = () -> strikeEncoder.getVoltage() / 3.3; //
@@ -240,6 +241,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
                                                 .schedule()))
            .schedule();
     }
+*/
 
     public Command setWristRotation(Double rot) {
         double inputValue = (rot / Math.PI + 0.5) % 1;
