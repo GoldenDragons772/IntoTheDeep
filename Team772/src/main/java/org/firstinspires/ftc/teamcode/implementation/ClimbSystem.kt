@@ -20,6 +20,22 @@ import kotlin.math.max
  */
 @Config
 class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase(), LogState {
+    companion object {
+        @JvmField var CLIMB_HOME = 0
+        @JvmField var CLIMB_LOW_CHAMBER = 475
+        @JvmField var CLIMB_HIGH_CHAMBER = 700
+        @JvmField var CLIMB_LOW_BASKET = 700
+        @JvmField var CLIMB_HIGH_BASKET = 2200
+        @JvmField var CLIMB_HIGH_CHAMBER_INVERTED = 1400
+
+        // PID coefficients for the climb slides.
+        @JvmField var PID_SLIDES = PIDFCoefficients(0.007, 0.00, 0.0001, 0.05)
+
+        // Target position for the climb slides, initialized to the HOME position.
+        @JvmField var ENABLED = true
+        @JvmField var POWER_SCALAR = 0.8
+    }
+
     override fun stateString(): String =
         "CLIMBSYSTEM targetPosition: $targetPosition state: ${state?.name} slidesPosition: ${this.slidesPosition}"
 
@@ -28,13 +44,13 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
      * Each state corresponds to a specific target position for the climb slides.
      */
     enum class ClimbState(private val pos: () -> Int) {
-        HOME({ CLIMB_HOME }),
+        HOME({ CLIMB_HOME }), // Using a lambda forces this to refer back to the static variable every time instead of copying it.
         LOW_CHAMBER({ CLIMB_LOW_CHAMBER }),  // Because there are no pointers in java
         LOW_BASKET({ CLIMB_LOW_BASKET }),
         HIGH_CHAMBER({ CLIMB_HIGH_CHAMBER }),
         HIGH_CHAMBER_INVERTED({ CLIMB_HIGH_CHAMBER_INVERTED }),
-        HIGH_BASKET({ CLIMB_HIGH_BASKET });
 
+        HIGH_BASKET({ CLIMB_HIGH_BASKET });
         fun getPos(): Int = pos()
     }
 
@@ -107,10 +123,10 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
         }))
     }
 
+
     fun setTargetPosition(climbPosition: Double): Command {
         return InstantCommand(Runnable { targetPosition = climbPosition })
     }
-
 
     private fun setMotorPower(speed: Double) {
         if (!ENABLED) return
@@ -129,23 +145,7 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
             setMotorPower(speed)
         })
     }
-
     var targetPosition = ClimbState.HOME.getPos().toDouble()
+
     var lastError = 0.0
-
-    companion object {
-        @JvmField var CLIMB_HOME = 0
-        @JvmField var CLIMB_LOW_CHAMBER = 100
-        @JvmField var CLIMB_HIGH_CHAMBER = 420
-        @JvmField var CLIMB_LOW_BASKET = 700
-        @JvmField var CLIMB_HIGH_BASKET = 2200
-        @JvmField var CLIMB_HIGH_CHAMBER_INVERTED = 1200
-
-        // PID coefficients for the climb slides.
-        @JvmField var PID_SLIDES = PIDFCoefficients(0.007, 0.00, 0.0001, 0.05)
-
-        // Target position for the climb slides, initialized to the HOME position.
-        @JvmField var ENABLED = true
-        @JvmField var POWER_SCALAR = 0.8
-    }
 }

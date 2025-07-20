@@ -21,11 +21,11 @@ public class Constants {
     public static double VISION_SERVO_MULTIPLIER = 0.66;
 
     // Pivot Positions (Joint 2)
-    public static double PIVOT_SERVO_HOME = 0.6;
+    public static double PIVOT_SERVO_HOME = 0.6; // used
     public static double PIVOT_SERVO_SCORE = 0.6;
     public static double PIVOT_SERVO_SPEC = 0.9;
-    public static double PIVOT_SERVO_SPEC_INV = 0.50;
-    public static double PIVOT_SERVO_TRANSFER = 0.08;
+    public static double PIVOT_SERVO_SPEC_INV = 0.6; // used
+    public static double PIVOT_SERVO_TRANSFER = 0.08; // used
     public static double PIVOT_SERVO_SAFE = 0.65;
     public static double PIVOT_SERVO_PRELOAD = 0.0;
 
@@ -33,12 +33,12 @@ public class Constants {
      * Values for stage 1 of the outtake
      */
 
-    public static double OUT_STRIKE_HOME = 0.82;
+    public static double OUT_STRIKE_HOME = 0.85;
     public static double OUT_STRIKE_SCORE = 0.25;
     public static double OUT_STRIKE_TRANSFER_PREP = 0.474;
     public static double OUT_STRIKE_TRANSFER = 0.574;
     public static double OUT_STRIKE_SPEC = 0.05;
-    public static double OUT_STRIKE_SPEC_INV = 0.05;
+    public static double OUT_STRIKE_SPEC_INV = 0.1;
     public static double OUT_STRIKE_SAFE = 0.85;
 
 
