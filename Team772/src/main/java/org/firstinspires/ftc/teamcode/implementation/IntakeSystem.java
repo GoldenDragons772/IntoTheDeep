@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.*;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.LogState;
@@ -16,6 +17,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * IntakeSystem is a subsystem that manages the intake mechanism of the robot.
@@ -30,11 +32,12 @@ public class IntakeSystem extends SubsystemBase implements LogState {
     public static double RIGHT_LINKAGE_HOME = 0.00;
 //    public static double RIGHT_LINKAGE_HOME = 0, RIGHT_LINKAGE_TARGET = 0.45, RIGHT_LINKAGE_HALF = 0.23;
 
-    public static double LINKAGE_LENGTH = 240/25.4; // mm to inches
-    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI/180; // radians
-    public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI/180; // radians
+    public static double LINKAGE_LENGTH = 240 / 25.4; // mm to inches
+    public static double LINKAGE_HOME_ANGLE = 78.0 * Math.PI / 180; // radians
+    public static double LINKAGE_TARGET_ANGLE = 13.0 * Math.PI / 180; // radians
     // Set Positions for Strike Servos
-    public static double STRIKE_HOME = 0.35, STRIKE_TARGET = 0.931, STRIKE_TRANSFER = 0.78, STRIKE_HOVER = 0.84;
+    public static double STRIKE_HOME = 0.35, STRIKE_TARGET = 0.945, STRIKE_TRANSFER = 0.78, STRIKE_HOVER = 0.84;
+    public static double STRIKE_RECOVERY_MIN = 0.98, STRIKE_RECOVERY_MAX = 0.25, STRIKE_RECOVERY_DISTANCE = 0.05;
 
     static WristPosition wristState = WristPosition.HOME;
     // Set Positions for main pivot
@@ -45,6 +48,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
     // Set Positions for claw
     public static double CLAW_HOME = 1.0, CLAW_TARGET = 0.73, CLAW_STROKE = 0.5;
+    AnalogInput strikeEncoder;
 
     //State stuff
     static IntakePosition extendState = IntakePosition.HOME;
@@ -148,6 +152,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         leftLinkageServo.setPosition(LINKAGE_HOME);
 
         pivotServo.setPosition(PIVOT_HOME);
+        strikeEncoder = root.getHw().get(AnalogInput.class, "analogInput"); // TODO: fix this
 
         if (!isAuto || !isSpecAuto) {
             this.moveToHome().schedule();
@@ -195,6 +200,7 @@ public class IntakeSystem extends SubsystemBase implements LogState {
 
     @Override
     public void periodic() {
+//        tryDetectIntakeFailure();
         if (!isAuto) {
 
             root.getTelemetry().addData("extendState", extendState.toString());
@@ -218,6 +224,21 @@ public class IntakeSystem extends SubsystemBase implements LogState {
         wristPos = inputValue;
         root.getTelemetry().addData("Theta --", rotationValue);
         root.getTelemetry().addData("Rotation", inputValue);
+    }
+
+    public void tryDetectIntakeFailure() {
+        // Won't work because modular arithmetic :pensive:
+        Supplier<Double> pos = () -> strikeEncoder.getVoltage() / 3.3; //
+        Supplier<Command> inc = () -> setStrike(pos.get() + STRIKE_RECOVERY_DISTANCE);
+        double cPos = pos.get();
+
+        if (!(STRIKE_RECOVERY_MIN < cPos && cPos < 1.0 || 0.0 < cPos && cPos < STRIKE_RECOVERY_MAX))
+            return;
+        inc.get()
+           .andThen(new InstantCommand(() -> inc.get()
+                                                .andThen(new InstantCommand(() -> inc.get().schedule()))
+                                                .schedule()))
+           .schedule();
     }
 
     public Command setWristRotation(Double rot) {
@@ -383,24 +404,19 @@ public class IntakeSystem extends SubsystemBase implements LogState {
      */
     public Command setStrike(IntakePosition pos) {
         return switch (pos) {
-            case HOME -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(STRIKE_HOME);
-                rightStrikeServo.setPosition(STRIKE_HOME);
-            });
-            case TARGET -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(STRIKE_TARGET);
-                rightStrikeServo.setPosition(STRIKE_TARGET);
-            });
-            case TRANSFER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(STRIKE_TRANSFER);
-                rightStrikeServo.setPosition(STRIKE_TRANSFER);
-            });
-            case HOVER -> new InstantCommand(() -> {
-                leftStrikeServo.setPosition(STRIKE_HOVER);
-                rightStrikeServo.setPosition(STRIKE_HOVER);
-            });
+            case HOME -> setStrike(STRIKE_HOME);
+            case TARGET -> setStrike(STRIKE_TARGET);
+            case TRANSFER -> setStrike(STRIKE_TRANSFER);
+            case HOVER -> setStrike(STRIKE_HOVER);
         };
 
+    }
+
+    private Command setStrike(double pos) {
+        return new InstantCommand(() -> {
+            leftStrikeServo.setPosition(pos);
+            rightStrikeServo.setPosition(pos);
+        });
     }
 
     /**

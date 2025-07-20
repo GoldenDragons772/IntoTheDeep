@@ -114,7 +114,7 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
 
     private fun setMotorPower(speed: Double) {
         if (!ENABLED) return
-        motors.forEach { it.power = speed }
+        motors.forEach { it.power = speed * POWER_SCALAR }
     }
 
     /**
@@ -130,6 +130,9 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
         })
     }
 
+    var targetPosition = ClimbState.HOME.getPos().toDouble()
+    var lastError = 0.0
+
     companion object {
         @JvmField var CLIMB_HOME = 0
         @JvmField var CLIMB_LOW_CHAMBER = 100
@@ -142,8 +145,7 @@ class ClimbSystem(private val root: RootSystem, isAuto: Boolean) : SubsystemBase
         @JvmField var PID_SLIDES = PIDFCoefficients(0.007, 0.00, 0.0001, 0.05)
 
         // Target position for the climb slides, initialized to the HOME position.
-        @JvmField var targetPosition = ClimbState.HOME.getPos().toDouble()
-        @JvmField var lastError = 0.0
         @JvmField var ENABLED = true
+        @JvmField var POWER_SCALAR = 0.8
     }
 }
