@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
  * Moves the outtake arm to the scoring position and sets the climb system to high chamber.
  * This command is used in the auto mode to score the specimen.
  */
-class AutoSpecimenCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): ParallelCommandGroup() {
+class AutoScoreSpecimenCommand(private val intakeSystem: IntakeSystem, private val outtakeSystem: OuttakeSystem, private val climbSystem: ClimbSystem): ParallelCommandGroup() {
 
     init{
         addCommands(

@@ -1,30 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import android.util.Log
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
-
-import com.arcrobotics.ftclib.command.*
-import com.pedropathing.localization.Pose
-import com.pedropathing.pathgen.BezierLine
-import com.pedropathing.pathgen.PathBuilder
-
+import com.arcrobotics.ftclib.command.CommandOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
-import org.firstinspires.ftc.teamcode.implementation.Constants
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.RootSystem
 import org.firstinspires.ftc.teamcode.implementation.commands.GrabSampleCommand
-import org.firstinspires.ftc.teamcode.vision.SampleDetection
-import org.opencv.core.Point
-import org.openftc.easyopencv.OpenCvCamera
-import org.openftc.easyopencv.OpenCvCameraFactory
-import org.openftc.easyopencv.OpenCvCameraRotation
-import kotlin.math.PI
-import kotlin.math.pow
-import kotlin.math.sin
 
 // ~ should always sort last alphabetically
 @TeleOp(name = "~Camera Test")

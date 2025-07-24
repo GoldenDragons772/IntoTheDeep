@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.implementation
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
-import com.arcrobotics.ftclib.command.Command
 import com.arcrobotics.ftclib.command.CommandScheduler
+import com.arcrobotics.ftclib.command.SubsystemBase
 import com.arcrobotics.ftclib.kotlin.extensions.util.clamp
 import com.pedropathing.follower.Follower
 import com.qualcomm.hardware.lynx.LynxModule
@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants
 import kotlin.math.pow
 import kotlin.math.sign
+import kotlin.reflect.full.functions
 
 /**
  * Root subsystem -- he's the guy in charge.
@@ -27,7 +28,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
     private val hubs: MutableList<LynxModule> = hw.getAll(LynxModule::class.java)
 
     val outtake = OuttakeSystem(this, isAuto)
-    val climb = ClimbSystem(this, isAuto)
+    var climb = ClimbSystem(this, isAuto)
     val intake = IntakeSystem(this, isAuto, isSpecAuto)
     val voltageSensor: VoltageSensor = hw.voltageSensor.first()
     val follower = Follower(hw, FConstants::class.java, LConstants::class.java)
@@ -37,6 +38,7 @@ class RootSystem(val hw: HardwareMap, rawTelemetry: Telemetry, val isAuto: Boole
         private set
 
     init {
+
 //        hubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
         follower.setupConstants(FConstants::class.java, LConstants::class.java)
     }

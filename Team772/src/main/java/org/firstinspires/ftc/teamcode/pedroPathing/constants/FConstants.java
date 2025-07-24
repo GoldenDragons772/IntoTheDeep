@@ -24,7 +24,7 @@ public class FConstants {
         FollowerConstants.mass = 12.519;
 
         FollowerConstants.xMovement = (81.719 + 80.890 + 80.382) / 3;
-        FollowerConstants.yMovement = (63.438 + 63.596 + 63.642) / 3;
+        FollowerConstants.yMovement = (64.62 + 64.68 + 64.32) / 3;
 
         FollowerConstants.forwardZeroPowerAcceleration = (-41.640 - 46.194 - 46.921) / 3;
         FollowerConstants.lateralZeroPowerAcceleration = (-78.681 - 75.491 - 73.338) / 3;
@@ -58,7 +58,7 @@ public class FConstants {
         FollowerConstants.pathEndTranslationalConstraint = 0.1;
         FollowerConstants.pathEndHeadingConstraint = 0.007;
 
-        FollowerConstants.useVoltageCompensationInAuto = false;
+        FollowerConstants.useVoltageCompensationInAuto = true;
         FollowerConstants.useVoltageCompensationInTeleOp = false;
         FollowerConstants.nominalVoltage = 13.5;
     }

@@ -26,8 +26,8 @@ public class LConstants {
         PinpointConstants.strafeX = 8 - 0.3;//6.398 - 0.65;     //7+.666;
         PinpointConstants.distanceUnit = DistanceUnit.INCH;
         PinpointConstants.hardwareMapName = "pinpoint";
-        PinpointConstants.useYawScalar = false;
-        PinpointConstants.yawScalar = 1.0;
+        PinpointConstants.useYawScalar = true;
+        PinpointConstants.yawScalar = 0.984;
         //PinpointConstants.useCustomEncoderResolution = true;
         PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
         //PinpointConstants.customEncoderResolution = 37.251;

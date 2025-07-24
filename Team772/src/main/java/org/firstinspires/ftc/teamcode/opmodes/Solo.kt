@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.arcrobotics.ftclib.command.CommandOpMode
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.helpers.AllianceSelector
 import org.firstinspires.ftc.teamcode.helpers.DriveManager
 
@@ -36,6 +35,8 @@ class Solo : CommandOpMode() {
             transferMapping = Pair(GamepadKeys.Button.A, 1), // Cross
             climbUpMapping = Pair(GamepadKeys.Button.LEFT_STICK_BUTTON, 1), // Cross
             climbDownMapping = Pair(GamepadKeys.Button.RIGHT_STICK_BUTTON, 1), // Circle
+            hangLowSpecMapping = Pair(GamepadKeys.Button.START, 1),
+            incrementClimbSystem = null,
             moveIntakeMapping = Pair(GamepadKeys.Trigger.LEFT_TRIGGER, 1)
         )
         driveManager = DriveManager(

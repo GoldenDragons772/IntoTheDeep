@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.arcrobotics.ftclib.command.*
 import com.pedropathing.commands.FollowPath
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import org.firstinspires.ftc.teamcode.auto.BucketAutoPaths
+import org.firstinspires.ftc.teamcode.auto.ReflectedBucketAutoPaths as BucketAutoPaths
 import org.firstinspires.ftc.teamcode.implementation.ClimbSystem
 import org.firstinspires.ftc.teamcode.implementation.IntakeSystem
 import org.firstinspires.ftc.teamcode.implementation.OuttakeSystem
@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.implementation.commands.TransferSampleComm
  * The auto currently scores three samples
  */
 //TODO: Add submersible sample scoring and transfer commands.
-@Autonomous(name = "Bucket Auto")
-class BucketAuto(): CommandOpMode() {
+@Autonomous(name = "Reflected Bucket")
+class ReflectedBucket(): CommandOpMode() {
     override fun initialize() {
 
         val root = RootSystem(hardwareMap, telemetry, true, isSpecAuto = false)
@@ -172,7 +172,6 @@ class BucketAuto(): CommandOpMode() {
                 root.outtake.clawOpen(),
                 WaitCommand(400),
 //
-//                //Pickup from sub first
 
                 //Move to the sub while getting the outtake ready for transfer.
                 ParallelCommandGroup(
@@ -184,80 +183,6 @@ class BucketAuto(): CommandOpMode() {
                     ),
                 ),
 
-//                //Move the intake into scanning position
-//                root.intake.moveToTarget(),
-//                root.intake.hoverIntake(),
-//                GrabSampleCommand(root),
-//
-//                //Strike the intake and close the claw.
-//                root.intake.strikeIntake(),
-//                WaitCommand(300),
-//                root.intake.toggleClaw(),
-
-//                //TODO: Add command to scan submersible.
-//                GrabSampleCommand(root),
-
-                //Transfer the sample.
-//                transferSampleCommand,
-//
-//                //Move back to the bucket while moving the climb up.
-//                FollowPath(root.follower, BucketAutoPaths.scoreFromSub(), true, 0.9)
-//                    .alongWith(
-//                        WaitCommand(1500),
-//                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
-//                    ),
-//
-//                //Let go of the sample
-//                root.outtake.clawOpen(),
-//                WaitCommand(250),
-//
-//                //Pickup from sub second
-//
-//                //Move to the sub while getting the outtake ready for transfer.
-//                ParallelCommandGroup(
-//                    FollowPath(root.follower, BucketAutoPaths.goToSub(), true, 0.9),
-//                    root.outtake.moveArmToTransferPrep(),
-//                    WaitCommand(1500).andThen(
-//                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
-//                    ),
-//                ),
-
-                //Move the intake into scanning position
-//                root.intake.moveToTarget(),
-//                root.intake.hoverIntake(),
-//                WaitCommand(500),
-//
-//                //Strike the intake and close the claw.
-//                root.intake.strikeIntake(),
-//                WaitCommand(300),
-//                root.intake.toggleClaw(),
-
-//                GrabSampleCommand(root),
-//
-//                //Transfer the Sample
-//                transferSampleCommand,
-//
-//                //Go back to the sub while moving the climb system
-//                FollowPath(root.follower, BucketAutoPaths.scoreFromSub(), true, 0.9)
-//                    .alongWith(
-//                        WaitCommand(1500),
-//                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HIGH_BASKET),
-//                    ),
-//
-//                //Let go of the sample.
-//                root.outtake.clawOpen(),
-//                WaitCommand(250),
-//
-//
-//                //Drive the robot away from the bucket so that the outtake does not get
-//                //stuck in the bucket after auto ends.
-//                ParallelCommandGroup(
-//                    FollowPath(root.follower, BucketAutoPaths.finishAuto(), true, 0.9),
-//                    WaitCommand(1000).andThen(
-//                        root.outtake.moveArmToHome(),
-//                        root.climb.setTargetPosition(ClimbSystem.ClimbState.HOME)
-//                    ),
-//                ),
             )
         )
     }
